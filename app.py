@@ -46,11 +46,11 @@ def generate_report():
     sheets_service.write_data(report_data)
 
     # Send email with PDF link
-    email_service.send_email(
-        data['client_email'],
-        "Your Report is Ready",
-        f"Your report has been generated. You can download it from the following link: {pdf_url}"
-    )
+   # email_service.send_email(
+    #    data['client_email'],
+     #   "Your Report is Ready",
+     #   f"Your report has been generated. You can download it from the following link: {pdf_url}"
+   # )
 
     logger.info(f'Report generated with ID: {report_id}')
     return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url})
