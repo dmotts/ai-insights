@@ -1,0 +1,74 @@
+from flask import Flask, request, jsonify, render_template, url_for
+from flask_mail import Mail, Message
+import os
+import logging
+import datetime
+from sheets_service import SheetsService
+from openai_service import OpenAIService
+from pdf_service import PDFService
+from email_service import EmailService
+from config import Config
+
+app = Flask(__name__)
+app.config.from_object(Config)
+mail = Mail(app)
+
+logging.basicConfig(level=app.config['LOG_LEVEL'])
+logger = logging.getLogger(__name__)
+
+# Initialize services
+sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], app.config['SHEET_NAME'])
+openai_service = OpenAIService(app.config['OPENAI_API_KEY'], app.config['OPENAI_MODEL'])
+pdf_service = PDFService(app.config['PDFCO_API_KEY'])
+email_service = EmailService(app)
+
+@app.route('/')
+def index():
+    return render_template('generate_report.html')
+
+@app.route('/generate_report', methods=['POST'])
+def generate_report():
+    data = request.json
+    report_id = generate_report_id()
+    timestamp = datetime.datetime.now().isoformat()
+
+    # Generate report content using OpenAI
+    report_content = openai_service.generate_report_content(data['client_name'], data['report_data'])
+
+    # Generate PDF using PDF.co
+    pdf_url = pdf_service.generate_pdf(report_content)
+
+    if not pdf_url:
+        return jsonify({"status": "error", "message": "Failed to generate PDF"}), 500
+
+    # Prepare data for Google Sheets
+    report_data = [report_id, data['client_name'], report_content, pdf_url, timestamp]
+    sheets_service.write_data(report_data)
+
+    # Send email with PDF link
+    email_service.send_email(
+        data['client_email'],
+        "Your Report is Ready",
+        f"Your report has been generated. You can download it from the following link: {pdf_url}"
+    )
+
+    logger.info(f'Report generated with ID: {report_id}')
+    return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url})
+
+@app.route('/get_report/<report_id>', methods=['GET'])
+def get_report(report_id):
+    all_reports = sheets_service.read_data()
+    report = next((report for report in all_reports if report['Report ID'] == report_id), None)
+
+    if report:
+        logger.info(f'Report found: {report_id}')
+        return jsonify(report)
+    else:
+        logger.warning(f'Report not found: {report_id}')
+        return jsonify({"status": "error", "message": "Report not found"}), 404
+
+def generate_report_id():
+    return str(int(datetime.datetime.now().timestamp()))
+
+if __name__ == '__main__':
+    app.run(debug=True)

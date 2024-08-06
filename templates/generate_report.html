@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Generate Report</title>
+</head>
+<body>
+    <div class="container text-center mt-5">
+        <h1>Generate Your Report</h1>
+        <form id="reportForm" class="mt-4">
+            <div class="form-group">
+                <label for="clientName">Client Name</label>
+                <input type="text" class="form-control" id="clientName" name="client_name" required>
+            </div>
+            <div class="form-group">
+                <label for="clientEmail">Client Email</label>
+                <input type="email" class="form-control" id="clientEmail" name="client_email" required>
+            </div>
+            <div class="form-group">
+                <label for="reportData">Report Data</label>
+                <textarea class="form-control" id="reportData" name="report_data" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send me the report</button>
+        </form>
+        <div id="result" class="mt-4"></div>
+    </div>
+
+    <script>
+        document.getElementById('reportForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const data = {
+                client_name: document.getElementById('clientName').value,
+                client_email: document.getElementById('clientEmail').value,
+                report_data: document.getElementById('reportData').value
+            };
+            
+            fetch('/generate_report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('result').innerHTML = `
+                        <div class="alert alert-success" role="alert">
+                            Report generated successfully! 
+                            <a href="${data.pdf_url}" target="_blank">Download PDF</a>
+                        </div>`;
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            Error generating report: ${data.message}
+                        </div>`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
