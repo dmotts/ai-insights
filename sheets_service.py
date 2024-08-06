@@ -8,13 +8,14 @@ class SheetsService:
         Initializes the SheetsService with Google Sheets credentials and sheet name.
         If the sheet does not exist, it creates a new sheet.
         """
+        logging.basicConfig(level=logging.DEBUG)
+        self.logger = logging.getLogger(__name__)
+
         self.scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
         self.creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_json, self.scope)
         self.client = gspread.authorize(self.creds)
         self.sheet_name = sheet_name
         self.sheet = self._get_or_create_sheet(sheet_name)
-        logging.basicConfig(level=logging.DEBUG)
-        self.logger = logging.getLogger(__name__)
 
     def _get_or_create_sheet(self, sheet_name):
         """
