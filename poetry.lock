@@ -238,6 +238,21 @@ async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
 
 [[package]]
+name = "flask-mail"
+version = "0.10.0"
+description = "Flask extension for sending email"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "flask_mail-0.10.0-py3-none-any.whl", hash = "sha256:a451e490931bb3441d9b11ebab6812a16bfa81855792ae1bf9c1e1e22c4e51e7"},
+    {file = "flask_mail-0.10.0.tar.gz", hash = "sha256:44083e7b02bbcce792209c06252f8569dd5a325a7aaa76afe7330422bd97881d"},
+]
+
+[package.dependencies]
+blinker = "*"
+flask = "*"
+
+[[package]]
 name = "google-auth"
 version = "2.32.0"
 description = "Google Authentication Library"
@@ -861,4 +876,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10.0,<3.11"
-content-hash = "54f123b808efa05c237283cf2e80401cb8e178b3ec922298367e153bdfa450c1"
+content-hash = "57f9dc49410c5375d158826bd6fac6722509ca5470c33af9f3477a07f4afe706"
