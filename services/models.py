@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from config import Config
 
 Base = declarative_base()
 
@@ -14,9 +15,8 @@ class Report(Base):
     pdf_url = Column(String, nullable=False)
     doc_url = Column(String, nullable=False)
 
-DATABASE_URL = 'postgresql+psycopg2://username:password@your-instance-ip/dbname'
-
-engine = create_engine(DATABASE_URL)
+# Create the database engine using the SQLALCHEMY_DATABASE_URI from the config
+engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
 # Create tables if they don't exist
