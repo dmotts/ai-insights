@@ -1,8 +1,13 @@
 Flask==2.0.2
+Flask-Mail==0.9.1
 gspread==5.0.0
 oauth2client==4.1.3
 openai
 requests==2.26.0
-Flask-Mail==0.9.1
-Werkzeug==2.0.2
-matplotlib
+requests-mock==1.9.3
+SQLAlchemy==1.4.22
+psycopg2-binary==2.9.1
+pytest==6.2.4
+pytest-cov==2.12.1
+selenium==3.141.0
+matplotlib==3.4.3

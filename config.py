@@ -14,3 +14,4 @@ class Config:
     MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'true') == 'true'
     MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', 'false') == 'true'
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'your_email@example.com')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql+psycopg2://username:password@your-instance-ip/dbname')

@@ -1,15 +1,19 @@
 import openai
 import logging
+from typing import List
 
 class OpenAIService:
-    def __init__(self, api_key, model):
+    def __init__(self, api_key: str, model: str):
         openai.api_key = api_key
         self.client = openai
         self.model = model
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(__name__)
 
-    def get_industry_trends(self, industry):
+    def get_industry_trends(self, industry: str) -> str:
+        """
+        Fetches the latest AI trends and developments in a given industry.
+        """
         prompt = f"Provide the latest AI trends and developments in the {industry} industry."
         self.logger.debug(f'Fetching industry trends for {industry}')
         try:
@@ -27,17 +31,20 @@ class OpenAIService:
             self.logger.error(f'Error fetching industry trends: {e}')
             return "Error fetching industry trends"
 
-    def generate_report_content(self, industry, answers):
+    def generate_report_content(self, industry: str, answers: List[str]) -> str:
+        """
+        Generates a comprehensive AI Insights Report for a business owner in a specified industry.
+        """
         industry_trends = self.get_industry_trends(industry)
         prompt = f"""
         You are an AI consultant. Generate a concise and actionable AI Insights Report for a business owner in the {industry} industry. The report should provide detailed insights on how AI can improve their business based on the following responses:
-    
+
         1. Key processes to optimize: {answers[0]}
         2. Challenges in improving customer experience: {answers[1]}
         3. Current data utilization: {answers[2]}
         4. Areas of operational inefficiency: {answers[3]}
         5. Long-term business goals and role of technology: {answers[4]}
-    
+
         The report should include:
         - An **Introduction** summarizing the business context.
         - **Latest Trends** in the {industry} industry: {industry_trends}
@@ -61,4 +68,3 @@ class OpenAIService:
         except Exception as e:
             self.logger.error(f'Error generating report content: {e}')
             return "Error generating report content"
-    
