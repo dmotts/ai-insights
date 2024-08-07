@@ -9,15 +9,15 @@ class Config:
     PDFCO_API_KEY = os.getenv('PDFCO_API_KEY', 'your_pdfco_api_key')
     GMAIL_ADDRESS = os.getenv('GMAIL_ADDRESS', '')
     GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD', '')
-
-# Use the DATABASE_URL from Render
-SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', '')
-
-# Feature flags to enable/disable services
-ENABLE_DATABASE = os.getenv('ENABLE_DATABASE', 'True') == 'True'
-ENABLE_EMAIL_SERVICE = os.getenv('ENABLE_EMAIL_SERVICE', 'True') == 'True'
-ENABLE_OPENAI_SERVICE = os.getenv('ENABLE_OPENAI_SERVICE', 'True') == 'True'
-ENABLE_PDF_SERVICE = os.getenv('ENABLE_PDF_SERVICE', 'True') == 'True'
-ENABLE_SHEETS_SERVICE = os.getenv('ENABLE_SHEETS_SERVICE', 'True') == 'True'
-ENABLE_INTEGRATION_SERVICE = os.getenv('ENABLE_INTEGRATION_SERVICE', 'True') == 'True'
-ENABLE_SUBSCRIPTION_SERVICE = os.getenv('ENABLE_SUBSCRIPTION_SERVICE', 'True') == 'True'
+    
+    # Use the DATABASE_URL from Render
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', '')
+    
+    # Feature flags to enable/disable services
+    ENABLE_DATABASE = os.getenv('ENABLE_DATABASE', 'True') == 'True'
+    ENABLE_EMAIL_SERVICE = os.getenv('ENABLE_EMAIL_SERVICE', 'True') == 'True'
+    ENABLE_OPENAI_SERVICE = os.getenv('ENABLE_OPENAI_SERVICE', 'True') == 'True'
+    ENABLE_PDF_SERVICE = os.getenv('ENABLE_PDF_SERVICE', 'True') == 'True'
+    ENABLE_SHEETS_SERVICE = os.getenv('ENABLE_SHEETS_SERVICE', 'True') == 'True'
+    ENABLE_INTEGRATION_SERVICE = os.getenv('ENABLE_INTEGRATION_SERVICE', 'True') == 'True'
+    ENABLE_SUBSCRIPTION_SERVICE = os.getenv('ENABLE_SUBSCRIPTION_SERVICE', 'True') == 'True'
