@@ -12,4 +12,3 @@ pytest-cov==2.12.1
 selenium==3.141.0
 matplotlib==3.4.3
 Werkzeug==2.0.2
-googleapiclient
