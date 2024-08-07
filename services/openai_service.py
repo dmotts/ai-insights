@@ -1,9 +1,11 @@
 import openai
+import os
 import logging
 
 class OpenAIService:
     def __init__(self, api_key, model):
         openai.api_key = api_key
+        self.client = openai
         self.model = model
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(__name__)
@@ -23,12 +25,18 @@ class OpenAIService:
         - An in-depth analysis of how AI can address these challenges and optimize processes.
         - A conclusion summarizing the key insights and recommendations for implementing AI solutions.
         """
-        response = openai.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=1500
-        )
-        return response.choices[0].message['content'].strip()
+        self.logger.debug('Generating report content with OpenAI')
+        try:
+            response = self.client.ChatCompletion.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=1500
+            )
+            self.logger.info('Report content generated successfully')
+            return response.choices[0].message['content'].strip()
+        except Exception as e:
+            self.logger.error(f'Error generating report content: {e}')
+            return "Error generating report content"
