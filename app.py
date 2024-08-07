@@ -39,14 +39,14 @@ def generate_report():
     ]
     report_content = openai_service.generate_report_content(industry, answers)
 
-    # Split the generated content into sections
+    # Safely split the generated content into sections
     sections = report_content.split('\n\n')
     content_dict = {
-        'introduction': sections[0],
-        'industry_trends': sections[1],
-        'ai_solutions': sections[2],
-        'analysis': sections[3],
-        'conclusion': sections[4]
+        'introduction': sections[0] if len(sections) > 0 else "Introduction section is unavailable.",
+        'industry_trends': sections[1] if len(sections) > 1 else "Industry trends section is unavailable.",
+        'ai_solutions': sections[2] if len(sections) > 2 else "AI solutions section is unavailable.",
+        'analysis': sections[3] if len(sections) > 3 else "Analysis section is unavailable.",
+        'conclusion': sections[4] if len(sections) > 4 else "Conclusion section is unavailable."
     }
 
     # Generate graphs
@@ -66,10 +66,10 @@ def generate_report():
     sheets_service.write_data(report_data)
 
     # email_service.send_email(
-     #   data['client_email'],
+    #    data['client_email'],
     #    "Your AI Insights Report is Ready",
     #    f"Your report has been generated. You can download it from the following link: {pdf_url}"
- #   )
+#    )
 
     logger.info(f'Report generated with ID: {report_data[0]}')
     return jsonify({"status": "success", "report_id": report_data[0], "pdf_url": pdf_url})
