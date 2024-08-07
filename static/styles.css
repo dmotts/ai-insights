@@ -1,49 +1,57 @@
 body {
-    background-color: #f8f9fa;
     font-family: Arial, sans-serif;
-}
-
-.container {
-    max-width: 600px;
-    margin-top: 50px;
-}
-
-.card {
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-    background: #007bff;
-    color: #fff;
-    padding: 20px;
-    border-radius: 8px 8px 0 0;
-}
-
-.card-body {
+    margin: 20px;
     padding: 20px;
 }
 
-.step {
-    display: none;
+h1, h2 {
+    color: #333;
 }
 
-.spinner-border {
-    width: 3rem;
-    height: 3rem;
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-top: 10px;
+}
+
+input, button {
+    padding: 8px;
+    margin-top: 5px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
     margin-top: 20px;
+}
+
+button:hover {
+    background-color: #45a049;
 }
 
 #result {
     margin-top: 20px;
 }
 
-.progress {
-    height: 20px;
+/* Progress Bar Styles */
+.progress-container {
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    margin-top: 20px;
 }
 
 .progress-bar {
-    font-size: 14px;
+    width: 0;
+    height: 20px;
+    background-color: #4CAF50;
+    text-align: center;
     line-height: 20px;
-    color: #fff;
+    color: white;
+    border-radius: 5px;
 }

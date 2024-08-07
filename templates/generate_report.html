@@ -1,186 +1,122 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <title>Generate AI Insights Report</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="card">
-            <div class="card-header text-center">
-                <h2>Generate Your AI Insights Report</h2>
-            </div>
-            <div class="card-body">
-                <form id="reportForm">
-                    <div id="step-1" class="step">
-                        <div class="form-group">
-                            <label for="clientName">Your Name</label>
-                            <input type="text" class="form-control" id="clientName" name="client_name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="clientEmail">Your Email</label>
-                            <input type="email" class="form-control" id="clientEmail" name="client_email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="industry">Industry</label>
-                            <select class="form-control" id="industry" name="industry" required>
-                                <option value="" disabled selected>Select your industry</option>
-                                <option value="Technology">Technology</option>
-                                <option value="Finance">Finance</option>
-                                <option value="Healthcare">Healthcare</option>
-                                <option value="Education">Education</option>
-                                <option value="Retail">Retail</option>
-                                <option value="Manufacturing">Manufacturing</option>
-                                <option value="Real Estate">Real Estate</option>
-                                <option value="Transportation">Transportation</option>
-                                <option value="Energy">Energy</option>
-                                <option value="Food and Beverage">Food and Beverage</option>
-                                <option value="Entertainment">Entertainment</option>
-                                <option value="Construction">Construction</option>
-                                <option value="Agriculture">Agriculture</option>
-                                <option value="Telecommunications">Telecommunications</option>
-                                <option value="Tourism">Tourism</option>
-                                <!-- Add more industries as needed -->
-                            </select>
-                        </div>
-                        <button type="button" class="btn btn-primary next-step">Next</button>
-                    </div>
+    <h1>AI Insights Report Generator</h1>
+    <form id="reportForm">
+        <label for="client_name">Client Name:</label>
+        <input type="text" id="client_name" name="client_name" required placeholder="e.g., John Doe">
+        <small>Enter the name of the report recipient.</small>
 
-                    <div id="step-2" class="step">
-                        <div class="form-group">
-                            <label for="question1">Describe the key processes in your business that you believe could be optimized.</label>
-                            <textarea class="form-control" id="question1" name="question1" rows="3" required></textarea>
-                        </div>
-                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="button" class="btn btn-primary next-step">Next</button>
-                    </div>
+        <label for="client_email">Client Email:</label>
+        <input type="email" id="client_email" name="client_email" required placeholder="e.g., john.doe@example.com">
+        <small>Enter a valid email address.</small>
 
-                    <div id="step-3" class="step">
-                        <div class="form-group">
-                            <label for="question2">What are the main challenges you face in improving customer experience?</label>
-                            <textarea class="form-control" id="question2" name="question2" rows="3" required></textarea>
-                        </div>
-                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="button" class="btn btn-primary next-step">Next</button>
-                    </div>
+        <label for="industry">Industry:</label>
+        <input type="text" id="industry" name="industry" required placeholder="e.g., Technology">
+        <small>Specify your industry sector.</small>
 
-                    <div id="step-4" class="step">
-                        <div class="form-group">
-                            <label for="question3">How do you currently utilize data to make business decisions?</label>
-                            <textarea class="form-control" id="question3" name="question3" rows="3" required></textarea>
-                        </div>
-                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="button" class="btn btn-primary next-step">Next</button>
-                    </div>
+        <label for="question1">Specific operational processes to improve with AI:</label>
+        <input type="text" id="question1" name="question1" required placeholder="e.g., Inventory Management">
+        <small>Mention key processes that AI can optimize.</small>
 
-                    <div id="step-5" class="step">
-                        <div class="form-group">
-                            <label for="question4">Which areas of your business operations do you feel are the least efficient?</label>
-                            <textarea class="form-control" id="question4" name="question4" rows="3" required></textarea>
-                        </div>
-                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="button" class="btn btn-primary next-step">Next</button>
-                    </div>
+        <label for="question2">Key challenges in improving customer experience:</label>
+        <input type="text" id="question2" name="question2" required placeholder="e.g., Personalization">
+        <small>Identify major hurdles in customer satisfaction.</small>
 
-                    <div id="step-6" class="step">
-                        <div class="form-group">
-                            <label for="question5">What are your long-term goals for your business, and how do you envision technology playing a role in achieving them?</label>
-                            <textarea class="form-control" id="question5" name="question5" rows="3" required></textarea>
-                        </div>
-                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="submit" class="btn btn-success">Send Me The Report</button>
-                    </div>
-                </form>
-                <div id="loading" class="text-center" style="display: none;">
-                    <div class="spinner-border" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <p>Generating your report, please wait...</p>
-                </div>
-                <div id="result" class="text-center mt-3" style="display: none;">
-                    <a id="downloadLink" class="btn btn-primary" href="#" target="_blank">Download The Report</a>
-                </div>
-            </div>
-            <!-- Progress bar moved to the bottom -->
-            <div class="card-footer">
-                <div class="progress mb-4">
-                    <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-        </div>
+        <label for="question3">Current data management and utilization challenges:</label>
+        <input type="text" id="question3" name="question3" required placeholder="e.g., Data Silos">
+        <small>Highlight challenges in handling and using data.</small>
+
+        <label for="question4">Areas of technology integration and inefficiency:</label>
+        <input type="text" id="question4" name="question4" required placeholder="e.g., Workflow Automation">
+        <small>Describe where technology falls short in your operations.</small>
+
+        <label for="question5">Long-term business goals and AI's role in achieving them:</label>
+        <input type="text" id="question5" name="question5" required placeholder="e.g., Market Expansion">
+        <small>Define goals and how AI can help achieve them.</small>
+
+        <label for="question6">Current AI maturity level in your organization:</label>
+        <input type="text" id="question6" name="question6" required placeholder="e.g., Initial Exploration">
+        <small>Describe how advanced your organization is in AI adoption.</small>
+
+        <!-- Add customization options -->
+        <fieldset>
+            <legend>Customize Your Report</legend>
+            <input type="checkbox" id="includeIntroduction" name="includeIntroduction" checked>
+            <label for="includeIntroduction">Include Introduction</label><br>
+
+            <input type="checkbox" id="includeIndustryTrends" name="includeIndustryTrends" checked>
+            <label for="includeIndustryTrends">Include Industry Trends</label><br>
+
+            <input type="checkbox" id="includeAISolutions" name="includeAISolutions" checked>
+            <label for="includeAISolutions">Include AI Solutions</label><br>
+
+            <input type="checkbox" id="includeAnalysis" name="includeAnalysis" checked>
+            <label for="includeAnalysis">Include Analysis</label><br>
+
+            <input type="checkbox" id="includeConclusion" name="includeConclusion" checked>
+            <label for="includeConclusion">Include Conclusion</label><br>
+        </fieldset>
+
+        <button type="submit">Generate Report</button>
+    </form>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar">0%</div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <div id="result"></div>
+
     <script>
-        $(document).ready(function() {
-            var currentStep = 1;
-            var totalSteps = $('.step').length;
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const formObject = Object.fromEntries(formData.entries());
 
-            function showStep(step) {
-                $('.step').hide();
-                $('#step-' + step).show();
-                updateProgressBar(step);
+            // Reset progress bar
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+
+            // Simulate progress
+            function updateProgress(percent) {
+                progressBar.style.width = percent + '%';
+                progressBar.textContent = percent + '%';
             }
 
-            function updateProgressBar(step) {
-                var percent = (step / totalSteps) * 100;
-                $('#progressBar').css('width', percent + '%').attr('aria-valuenow', percent);
-                $('#progressBar').text('Step ' + step + ' of ' + totalSteps);
+            updateProgress(20); // Start progress
+
+            const response = await fetch('/generate_report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formObject)
+            });
+
+            updateProgress(60); // Midway progress
+
+            const result = await response.json();
+            updateProgress(100); // Complete progress
+
+            const resultDiv = document.getElementById('result');
+            if (result.status === 'success') {
+                resultDiv.innerHTML = `
+                    <h2>Report Generated Successfully!</h2>
+                    <p>Report ID: ${result.report_id}</p>
+                    <p><a href="${result.pdf_url}" target="_blank">Download PDF</a></p>
+                    <p><a href="${result.doc_url}" target="_blank">View Google Doc</a></p>
+                `;
+            } else {
+                resultDiv.innerHTML = `<h2>Error: ${result.message}</h2>`;
             }
-
-            $('.next-step').click(function() {
-                currentStep++;
-                showStep(currentStep);
-            });
-
-            $('.prev-step').click(function() {
-                currentStep--;
-                showStep(currentStep);
-            });
-
-            $('#reportForm').submit(function(event) {
-                event.preventDefault();
-                $('#reportForm').hide();
-                $('#loading').show();
-
-                var formData = {
-                    client_name: $('#clientName').val(),
-                    client_email: $('#clientEmail').val(),
-                    industry: $('#industry').val(),
-                    question1: $('#question1').val(),
-                    question2: $('#question2').val(),
-                    question3: $('#question3').val(),
-                    question4: $('#question4').val(),
-                    question5: $('#question5').val()
-                };
-
-                fetch('/generate_report', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    $('#loading').hide();
-                    if (data.status === 'success') {
-                        $('#result').show();
-                        $('#downloadLink').attr('href', data.pdf_url);
-                        $('#progressBar').hide();  // Hide the progress bar
-                    } else {
-                        alert('Error generating report: ' + data.message);
-                        $('#reportForm').show();
-                    }
-                });
-            });
-
-            showStep(currentStep);
         });
     </script>
 </body>

@@ -44,7 +44,13 @@ def test_generate_report_endpoint(client, db, requests_mock):
         'question2': 'Improving UX',
         'question3': 'Data analysis',
         'question4': 'Automation',
-        'question5': 'AI in future growth'
+        'question5': 'AI in future growth',
+        'question6': 'Initial Exploration',
+        'includeIntroduction': True,
+        'includeIndustryTrends': True,
+        'includeAISolutions': True,
+        'includeAnalysis': True,
+        'includeConclusion': True
     })
 
     assert response.status_code == 200
@@ -55,3 +61,22 @@ def test_generate_report_endpoint(client, db, requests_mock):
 
     report = db.query(Report).filter_by(client_email='john.doe@example.com').first()
     assert report is not None
+
+def test_generate_report_invalid_data(client):
+    # Test with invalid email format
+    response = client.post('/generate_report', json={
+        'client_name': 'John Doe',
+        'client_email': 'invalid-email',
+        'industry': 'Technology',
+        'question1': 'Optimizing processes',
+        'question2': 'Improving UX',
+        'question3': 'Data analysis',
+        'question4': 'Automation',
+        'question5': 'AI in future growth',
+        'question6': 'Initial Exploration'
+    })
+
+    assert response.status_code == 400
+    data = response.get_json()
+    assert data['status'] == 'error'
+    assert 'Validation error' in data['message']

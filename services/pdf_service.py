@@ -26,9 +26,11 @@ class PDFService:
             result = response.json()
             self.logger.info('PDF generated successfully')
             return result['url']
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f'HTTP error generating PDF: {e}')
         except Exception as e:
             self.logger.error(f'Error generating PDF: {e}')
-            return None
+        return None
 
     def generate_graphs(self, analysis_data):
         """

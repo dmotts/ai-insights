@@ -1,6 +1,4 @@
-from flask import Flask, request, jsonify, render_template, url_for
-from flask_mail import Mail, Message
-import os
+from flask import Flask, request, jsonify, render_template
 import logging
 import datetime
 from services.sheets_service import SheetsService
@@ -10,11 +8,13 @@ from services.email_service import EmailService
 from config import Config
 from sqlalchemy.orm import Session
 from services.models import engine
+from werkzeug.exceptions import HTTPException
+from marshmallow import Schema, fields, ValidationError
 
 app = Flask(__name__)
 app.config.from_object(Config)
-mail = Mail(app)
 
+# Initialize logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,28 @@ logger = logging.getLogger(__name__)
 sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], app.config['SHEET_NAME'])
 openai_service = OpenAIService(app.config['OPENAI_API_KEY'], app.config['OPENAI_MODEL'])
 pdf_service = PDFService(app.config['PDFCO_API_KEY'])
-email_service = EmailService(app)
+email_service = EmailService()
+
+class ReportRequestSchema(Schema):
+    client_name = fields.String(required=True)
+    client_email = fields.Email(required=True)
+    industry = fields.String(required=True)
+    question1 = fields.String(required=True)
+    question2 = fields.String(required=True)
+    question3 = fields.String(required=True)
+    question4 = fields.String(required=True)
+    question5 = fields.String(required=True)
+    question6 = fields.String(required=True)
+
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    logger.error(f"HTTP error occurred: {e}")
+    return jsonify({"status": "error", "message": e.description}), e.code
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    logger.error(f"Error occurred: {e}")
+    return jsonify({"status": "error", "message": "An internal error occurred"}), 500
 
 @app.route('/')
 def index():
@@ -31,25 +52,41 @@ def index():
 @app.route('/generate_report', methods=['POST'])
 def generate_report():
     try:
+        # Validate and deserialize input
         data = request.json
-        industry = data.get('industry')
+        schema = ReportRequestSchema()
+        validated_data = schema.load(data)
+
+        industry = validated_data.get('industry')
         answers = [
-            data.get('question1'),
-            data.get('question2'),
-            data.get('question3'),
-            data.get('question4'),
-            data.get('question5')
+            validated_data.get('question1'),
+            validated_data.get('question2'),
+            validated_data.get('question3'),
+            validated_data.get('question4'),
+            validated_data.get('question5'),
+            validated_data.get('question6')
         ]
-        report_content = openai_service.generate_report_content(industry, answers)
+
+        # Get customization options
+        include_sections = {
+            "introduction": data.get('includeIntroduction', True),
+            "industry_trends": data.get('includeIndustryTrends', True),
+            "ai_solutions": data.get('includeAISolutions', True),
+            "analysis": data.get('includeAnalysis', True),
+            "conclusion": data.get('includeConclusion', True)
+        }
+
+        # Generate report content
+        report_content = openai_service.generate_report_content(industry, answers, include_sections)
 
         # Safely split the generated content into sections
         sections = report_content.split('\n\n')
         content_dict = {
-            'introduction': sections[0] if len(sections) > 0 else "Introduction section is unavailable.",
-            'industry_trends': sections[1] if len(sections) > 1 else "Industry trends section is unavailable.",
-            'ai_solutions': sections[2] if len(sections) > 2 else "AI solutions section is unavailable.",
-            'analysis': sections[3] if len(sections) > 3 else "Analysis section is unavailable.",
-            'conclusion': sections[4] if len(sections) > 4 else "Conclusion section is unavailable."
+            'introduction': sections[0] if len(sections) > 0 and include_sections['introduction'] else "Introduction section is unavailable.",
+            'industry_trends': sections[1] if len(sections) > 1 and include_sections['industry_trends'] else "Industry trends section is unavailable.",
+            'ai_solutions': sections[2] if len(sections) > 2 and include_sections['ai_solutions'] else "AI solutions section is unavailable.",
+            'analysis': sections[3] if len(sections) > 3 and include_sections['analysis'] else "Analysis section is unavailable.",
+            'conclusion': sections[4] if len(sections) > 4 and include_sections['conclusion'] else "Conclusion section is unavailable."
         }
 
         # Generate graphs with analysis data
@@ -81,8 +118,8 @@ def generate_report():
         # Write report data to Google Sheets and Database
         report_data = [
             report_id,
-            data['client_name'],
-            data['client_email'],
+            validated_data['client_name'],
+            validated_data['client_email'],
             industry,
             pdf_url,
             doc_url,
@@ -92,14 +129,20 @@ def generate_report():
         with Session(engine) as db:
             sheets_service.write_data(db, report_data)
 
-        # email_service.send_email(
-        #    data['client_email'],
-        #    "Your AI Insights Report is Ready",
-        #    f"Your report has been generated. You can download it from the following links:\n\nPDF: {pdf_url}\nGoogle Doc: {doc_url}"
-       # )
+      #  email_service.send_email(
+      #      validated_data['client_email'],
+      #      "Your AI Insights Report is Ready",
+       #     f"Your report has been generated. You can download it from the following links:\n\nPDF: {pdf_url}\nGoogle Doc: {doc_url}"
+        #)
+
+        # Schedule follow-up email (for demonstration, replace with actual scheduling)
+        # email_service.send_follow_up_email(validated_data['client_email'], report_id)
 
         logger.info(f'Report generated with ID: {report_id}')
         return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url, "doc_url": doc_url})
+    except ValidationError as err:
+        logger.error(f"Validation error: {err.messages}")
+        return jsonify({"status": "error", "message": "Validation error", "details": err.messages}), 400
     except Exception as e:
         logger.error(f"Error generating report: {e}")
         return jsonify({"status": "error", "message": "An error occurred while generating the report."}), 500
