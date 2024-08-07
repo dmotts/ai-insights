@@ -3,121 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate AI Insights Report</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <title>Generate Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>AI Insights Report Generator</h1>
-    <form id="reportForm">
-        <label for="client_name">Client Name:</label>
-        <input type="text" id="client_name" name="client_name" required placeholder="e.g., John Doe">
-        <small>Enter the name of the report recipient.</small>
+    <div class="container">
+        <h1>Generate Your AI Insights Report</h1>
+        <div class="progress-bar">
+            <div id="progress"></div>
+        </div>
+        <form id="reportForm">
+            <!-- Step 1 -->
+            <div class="form-step">
+                <h2>Step 1: Data Management</h2>
+                <label for="question1">What are your current data management and utilization challenges?</label>
+                <input type="text" id="question1" name="question1" placeholder="Describe your challenges">
+                <button type="button" class="next-step">Next</button>
+            </div>
 
-        <label for="client_email">Client Email:</label>
-        <input type="email" id="client_email" name="client_email" required placeholder="e.g., john.doe@example.com">
-        <small>Enter a valid email address.</small>
+            <!-- Step 2 -->
+            <div class="form-step">
+                <h2>Step 2: Technology Integration</h2>
+                <label for="question2">What are the areas of technology integration and inefficiency?</label>
+                <input type="text" id="question2" name="question2" placeholder="Describe inefficiencies">
+                <button type="button" class="prev-step">Previous</button>
+                <button type="button" class="next-step">Next</button>
+            </div>
 
-        <label for="industry">Industry:</label>
-        <input type="text" id="industry" name="industry" required placeholder="e.g., Technology">
-        <small>Specify your industry sector.</small>
+            <!-- Step 3 -->
+            <div class="form-step">
+                <h2>Step 3: Business Goals</h2>
+                <label for="question3">What are your long-term business goals and AI's role in achieving them?</label>
+                <input type="text" id="question3" name="question3" placeholder="Define your goals">
+                <button type="button" class="prev-step">Previous</button>
+                <button type="button" class="next-step">Next</button>
+            </div>
 
-        <label for="question1">Specific operational processes to improve with AI:</label>
-        <input type="text" id="question1" name="question1" required placeholder="e.g., Inventory Management">
-        <small>Mention key processes that AI can optimize.</small>
+            <!-- Step 4 -->
+            <div class="form-step">
+                <h2>Step 4: AI Maturity Level</h2>
+                <label for="question4">What is the current AI maturity level in your organization?</label>
+                <input type="text" id="question4" name="question4" placeholder="Describe your AI maturity">
+                <button type="button" class="prev-step">Previous</button>
+                <button type="button" class="next-step">Next</button>
+            </div>
 
-        <label for="question2">Key challenges in improving customer experience:</label>
-        <input type="text" id="question2" name="question2" required placeholder="e.g., Personalization">
-        <small>Identify major hurdles in customer satisfaction.</small>
-
-        <label for="question3">Current data management and utilization challenges:</label>
-        <input type="text" id="question3" name="question3" required placeholder="e.g., Data Silos">
-        <small>Highlight challenges in handling and using data.</small>
-
-        <label for="question4">Areas of technology integration and inefficiency:</label>
-        <input type="text" id="question4" name="question4" required placeholder="e.g., Workflow Automation">
-        <small>Describe where technology falls short in your operations.</small>
-
-        <label for="question5">Long-term business goals and AI's role in achieving them:</label>
-        <input type="text" id="question5" name="question5" required placeholder="e.g., Market Expansion">
-        <small>Define goals and how AI can help achieve them.</small>
-
-        <label for="question6">Current AI maturity level in your organization:</label>
-        <input type="text" id="question6" name="question6" required placeholder="e.g., Initial Exploration">
-        <small>Describe how advanced your organization is in AI adoption.</small>
-
-        <!-- Add customization options -->
-        <fieldset>
-            <legend>Customize Your Report</legend>
-            <input type="checkbox" id="includeIntroduction" name="includeIntroduction" checked>
-            <label for="includeIntroduction">Include Introduction</label><br>
-
-            <input type="checkbox" id="includeIndustryTrends" name="includeIndustryTrends" checked>
-            <label for="includeIndustryTrends">Include Industry Trends</label><br>
-
-            <input type="checkbox" id="includeAISolutions" name="includeAISolutions" checked>
-            <label for="includeAISolutions">Include AI Solutions</label><br>
-
-            <input type="checkbox" id="includeAnalysis" name="includeAnalysis" checked>
-            <label for="includeAnalysis">Include Analysis</label><br>
-
-            <input type="checkbox" id="includeConclusion" name="includeConclusion" checked>
-            <label for="includeConclusion">Include Conclusion</label><br>
-        </fieldset>
-
-        <button type="submit">Generate Report</button>
-    </form>
-
-    <!-- Progress Bar -->
-    <div class="progress-container">
-        <div class="progress-bar" id="progressBar">0%</div>
+            <!-- Step 5 -->
+            <div class="form-step">
+                <h2>Step 5: Report Customization</h2>
+                <p>Customize Your Report</p>
+                <label><input type="checkbox" name="includeIntroduction" checked> Include Introduction</label>
+                <label><input type="checkbox" name="includeIndustryTrends" checked> Include Industry Trends</label>
+                <label><input type="checkbox" name="includeAISolutions" checked> Include AI Solutions</label>
+                <label><input type="checkbox" name="includeAnalysis" checked> Include Analysis</label>
+                <label><input type="checkbox" name="includeConclusion" checked> Include Conclusion</label>
+                <button type="button" class="prev-step">Previous</button>
+                <button type="button" class="submit-form">Submit</button>
+            </div>
+        </form>
     </div>
 
-    <div id="result"></div>
-
-    <script>
-        document.getElementById('reportForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const formObject = Object.fromEntries(formData.entries());
-
-            // Reset progress bar
-            const progressBar = document.getElementById('progressBar');
-            progressBar.style.width = '0%';
-            progressBar.textContent = '0%';
-
-            // Simulate progress
-            function updateProgress(percent) {
-                progressBar.style.width = percent + '%';
-                progressBar.textContent = percent + '%';
-            }
-
-            updateProgress(20); // Start progress
-
-            const response = await fetch('/generate_report', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formObject)
-            });
-
-            updateProgress(60); // Midway progress
-
-            const result = await response.json();
-            updateProgress(100); // Complete progress
-
-            const resultDiv = document.getElementById('result');
-            if (result.status === 'success') {
-                resultDiv.innerHTML = `
-                    <h2>Report Generated Successfully!</h2>
-                    <p>Report ID: ${result.report_id}</p>
-                    <p><a href="${result.pdf_url}" target="_blank">Download PDF</a></p>
-                    <p><a href="${result.doc_url}" target="_blank">View Google Doc</a></p>
-                `;
-            } else {
-                resultDiv.innerHTML = `<h2>Error: ${result.message}</h2>`;
-            }
-        });
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

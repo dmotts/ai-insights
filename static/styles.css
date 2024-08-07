@@ -1,57 +1,71 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    background-color: #f5f5f5;
     padding: 20px;
 }
 
-h1, h2 {
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
     color: #333;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
+.form-step {
+    display: none;
 }
 
-label {
-    margin-top: 10px;
-}
-
-input, button {
-    padding: 8px;
-    margin-top: 5px;
+.form-step.active {
+    display: block;
 }
 
 button {
-    background-color: #4CAF50;
-    color: white;
+    margin-top: 10px;
+    padding: 10px 20px;
     border: none;
+    background-color: #28a745;
+    color: #fff;
     cursor: pointer;
-    margin-top: 20px;
+    border-radius: 5px;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #218838;
 }
 
-#result {
-    margin-top: 20px;
+button.prev-step {
+    background-color: #007bff;
 }
 
-/* Progress Bar Styles */
-.progress-container {
-    width: 100%;
-    background-color: #f3f3f3;
-    border-radius: 5px;
-    margin-top: 20px;
+button.prev-step:hover {
+    background-color: #0069d9;
+}
+
+button.submit-form {
+    background-color: #ffc107;
+}
+
+button.submit-form:hover {
+    background-color: #e0a800;
 }
 
 .progress-bar {
-    width: 0;
-    height: 20px;
-    background-color: #4CAF50;
-    text-align: center;
-    line-height: 20px;
-    color: white;
+    background-color: #ddd;
     border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+#progress {
+    background-color: #28a745;
+    height: 10px;
+    width: 0;
+    transition: width 0.4s ease;
 }
