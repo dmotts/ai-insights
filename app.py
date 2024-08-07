@@ -5,8 +5,6 @@ from services.sheets_service import SheetsService
 from services.openai_service import OpenAIService
 from services.pdf_service import PDFService
 from services.email_service import EmailService
-from services.integration_service import IntegrationService
-from services.subscription_service import SubscriptionService
 from config import Config
 from sqlalchemy.orm import Session
 from services.models import engine
@@ -25,8 +23,6 @@ sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], app
 openai_service = OpenAIService(app.config['OPENAI_API_KEY'], app.config['OPENAI_MODEL'])
 pdf_service = PDFService(app.config['PDFCO_API_KEY'])
 email_service = EmailService()
-integration_service = IntegrationService()
-subscription_service = SubscriptionService()
 
 class ReportRequestSchema(Schema):
     client_name = fields.String(required=True)
@@ -38,6 +34,11 @@ class ReportRequestSchema(Schema):
     question4 = fields.String(required=True)
     question5 = fields.String(required=True)
     question6 = fields.String(required=True)
+    includeIntroduction = fields.Boolean(required=True)
+    includeIndustryTrends = fields.Boolean(required=True)
+    includeAISolutions = fields.Boolean(required=True)
+    includeAnalysis = fields.Boolean(required=True)
+    includeConclusion = fields.Boolean(required=True)
 
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
@@ -73,18 +74,15 @@ def generate_report():
 
         # Get customization options
         include_sections = {
-            "introduction": data.get('includeIntroduction', True),
-            "industry_trends": data.get('includeIndustryTrends', True),
-            "ai_solutions": data.get('includeAISolutions', True),
-            "analysis": data.get('includeAnalysis', True),
-            "conclusion": data.get('includeConclusion', True)
+            "introduction": validated_data.get('includeIntroduction'),
+            "industry_trends": validated_data.get('includeIndustryTrends'),
+            "ai_solutions": validated_data.get('includeAISolutions'),
+            "analysis": validated_data.get('includeAnalysis'),
+            "conclusion": validated_data.get('includeConclusion')
         }
 
         # Generate report content
-        if Config.ENABLE_OPENAI_SERVICE:
-            report_content = openai_service.generate_report_content(industry, answers, include_sections)
-        else:
-            report_content = "OpenAI service is disabled. Report content generation skipped."
+        report_content = openai_service.generate_report_content(industry, answers, include_sections)
 
         # Safely split the generated content into sections
         sections = report_content.split('\n\n')
@@ -97,28 +95,30 @@ def generate_report():
         }
 
         # Generate graphs with analysis data
-        if Config.ENABLE_PDF_SERVICE:
-            analysis_data = {
-                'x': [1, 2, 3, 4, 5],
-                'y': [10, 20, 15, 30, 25],
-                'categories': ['HR', 'Finance', 'IT', 'Operations', 'Sales'],
-                'values': [75, 85, 95, 80, 90]
-            }
-            graph1, graph2 = pdf_service.generate_graphs(analysis_data)
-            content_dict['graph1'] = graph1
-            content_dict['graph2'] = graph2
-        else:
-            content_dict['graph1'] = "PDF service is disabled. Graph generation skipped."
-            content_dict['graph2'] = "PDF service is disabled. Graph generation skipped."
+        analysis_data = {
+            'x': [1, 2, 3, 4, 5],
+            'y': [10, 20, 15, 30, 25],
+            'categories': ['HR', 'Finance', 'IT', 'Operations', 'Sales'],
+            'values': [75, 85, 95, 80, 90]
+        }
+        graph1, graph2 = pdf_service.generate_graphs(analysis_data)
+        content_dict['graph1'] = graph1
+        content_dict['graph2'] = graph2
 
         html_content = render_template('report_template.html', **content_dict)
 
         # Generate PDF using PDF.co
-        pdf_url = pdf_service.generate_pdf(html_content) if Config.ENABLE_PDF_SERVICE else "PDF service is disabled."
+        pdf_url = pdf_service.generate_pdf(html_content)
+
+        if not pdf_url:
+            return jsonify({"status": "error", "message": "Failed to generate PDF"}), 500
 
         # Create a Google Doc for the report
         report_id = generate_report_id()
-        doc_url = sheets_service.create_google_doc(report_id, report_content) if Config.ENABLE_SHEETS_SERVICE else "Sheets service is disabled."
+        doc_url = sheets_service.create_google_doc(report_id, report_content)
+
+        if not doc_url:
+            return jsonify({"status": "error", "message": "Failed to create Google Doc"}), 500
 
         # Write report data to Google Sheets and Database
         report_data = [
@@ -131,26 +131,14 @@ def generate_report():
             datetime.datetime.now().isoformat()
         ]
 
-        if Config.ENABLE_SHEETS_SERVICE:
-            with Session(engine) as db:
-                sheets_service.write_data(db, report_data)
+        with Session(engine) as db:
+            sheets_service.write_data(db, report_data)
 
-        if Config.ENABLE_EMAIL_SERVICE:
-            email_service.send_email(
-                validated_data['client_email'],
-                "Your AI Insights Report is Ready",
-                f"Your report has been generated. You can download it from the following links:\n\nPDF: {pdf_url}\nGoogle Doc: {doc_url}"
-            )
-
-            # Schedule follow-up email (for demonstration, replace with actual scheduling)
-            email_service.send_follow_up_email(validated_data['client_email'], report_id)
-
-        if Config.ENABLE_INTEGRATION_SERVICE:
-            integration_service.export_to_crm(report_data)
-            integration_service.export_to_bi_tool(report_data)
-
-        if Config.ENABLE_SUBSCRIPTION_SERVICE:
-            subscription_service.add_subscriber(validated_data['client_email'], industry)
+        email_service.send_email(
+            validated_data['client_email'],
+            "Your AI Insights Report is Ready",
+            f"Your report has been generated. You can download it from the following links:\n\nPDF: {pdf_url}\nGoogle Doc: {doc_url}"
+        )
 
         logger.info(f'Report generated with ID: {report_id}')
         return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url, "doc_url": doc_url})
