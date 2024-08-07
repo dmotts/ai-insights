@@ -37,7 +37,9 @@ def generate_report():
         data.get('question5')
     ]
     report_content = openai_service.generate_report_content(answers)
-    html_content = render_template('report_template.html', **report_content)
+    html_content = render_template('report_template.html', introduction=report_content)
+
+    # Generate PDF using PDF.co
     pdf_url = pdf_service.generate_pdf(html_content)
 
     if not pdf_url:
