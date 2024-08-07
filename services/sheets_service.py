@@ -4,13 +4,17 @@ from googleapiclient.discovery import build
 from sqlalchemy.orm import Session
 from .models import Report
 import logging
-from config import Config
 
 class SheetsService:
     def __init__(self, credentials_json, sheet_name):
-        if not Config.ENABLE_SHEETS_SERVICE:
-            logging.info('Sheets service is disabled.')
-            return
+        """
+        Initializes the SheetsService with Google Sheets credentials and sheet name.
+        """
+        # Initialize the logger
+        self.logger = logging.getLogger(__name__)
+
+        # Configure logging level if needed
+        logging.basicConfig(level=logging.DEBUG)
 
         self.scope = [
             "https://spreadsheets.google.com/feeds",
@@ -22,13 +26,11 @@ class SheetsService:
         self.drive_service = build('drive', 'v3', credentials=self.creds)
         self.docs_service = build('docs', 'v1', credentials=self.creds)
         self.sheet = self._get_or_create_sheet(sheet_name)
-        self.logger = logging.getLogger(__name__)
 
     def _get_or_create_sheet(self, sheet_name):
-        if not Config.ENABLE_SHEETS_SERVICE:
-            self.logger.info('Sheets service is disabled. Skipping sheet creation.')
-            return None
-
+        """
+        Gets or creates a Google Sheet with the specified name.
+        """
         try:
             sheet = self.client.open(sheet_name).sheet1
             self.logger.info(f'Using existing sheet: {sheet_name}')
@@ -44,10 +46,9 @@ class SheetsService:
                 raise
 
     def read_data(self):
-        if not Config.ENABLE_SHEETS_SERVICE:
-            self.logger.info('Sheets service is disabled. Skipping data reading.')
-            return []
-
+        """
+        Reads all records from the Google Sheet.
+        """
         self.logger.debug('Reading data from Google Sheets')
         try:
             data = self.sheet.get_all_records()
@@ -58,10 +59,9 @@ class SheetsService:
             return []
 
     def write_data(self, db: Session, data):
-        if not Config.ENABLE_SHEETS_SERVICE:
-            self.logger.info('Sheets service is disabled. Skipping data writing.')
-            return
-
+        """
+        Writes a new row of data to the Google Sheet and the database.
+        """
         self.logger.debug('Writing data to Google Sheets and database')
         try:
             # Write to Google Sheets
@@ -69,10 +69,6 @@ class SheetsService:
             self.logger.info('Data written to Google Sheets successfully')
         except Exception as e:
             self.logger.error(f'Error writing to Google Sheets: {e}')
-
-        if not Config.ENABLE_DATABASE:
-            self.logger.info('Database operations are disabled. Skipping database writing.')
-            return
 
         try:
             # Write to database
@@ -90,10 +86,9 @@ class SheetsService:
             self.logger.error(f'Error writing data to database: {e}')
 
     def create_google_doc(self, report_id, content):
-        if not Config.ENABLE_SHEETS_SERVICE:
-            self.logger.info('Sheets service is disabled. Skipping Google Doc creation.')
-            return None
-
+        """
+        Creates a Google Doc with the report content.
+        """
         self.logger.debug('Creating Google Doc for the report')
         try:
             # Create the document
