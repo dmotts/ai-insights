@@ -1,19 +1,39 @@
 body {
     background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
 }
 
 .container {
     max-width: 600px;
-    padding-top: 50px;
+    margin-top: 50px;
 }
 
-form {
-    background: #ffffff;
-    padding: 20px;
+.card {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.alert {
+.card-header {
+    background: #007bff;
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.step {
+    display: none;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    margin-top: 20px;
+}
+
+#result {
     margin-top: 20px;
 }

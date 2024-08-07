@@ -5,54 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <title>Generate Report</title>
+    <title>Generate AI Insights Report</title>
 </head>
 <body>
     <div class="container mt-5">
-        <div id="questionCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="form-group">
-                        <label for="question1">Describe the key processes in your business that you believe could be optimized.</label>
-                        <textarea class="form-control" id="question1" rows="3"></textarea>
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Generate Your AI Insights Report</h2>
+            </div>
+            <div class="card-body">
+                <form id="reportForm">
+                    <div id="step-1" class="step">
+                        <div class="form-group">
+                            <label for="clientName">Your Name</label>
+                            <input type="text" class="form-control" id="clientName" name="client_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="clientEmail">Your Email</label>
+                            <input type="email" class="form-control" id="clientEmail" name="client_email" required>
+                        </div>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
                     </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="form-group">
-                        <label for="question2">What are the main challenges you face in improving customer experience?</label>
-                        <textarea class="form-control" id="question2" rows="3"></textarea>
+
+                    <div id="step-2" class="step">
+                        <div class="form-group">
+                            <label for="question1">Describe the key processes in your business that you believe could be optimized.</label>
+                            <textarea class="form-control" id="question1" name="question1" rows="3" required></textarea>
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
                     </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="form-group">
-                        <label for="question3">How do you currently utilize data to make business decisions?</label>
-                        <textarea class="form-control" id="question3" rows="3"></textarea>
+
+                    <div id="step-3" class="step">
+                        <div class="form-group">
+                            <label for="question2">What are the main challenges you face in improving customer experience?</label>
+                            <textarea class="form-control" id="question2" name="question2" rows="3" required></textarea>
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
                     </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="form-group">
-                        <label for="question4">Which areas of your business operations do you feel are the least efficient?</label>
-                        <textarea class="form-control" id="question4" rows="3"></textarea>
+
+                    <div id="step-4" class="step">
+                        <div class="form-group">
+                            <label for="question3">How do you currently utilize data to make business decisions?</label>
+                            <textarea class="form-control" id="question3" name="question3" rows="3" required></textarea>
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
                     </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="form-group">
-                        <label for="question5">What are your long-term goals for your business, and how do you envision technology playing a role in achieving them?</label>
-                        <textarea class="form-control" id="question5" rows="3"></textarea>
+
+                    <div id="step-5" class="step">
+                        <div class="form-group">
+                            <label for="question4">Which areas of your business operations do you feel are the least efficient?</label>
+                            <textarea class="form-control" id="question4" name="question4" rows="3" required></textarea>
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
                     </div>
+
+                    <div id="step-6" class="step">
+                        <div class="form-group">
+                            <label for="question5">What are your long-term goals for your business, and how do you envision technology playing a role in achieving them?</label>
+                            <textarea class="form-control" id="question5" name="question5" rows="3" required></textarea>
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                        <button type="submit" class="btn btn-success">Send Me The Report</button>
+                    </div>
+                </form>
+                <div id="loading" class="text-center" style="display: none;">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p>Generating your report, please wait...</p>
                 </div>
-                <div class="carousel-item">
-                    <button class="btn btn-primary" id="sendReportButton">Send Me The Report</button>
+                <div id="result" class="text-center mt-3" style="display: none;">
+                    <a id="downloadLink" class="btn btn-primary" href="#" target="_blank">Download The Report</a>
                 </div>
             </div>
-            <a class="carousel-control-prev" href="#questionCarousel" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#questionCarousel" role="button" data-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
         </div>
     </div>
 
@@ -60,8 +89,60 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script>
-        document.getElementById('sendReportButton').addEventListener('click', function() {
-            // Handle form submission and report generation
+        $(document).ready(function() {
+            var currentStep = 1;
+
+            function showStep(step) {
+                $('.step').hide();
+                $('#step-' + step).show();
+            }
+
+            $('.next-step').click(function() {
+                currentStep++;
+                showStep(currentStep);
+            });
+
+            $('.prev-step').click(function() {
+                currentStep--;
+                showStep(currentStep);
+            });
+
+            $('#reportForm').submit(function(event) {
+                event.preventDefault();
+                $('#reportForm').hide();
+                $('#loading').show();
+
+                var formData = {
+                    client_name: $('#clientName').val(),
+                    client_email: $('#clientEmail').val(),
+                    question1: $('#question1').val(),
+                    question2: $('#question2').val(),
+                    question3: $('#question3').val(),
+                    question4: $('#question4').val(),
+                    question5: $('#question5').val()
+                };
+
+                fetch('/generate_report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    $('#loading').hide();
+                    if (data.status === 'success') {
+                        $('#result').show();
+                        $('#downloadLink').attr('href', data.pdf_url);
+                    } else {
+                        alert('Error generating report: ' + data.message);
+                        $('#reportForm').show();
+                    }
+                });
+            });
+
+            showStep(currentStep);
         });
     </script>
 </body>
