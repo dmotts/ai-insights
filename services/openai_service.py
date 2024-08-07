@@ -39,7 +39,7 @@ class OpenAIService:
                 max_tokens=1500
             )
             self.logger.info('Report content generated successfully')
-            return response.choices[0].message['content'].strip()
+            return response.choices[0].message.content
         except Exception as e:
             self.logger.error(f'Error generating report content: {e}')
             return "Error generating report content"
