@@ -13,3 +13,4 @@ matplotlib==3.4.3
 marshmallow==3.13.0
 cachetools==4.2.2
 google-api-python-client
+Werkzeug==2.0.2
