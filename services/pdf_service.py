@@ -3,13 +3,22 @@ import io
 import base64
 import logging
 import requests
+from config import Config
 
 class PDFService:
     def __init__(self, api_key):
+        if not Config.ENABLE_PDF_SERVICE:
+            logging.info('PDF service is disabled.')
+            return
+
         self.api_key = api_key
         self.logger = logging.getLogger(__name__)
 
     def generate_pdf(self, html_content):
+        if not Config.ENABLE_PDF_SERVICE:
+            self.logger.info('PDF service is disabled. Skipping PDF generation.')
+            return None
+
         self.logger.debug('Generating PDF with PDF.co')
         url = "https://api.pdf.co/v1/pdf/convert/from/html"
         headers = {
@@ -33,9 +42,10 @@ class PDFService:
         return None
 
     def generate_graphs(self, analysis_data):
-        """
-        Generate example graphs with titles and labels.
-        """
+        if not Config.ENABLE_PDF_SERVICE:
+            self.logger.info('PDF service is disabled. Skipping graph generation.')
+            return None, None
+
         self.logger.debug('Generating graphs')
         try:
             # Example graph 1

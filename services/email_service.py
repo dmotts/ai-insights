@@ -3,14 +3,23 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
 import os
+from config import Config
 
 class EmailService:
     def __init__(self):
+        if not Config.ENABLE_EMAIL_SERVICE:
+            logging.info('Email service is disabled.')
+            return
+
         self.email = os.getenv('GMAIL_ADDRESS', 'your_email@gmail.com')
         self.password = os.getenv('GMAIL_APP_PASSWORD', 'your_app_password')
         self.logger = logging.getLogger(__name__)
 
     def send_email(self, recipient: str, subject: str, body: str):
+        if not Config.ENABLE_EMAIL_SERVICE:
+            self.logger.info('Email service is disabled. Skipping email sending.')
+            return
+
         msg = MIMEMultipart()
         msg['From'] = self.email
         msg['To'] = recipient
@@ -30,6 +39,10 @@ class EmailService:
             self.logger.error(f'Error sending email: {e}')
 
     def send_follow_up_email(self, recipient: str, report_id: str):
+        if not Config.ENABLE_EMAIL_SERVICE:
+            self.logger.info('Email service is disabled. Skipping follow-up email sending.')
+            return
+
         subject = "Follow-up on Your AI Insights Report"
         body = f"""
         Dear {recipient},
@@ -47,6 +60,10 @@ class EmailService:
         self.logger.info(f'Follow-up email sent to {recipient} for report ID: {report_id}')
 
     def schedule_follow_up(self, recipient: str, report_id: str):
+        if not Config.ENABLE_EMAIL_SERVICE:
+            self.logger.info('Email service is disabled. Skipping follow-up email scheduling.')
+            return
+
         # For demonstration, we can simulate scheduling with a simple print statement.
         # In production, consider using a task scheduler like Celery or a cron job.
         print(f"Scheduling follow-up email for {recipient} about report ID: {report_id}")

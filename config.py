@@ -10,3 +10,12 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql+psycopg2://username:password@your-instance-ip/dbname')
     GMAIL_ADDRESS = os.getenv('GMAIL_ADDRESS', '')
     GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD', '')
+
+# Feature flags to enable/disable services
+ENABLE_DATABASE = os.getenv('ENABLE_DATABASE', 'True') == 'True'
+ENABLE_EMAIL_SERVICE = os.getenv('ENABLE_EMAIL_SERVICE', 'True') == 'True'
+ENABLE_OPENAI_SERVICE = os.getenv('ENABLE_OPENAI_SERVICE', 'True') == 'True'
+ENABLE_PDF_SERVICE = os.getenv('ENABLE_PDF_SERVICE', 'True') == 'True'
+ENABLE_SHEETS_SERVICE = os.getenv('ENABLE_SHEETS_SERVICE', 'True') == 'True'
+ENABLE_INTEGRATION_SERVICE = os.getenv('ENABLE_INTEGRATION_SERVICE', 'True') == 'True'
+ENABLE_SUBSCRIPTION_SERVICE = os.getenv('ENABLE_SUBSCRIPTION_SERVICE', 'True') == 'True'

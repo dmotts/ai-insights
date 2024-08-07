@@ -2,21 +2,26 @@ import openai
 import logging
 from typing import List
 from cachetools import cached, TTLCache
+from config import Config
 
 class OpenAIService:
     def __init__(self, api_key: str, model: str):
+        if not Config.ENABLE_OPENAI_SERVICE:
+            logging.info('OpenAI service is disabled.')
+            return
+
         openai.api_key = api_key
         self.client = openai
         self.model = model
-        logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(__name__)
         self.cache = TTLCache(maxsize=100, ttl=300)  # Cache results for 5 minutes
 
     @cached(cache=lambda self: self.cache)
     def get_industry_trends(self, industry: str) -> str:
-        """
-        Fetches the latest AI trends and developments in a given industry.
-        """
+        if not Config.ENABLE_OPENAI_SERVICE:
+            self.logger.info('OpenAI service is disabled. Skipping industry trends generation.')
+            return "OpenAI service is disabled."
+
         prompt = f"Provide the latest AI trends and developments in the {industry} industry."
         self.logger.debug(f'Fetching industry trends for {industry}')
         try:
@@ -36,9 +41,10 @@ class OpenAIService:
 
     @cached(cache=lambda self: self.cache)
     def get_industry_benchmarks(self, industry: str) -> str:
-        """
-        Fetch industry benchmarks for the specified industry.
-        """
+        if not Config.ENABLE_OPENAI_SERVICE:
+            self.logger.info('OpenAI service is disabled. Skipping industry benchmarks generation.')
+            return "OpenAI service is disabled."
+
         prompt = f"Provide industry benchmarks for the {industry} sector. Include key performance indicators and standard metrics used for comparison."
         self.logger.debug(f'Fetching industry benchmarks for {industry}')
         try:
@@ -57,9 +63,10 @@ class OpenAIService:
             return "Error fetching industry benchmarks"
 
     def generate_report_content(self, industry: str, answers: List[str], include_sections: dict) -> str:
-        """
-        Generates a comprehensive AI Insights Report for a business owner in a specified industry.
-        """
+        if not Config.ENABLE_OPENAI_SERVICE:
+            self.logger.info('OpenAI service is disabled. Skipping report content generation.')
+            return "OpenAI service is disabled."
+
         industry_trends = self.get_industry_trends(industry)
         benchmark_data = self.get_industry_benchmarks(industry)
         trend_analysis = self.perform_trend_analysis(industry)
@@ -117,9 +124,10 @@ class OpenAIService:
             return "Error generating report content"
 
     def perform_trend_analysis(self, industry: str) -> str:
-        """
-        Perform trend analysis for the specified industry.
-        """
+        if not Config.ENABLE_OPENAI_SERVICE:
+            self.logger.info('OpenAI service is disabled. Skipping trend analysis.')
+            return "OpenAI service is disabled."
+
         prompt = f"Analyze historical data to identify trends and predict future developments in the {industry} industry."
         self.logger.debug(f'Performing trend analysis for {industry}')
         try:
@@ -138,9 +146,10 @@ class OpenAIService:
             return "Error performing trend analysis"
 
     def get_case_studies(self, industry: str) -> str:
-        """
-        Fetch case studies for the specified industry.
-        """
+        if not Config.ENABLE_OPENAI_SERVICE:
+            self.logger.info('OpenAI service is disabled. Skipping case studies generation.')
+            return "OpenAI service is disabled."
+
         prompt = f"Provide case studies of successful AI implementation in the {industry} industry."
         self.logger.debug(f'Fetching case studies for {industry}')
         try:
