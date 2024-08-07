@@ -1,71 +1,28 @@
 body {
-    font-family: Arial, sans-serif;
     background-color: #f5f5f5;
-    padding: 20px;
 }
 
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.card {
+    border-radius: 8px;
+    margin-top: 40px;
 }
 
-h1 {
-    text-align: center;
-    color: #333;
-}
-
-.form-step {
-    display: none;
-}
-
-.form-step.active {
-    display: block;
+.progress-bar {
+    background-color: #28a745;
 }
 
 button {
     margin-top: 10px;
-    padding: 10px 20px;
-    border: none;
-    background-color: #28a745;
-    color: #fff;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-button:hover {
-    background-color: #218838;
 }
 
 button.prev-step {
     background-color: #007bff;
 }
 
-button.prev-step:hover {
-    background-color: #0069d9;
-}
-
 button.submit-form {
-    background-color: #ffc107;
+    background-color: #28a745;
 }
 
 button.submit-form:hover {
-    background-color: #e0a800;
-}
-
-.progress-bar {
-    background-color: #ddd;
-    border-radius: 5px;
-    overflow: hidden;
-    margin-bottom: 20px;
-}
-
-#progress {
-    background-color: #28a745;
-    height: 10px;
-    width: 0;
-    transition: width 0.4s ease;
+    background-color: #218838;
 }
