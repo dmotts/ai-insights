@@ -48,11 +48,11 @@ def generate_report():
     report_data = [generate_report_id(), data['client_name'], report_content, pdf_url, datetime.datetime.now().isoformat()]
     sheets_service.write_data(report_data)
 
-    email_service.send_email(
-        data['client_email'],
-        "Your AI Insights Report is Ready",
-        f"Your report has been generated. You can download it from the following link: {pdf_url}"
-    )
+#    email_service.send_email(
+#        data['client_email'],
+#        "Your AI Insights Report is Ready",
+#        f"Your report has been generated. You can download it from the following link: {pdf_url}"
+#    )
 
     logger.info(f'Report generated with ID: {report_data[0]}')
     return jsonify({"status": "success", "report_id": report_data[0], "pdf_url": pdf_url})

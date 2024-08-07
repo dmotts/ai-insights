@@ -27,7 +27,7 @@ class OpenAIService:
         """
         self.logger.debug('Generating report content with OpenAI')
         try:
-            response = self.client.ChatCompletion.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
