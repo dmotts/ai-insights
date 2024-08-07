@@ -37,3 +37,13 @@ body {
 #result {
     margin-top: 20px;
 }
+
+.progress {
+    height: 20px;
+}
+
+.progress-bar {
+    font-size: 14px;
+    line-height: 20px;
+    color: #fff;
+}
