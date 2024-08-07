@@ -3,10 +3,10 @@ from flask_mail import Mail, Message
 import os
 import logging
 import datetime
-from sheets_service import SheetsService
-from openai_service import OpenAIService
-from pdf_service import PDFService
-from email_service import EmailService
+from services.sheets_service import SheetsService
+from services.openai_service import OpenAIService
+from services.pdf_service import PDFService
+from services.email_service import EmailService
 from config import Config
 
 app = Flask(__name__)
@@ -29,31 +29,31 @@ def index():
 @app.route('/generate_report', methods=['POST'])
 def generate_report():
     data = request.json
-    report_id = generate_report_id()
-    timestamp = datetime.datetime.now().isoformat()
-
-    # Generate report content using OpenAI
-    report_content = openai_service.generate_report_content(data['client_name'], data['report_data'])
-
-    # Generate PDF using PDF.co
-    pdf_url = pdf_service.generate_pdf(report_content)
+    answers = [
+        data.get('question1'),
+        data.get('question2'),
+        data.get('question3'),
+        data.get('question4'),
+        data.get('question5')
+    ]
+    report_content = openai_service.generate_report_content(answers)
+    html_content = render_template('report_template.html', **report_content)
+    pdf_url = pdf_service.generate_pdf(html_content)
 
     if not pdf_url:
         return jsonify({"status": "error", "message": "Failed to generate PDF"}), 500
 
-    # Prepare data for Google Sheets
-    report_data = [report_id, data['client_name'], report_content, pdf_url, timestamp]
+    report_data = [generate_report_id(), data['client_name'], report_content, pdf_url, datetime.datetime.now().isoformat()]
     sheets_service.write_data(report_data)
 
-    # Send email with PDF link
-   # email_service.send_email(
-    #    data['client_email'],
-     #   "Your Report is Ready",
-     #   f"Your report has been generated. You can download it from the following link: {pdf_url}"
-   # )
+    email_service.send_email(
+        data['client_email'],
+        "Your AI Insights Report is Ready",
+        f"Your report has been generated. You can download it from the following link: {pdf_url}"
+    )
 
-    logger.info(f'Report generated with ID: {report_id}')
-    return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url})
+    logger.info(f'Report generated with ID: {report_data[0]}')
+    return jsonify({"status": "success", "report_id": report_data[0], "pdf_url": pdf_url})
 
 @app.route('/get_report/<report_id>', methods=['GET'])
 def get_report(report_id):

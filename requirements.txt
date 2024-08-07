@@ -5,3 +5,4 @@ openai
 requests==2.26.0
 Flask-Mail==0.9.1
 Werkzeug==2.0.2
+pdfkit==1.0.0

@@ -8,58 +8,60 @@
     <title>Generate Report</title>
 </head>
 <body>
-    <div class="container text-center mt-5">
-        <h1>Generate Your Report</h1>
-        <form id="reportForm" class="mt-4">
-            <div class="form-group">
-                <label for="clientName">Client Name</label>
-                <input type="text" class="form-control" id="clientName" name="client_name" required>
+    <div class="container mt-5">
+        <div id="questionCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="form-group">
+                        <label for="question1">Describe the key processes in your business that you believe could be optimized.</label>
+                        <textarea class="form-control" id="question1" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="form-group">
+                        <label for="question2">What are the main challenges you face in improving customer experience?</label>
+                        <textarea class="form-control" id="question2" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="form-group">
+                        <label for="question3">How do you currently utilize data to make business decisions?</label>
+                        <textarea class="form-control" id="question3" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="form-group">
+                        <label for="question4">Which areas of your business operations do you feel are the least efficient?</label>
+                        <textarea class="form-control" id="question4" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="form-group">
+                        <label for="question5">What are your long-term goals for your business, and how do you envision technology playing a role in achieving them?</label>
+                        <textarea class="form-control" id="question5" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <button class="btn btn-primary" id="sendReportButton">Send Me The Report</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="clientEmail">Client Email</label>
-                <input type="email" class="form-control" id="clientEmail" name="client_email" required>
-            </div>
-            <div class="form-group">
-                <label for="reportData">Report Data</label>
-                <textarea class="form-control" id="reportData" name="report_data" rows="3" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Send me the report</button>
-        </form>
-        <div id="result" class="mt-4"></div>
+            <a class="carousel-control-prev" href="#questionCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#questionCarousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script>
-        document.getElementById('reportForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            const data = {
-                client_name: document.getElementById('clientName').value,
-                client_email: document.getElementById('clientEmail').value,
-                report_data: document.getElementById('reportData').value
-            };
-            
-            fetch('/generate_report', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('result').innerHTML = `
-                        <div class="alert alert-success" role="alert">
-                            Report generated successfully! 
-                            <a href="${data.pdf_url}" target="_blank">Download PDF</a>
-                        </div>`;
-                } else {
-                    document.getElementById('result').innerHTML = `
-                        <div class="alert alert-danger" role="alert">
-                            Error generating report: ${data.message}
-                        </div>`;
-                }
-            });
+        document.getElementById('sendReportButton').addEventListener('click', function() {
+            // Handle form submission and report generation
         });
     </script>
 </body>
