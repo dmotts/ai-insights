@@ -11,7 +11,7 @@ class Config:
     GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD', '')
     
     # Use the DATABASE_URL from Render
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql://postgres:acIodXPCyPwpbMOnAnyjJQHrjpcGgYHv@monorail.proxy.rlwy.net:58816/railway')
     
     # Feature flags to enable/disable services
     ENABLE_DATABASE = os.getenv('ENABLE_DATABASE', 'True') == 'True'
