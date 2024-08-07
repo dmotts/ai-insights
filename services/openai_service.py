@@ -1,11 +1,14 @@
-import openai
 import os
 import logging
+from openai import OpenAI
 
 class OpenAIService:
     def __init__(self, api_key, model):
-        openai.api_key = api_key
-        self.client = openai
+        self.client = client = OpenAI(
+            # This is the default and can be omitted
+            api_key=api_key,
+        )
+
         self.model = model
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(__name__)
