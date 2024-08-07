@@ -1,76 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Insights Report</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f4f4f4;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-            overflow: hidden;
-        }
-        header {
-            background: #333;
-            color: #fff;
-            padding-top: 30px;
-            min-height: 70px;
-            border-bottom: #77d42a 3px solid;
-        }
-        header a {
-            color: #fff;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-size: 16px;
-        }
-        #main {
-            padding: 20px;
-            background: #fff;
-            margin-top: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        footer {
-            text-align: center;
-            padding: 20px;
-            background: #333;
-            color: #fff;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <h1>AI Insights Report</h1>
-        </div>
-    </header>
-    <div id="main" class="container">
-        <h2>Introduction</h2>
-        <p>{{ introduction }}</p>
+import requests
+import logging
+import matplotlib.pyplot as plt
+import io
+import base64
 
-        <h2>AI Solutions</h2>
-        <p>{{ ai_solutions }}</p>
+class PDFService:
+    def __init__(self, api_key):
+        self.api_key = api_key
+        logging.basicConfig(level=logging.DEBUG)
+        self.logger = logging.getLogger(__name__)
 
-        <h2>Detailed Analysis and Recommendations</h2>
-        <p>{{ analysis }}</p>
+    def generate_pdf(self, html_content):
+        self.logger.debug('Generating PDF with PDF.co')
+        url = "https://api.pdf.co/v1/pdf/convert/from/html"
+        headers = {
+            "x-api-key": self.api_key,
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "html": html_content,
+            "name": "report.pdf"
+        }
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            result = response.json()
+            self.logger.info('PDF generated successfully')
+            return result['url']
+        except Exception as e:
+            self.logger.error(f'Error generating PDF: {e}')
+            return None
 
-        <h2>Graphs and Forecasts</h2>
-        <div id="graphs">
-            <img src="{{ graph1 }}" alt="Graph 1">
-            <img src="{{ graph2 }}" alt="Graph 2">
-        </div>
+    def generate_graphs(self):
+        self.logger.debug('Generating graphs')
+        try:
+            fig, ax = plt.subplots()
+            ax.plot([1, 2, 3, 4], [1, 4, 2, 3])
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            buf.seek(0)
+            graph1 = base64.b64encode(buf.getvalue()).decode('utf-8')
+            plt.close(fig)
 
-        <h2>Conclusion</h2>
-        <p>{{ conclusion }}</p>
-    </div>
-    <footer>
-        <p>&copy; 2024 AI Consulting Services</p>
-    </footer>
-</body>
-</html>
+            fig, ax = plt.subplots()
+            ax.bar([1, 2, 3, 4], [1, 4, 2, 3])
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            buf.seek(0)
+            graph2 = base64.b64encode(buf.getvalue()).decode('utf-8')
+            plt.close(fig)
+
+            self.logger.info('Graphs generated successfully')
+            return f"data:image/png;base64,{graph1}", f"data:image/png;base64,{graph2}"
+        except Exception as e:
+            self.logger.error(f'Error generating graphs: {e}')
+            return None, None

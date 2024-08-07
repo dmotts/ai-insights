@@ -9,9 +9,28 @@ class OpenAIService:
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(__name__)
 
-    def generate_report_content(self, answers):
+    def get_industry_trends(self, industry):
+        prompt = f"Provide the latest AI trends and developments in the {industry} industry."
+        self.logger.debug(f'Fetching industry trends for {industry}')
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant knowledgeable about AI trends."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=1500
+            )
+            self.logger.info('Industry trends fetched successfully')
+            return response.choices[0].message.content
+        except Exception as e:
+            self.logger.error(f'Error fetching industry trends: {e}')
+            return "Error fetching industry trends"
+
+    def generate_report_content(self, industry, answers):
+        industry_trends = self.get_industry_trends(industry)
         prompt = f"""
-        You are an AI consultant. Generate a concise and actionable AI Insights Report for a business owner. The report should provide detailed insights on how AI can improve their business based on the following responses:
+        You are an AI consultant. Generate a concise and actionable AI Insights Report for a business owner in the {industry} industry. The report should provide detailed insights on how AI can improve their business based on the following responses:
         1. Key processes to optimize: {answers[0]}
         2. Challenges in improving customer experience: {answers[1]}
         3. Current data utilization: {answers[2]}
@@ -20,14 +39,15 @@ class OpenAIService:
 
         The report should include:
         - An introduction summarizing the business context.
-        - A section outlining specific AI solutions for the identified issues.
+        - Latest trends in the {industry} industry: {industry_trends}
+        - Specific AI solutions for the identified issues.
         - Detailed analysis and recommendations for implementation.
         - Graphs and forecasts where applicable.
         - A conclusion summarizing the key insights and action points.
         """
         self.logger.debug('Generating report content with OpenAI')
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.ChatCompletion.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
@@ -36,7 +56,7 @@ class OpenAIService:
                 max_tokens=1500
             )
             self.logger.info('Report content generated successfully')
-            return response.choices[0].message.content
+            return response.choices[0]['message']['content'].strip()
         except Exception as e:
             self.logger.error(f'Error generating report content: {e}')
             return "Error generating report content"
