@@ -48,6 +48,14 @@ document.addEventListener('DOMContentLoaded', function() {
             summaryItem.innerHTML = `<strong>${key}:</strong> ${value}`;
             summaryDiv.appendChild(summaryItem);
         }
+
+        // Handle radio button selections
+        document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+            const summaryItem = document.createElement('div');
+            summaryItem.className = 'summary-item';
+            summaryItem.innerHTML = `<strong>${input.name}:</strong> ${input.nextElementSibling.textContent.trim()}`;
+            summaryDiv.appendChild(summaryItem);
+        });
     }
 
     // Function to validate the current step
@@ -92,7 +100,11 @@ document.addEventListener('DOMContentLoaded', function() {
             for (const [key, value] of Object.entries(savedState)) {
                 const input = document.querySelector(`[name="${key}"]`);
                 if (input) {
-                    input.value = value;
+                    if (input.type === 'radio') {
+                        document.querySelector(`input[name="${key}"][value="${value}"]`).checked = true;
+                    } else {
+                        input.value = value;
+                    }
                 }
             }
         }
@@ -159,6 +171,13 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('input', function() {
             validateStep();
             updateProgress();
+            saveFormState();
+        });
+    });
+
+    document.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.addEventListener('change', function() {
+            validateStep();
             saveFormState();
         });
     });
