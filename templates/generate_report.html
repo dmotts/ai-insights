@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate Report</title>
+    <title>Your AI Insights Report</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Local FontAwesome CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome/css/all.css') }}">
 </head>
 <body>
     <div class="container mt-5">
@@ -60,7 +62,7 @@
                             </select>
                             <div class="invalid-feedback">Please select your industry.</div>
                         </div>
-                        <button type="button" class="btn btn-primary next-step" disabled>Next</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
                     </div>
 
                     <!-- Step 2 -->
@@ -89,7 +91,7 @@
                             <div class="invalid-feedback">Please select an option.</div>
                         </div>
                         <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="button" class="btn btn-primary next-step" disabled>Next</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
                     </div>
 
                     <!-- Step 3 -->
@@ -118,7 +120,7 @@
                             <div class="invalid-feedback">Please select an option.</div>
                         </div>
                         <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="button" class="btn btn-primary next-step" disabled>Next</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
                     </div>
 
                     <!-- Step 4 -->
@@ -147,7 +149,7 @@
                             <div class="invalid-feedback">Please select an option.</div>
                         </div>
                         <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="button" class="btn btn-primary next-step" disabled>Next</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
                     </div>
 
                     <!-- Step 5: Summary -->
@@ -157,7 +159,7 @@
                             <!-- Summary content will be populated by JavaScript -->
                         </div>
                         <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="button" class="btn btn-success submit-form" disabled>Submit</button>
+                        <button type="button" class="btn btn-success submit-form">Submit</button>
                     </div>
                 </form>
             </div>
@@ -168,7 +170,6 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script>
         $(function () {
