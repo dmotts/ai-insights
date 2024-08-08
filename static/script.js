@@ -40,22 +40,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const summaryDiv = document.getElementById('summary');
         summaryDiv.innerHTML = ''; // Clear existing content
         const formData = new FormData(document.getElementById('reportForm'));
-        const entries = formData.entries();
 
-        for (const [key, value] of entries) {
+        const summaryData = {
+            'Name': formData.get('client_name'),
+            'Email': formData.get('client_email'),
+            'Business Industry': formData.get('industry'),
+            'What are your current data management and utilization challenges?': formData.get('question1'),
+            'What are the areas of technology integration and inefficiency?': formData.get('question2'),
+            'What are your long-term business goals and AI\'s role in achieving them?': formData.get('question3'),
+        };
+
+        for (const [question, answer] of Object.entries(summaryData)) {
             const summaryItem = document.createElement('div');
             summaryItem.className = 'summary-item';
-            summaryItem.innerHTML = `<strong>${key}:</strong> ${value}`;
+            summaryItem.innerHTML = `<strong>${question}:</strong><br>${answer}`;
             summaryDiv.appendChild(summaryItem);
         }
-
-        // Handle radio button selections
-        document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
-            const summaryItem = document.createElement('div');
-            summaryItem.className = 'summary-item';
-            summaryItem.innerHTML = `<strong>${input.name}:</strong> ${input.nextElementSibling.textContent.trim()}`;
-            summaryDiv.appendChild(summaryItem);
-        });
     }
 
     // Function to validate the current step
