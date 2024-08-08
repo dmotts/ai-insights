@@ -22,18 +22,24 @@
                     <div class="form-step active">
                         <h4>Step 1: Personal Information</h4>
                         <div class="form-group">
-                            <label for="client_name">Name</label>
-                            <input type="text" class="form-control" id="client_name" name="client_name" placeholder="Enter your name" required data-toggle="tooltip" title="Please enter your full name.">
+                            <label for="client_name">Name
+                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Please enter your full name."></i>
+                            </label>
+                            <input type="text" class="form-control" id="client_name" name="client_name" placeholder="Enter your name" required>
                             <div class="invalid-feedback">Please enter your name.</div>
                         </div>
                         <div class="form-group">
-                            <label for="client_email">Email</label>
-                            <input type="email" class="form-control" id="client_email" name="client_email" placeholder="Enter your email" required data-toggle="tooltip" title="Please enter a valid email address.">
+                            <label for="client_email">Email
+                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Please enter a valid email address."></i>
+                            </label>
+                            <input type="email" class="form-control" id="client_email" name="client_email" placeholder="Enter your email" required>
                             <div class="invalid-feedback">Please enter a valid email address.</div>
                         </div>
                         <div class="form-group">
-                            <label for="industry">Business Industry</label>
-                            <input type="text" class="form-control" id="industry" name="industry" placeholder="Enter your industry" required data-toggle="tooltip" title="Specify the industry your business operates in.">
+                            <label for="industry">Business Industry
+                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Specify the industry your business operates in."></i>
+                            </label>
+                            <input type="text" class="form-control" id="industry" name="industry" placeholder="Enter your industry" required>
                             <div class="invalid-feedback">Please enter your industry.</div>
                         </div>
                         <button type="button" class="btn btn-primary next-step" disabled>Next</button>
@@ -43,8 +49,10 @@
                     <div class="form-step">
                         <h4>Step 2: Data Management</h4>
                         <div class="form-group">
-                            <label for="question1">What are your current data management and utilization challenges?</label>
-                            <input type="text" class="form-control" id="question1" name="question1" placeholder="Describe your challenges" required data-toggle="tooltip" title="Outline the main data management issues you face.">
+                            <label for="question1">What are your current data management and utilization challenges?
+                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Outline the main data management issues you face."></i>
+                            </label>
+                            <input type="text" class="form-control" id="question1" name="question1" placeholder="Describe your challenges" required>
                             <div class="invalid-feedback">Please describe your challenges.</div>
                         </div>
                         <button type="button" class="btn btn-secondary prev-step">Previous</button>
@@ -55,8 +63,10 @@
                     <div class="form-step">
                         <h4>Step 3: Technology Integration</h4>
                         <div class="form-group">
-                            <label for="question2">What are the areas of technology integration and inefficiency?</label>
-                            <input type="text" class="form-control" id="question2" name="question2" placeholder="Describe inefficiencies" required data-toggle="tooltip" title="Specify any technology integration issues and inefficiencies.">
+                            <label for="question2">What are the areas of technology integration and inefficiency?
+                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Specify any technology integration issues and inefficiencies."></i>
+                            </label>
+                            <input type="text" class="form-control" id="question2" name="question2" placeholder="Describe inefficiencies" required>
                             <div class="invalid-feedback">Please describe inefficiencies.</div>
                         </div>
                         <button type="button" class="btn btn-secondary prev-step">Previous</button>
@@ -67,57 +77,19 @@
                     <div class="form-step">
                         <h4>Step 4: Business Goals</h4>
                         <div class="form-group">
-                            <label for="question3">What are your long-term business goals and AI's role in achieving them?</label>
-                            <input type="text" class="form-control" id="question3" name="question3" placeholder="Define your goals" required data-toggle="tooltip" title="Describe your long-term business goals and how AI can help achieve them.">
+                            <label for="question3">What are your long-term business goals and AI's role in achieving them?
+                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Describe your long-term business goals and how AI can help achieve them."></i>
+                            </label>
+                            <input type="text" class="form-control" id="question3" name="question3" placeholder="Define your goals" required>
                             <div class="invalid-feedback">Please define your goals.</div>
                         </div>
                         <button type="button" class="btn btn-secondary prev-step">Previous</button>
                         <button type="button" class="btn btn-primary next-step" disabled>Next</button>
                     </div>
 
-                    <!-- Step 5 -->
+                    <!-- Step 5: Summary -->
                     <div class="form-step">
-                        <h4>Step 5: AI Maturity Level</h4>
-                        <div class="form-group">
-                            <label for="question4">What is the current AI maturity level in your organization?</label>
-                            <input type="text" class="form-control" id="question4" name="question4" placeholder="Describe your AI maturity" required data-toggle="tooltip" title="Describe the current level of AI adoption and integration in your organization.">
-                            <div class="invalid-feedback">Please describe your AI maturity.</div>
-                        </div>
-                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="button" class="btn btn-primary next-step" disabled>Next</button>
-                    </div>
-
-                    <!-- Step 6 -->
-                    <div class="form-step">
-                        <h4>Step 6: Report Customization</h4>
-                        <p>Customize Your Report</p>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="includeIntroduction" name="includeIntroduction" checked data-toggle="tooltip" title="Include an introduction section in the report.">
-                            <label class="form-check-label" for="includeIntroduction">Include Introduction</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="includeIndustryTrends" name="includeIndustryTrends" checked data-toggle="tooltip" title="Include industry trends section in the report.">
-                            <label class="form-check-label" for="includeIndustryTrends">Include Industry Trends</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="includeAISolutions" name="includeAISolutions" checked data-toggle="tooltip" title="Include AI solutions section in the report.">
-                            <label class="form-check-label" for="includeAISolutions">Include AI Solutions</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="includeAnalysis" name="includeAnalysis" checked data-toggle="tooltip" title="Include analysis section in the report.">
-                            <label class="form-check-label" for="includeAnalysis">Include Analysis</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="includeConclusion" name="includeConclusion" checked data-toggle="tooltip" title="Include conclusion section in the report.">
-                            <label class="form-check-label" for="includeConclusion">Include Conclusion</label>
-                        </div>
-                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                        <button type="button" class="btn btn-primary next-step" disabled>Next</button>
-                    </div>
-
-                    <!-- Step 7: Summary -->
-                    <div class="form-step">
-                        <h4>Step 7: Review Your Information</h4>
+                        <h4>Step 5: Review Your Information</h4>
                         <div id="summary">
                             <!-- Summary content will be populated by JavaScript -->
                         </div>
@@ -133,6 +105,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script>
         $(function () {

@@ -132,11 +132,6 @@ document.addEventListener('DOMContentLoaded', function() {
     submitBtn.addEventListener('click', () => {
         const formData = new FormData(document.getElementById('reportForm'));
         const data = Object.fromEntries(formData.entries());
-        data.includeIntroduction = formData.get('includeIntroduction') !== null;
-        data.includeIndustryTrends = formData.get('includeIndustryTrends') !== null;
-        data.includeAISolutions = formData.get('includeAISolutions') !== null;
-        data.includeAnalysis = formData.get('includeAnalysis') !== null;
-        data.includeConclusion = formData.get('includeConclusion') !== null;
 
         fetch('/generate_report', {
             method: 'POST',

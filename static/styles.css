@@ -71,3 +71,9 @@ h4 {
 .summary-item {
     margin-bottom: 10px;
 }
+
+.fas.fa-question-circle {
+    margin-left: 5px;
+    color: #6c757d;
+    cursor: pointer;
+}
