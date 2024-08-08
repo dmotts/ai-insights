@@ -6,13 +6,110 @@ document.addEventListener('DOMContentLoaded', function() {
     const progress = document.getElementById('progress');
     let currentStep = 0;
 
+    // Function to show the current step
     function showStep(step) {
         steps.forEach((el, index) => {
+            el.classList.remove('previous', 'next');
+            if (index < step) {
+                el.classList.add('previous');
+            } else if (index > step) {
+                el.classList.add('next');
+            } else {
+                el.classList.add('active');
+            }
             el.classList.toggle('active', index === step);
         });
-        progress.style.width = `${(step / (steps.length - 1)) * 100}%`;
+        updateProgress();
+        if (step === steps.length - 1) {
+            populateSummary();
+        }
+        validateStep();
     }
 
+    // Function to update progress bar
+    function updateProgress() {
+        const fields = document.querySelectorAll('.form-control');
+        const filledFields = Array.from(fields).filter(field => field.value.trim() !== '');
+        const progressPercentage = (filledFields.length / fields.length) * 100;
+        progress.style.width = `${progressPercentage}%`;
+        progress.innerText = `${Math.round(progressPercentage)}%`;
+    }
+
+    // Function to populate summary step
+    function populateSummary() {
+        const summaryDiv = document.getElementById('summary');
+        summaryDiv.innerHTML = ''; // Clear existing content
+        const formData = new FormData(document.getElementById('reportForm'));
+        const entries = formData.entries();
+
+        for (const [key, value] of entries) {
+            const summaryItem = document.createElement('div');
+            summaryItem.className = 'summary-item';
+            summaryItem.innerHTML = `<strong>${key}:</strong> ${value}`;
+            summaryDiv.appendChild(summaryItem);
+        }
+    }
+
+    // Function to validate the current step
+    function validateStep() {
+        const activeStep = steps[currentStep];
+        const inputs = activeStep.querySelectorAll('input[required]');
+        let allValid = true;
+
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                input.classList.add('is-invalid');
+                allValid = false;
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+
+        const nextBtn = activeStep.querySelector('.next-step');
+        if (nextBtn) {
+            nextBtn.disabled = !allValid;
+        }
+
+        if (currentStep === steps.length - 1) {
+            submitBtn.disabled = !allValid;
+        }
+    }
+
+    // Save form state to localStorage
+    function saveFormState() {
+        const formData = new FormData(document.getElementById('reportForm'));
+        const data = Object.fromEntries(formData.entries());
+        localStorage.setItem('formState', JSON.stringify(data));
+        localStorage.setItem('currentStep', currentStep);
+    }
+
+    // Restore form state from localStorage
+    function restoreFormState() {
+        const savedState = JSON.parse(localStorage.getItem('formState'));
+        const savedStep = localStorage.getItem('currentStep');
+
+        if (savedState) {
+            for (const [key, value] of Object.entries(savedState)) {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input) {
+                    input.value = value;
+                }
+            }
+        }
+
+        if (savedStep !== null) {
+            currentStep = parseInt(savedStep, 10);
+            showStep(currentStep);
+        }
+    }
+
+    // Clear form state from localStorage
+    function clearFormState() {
+        localStorage.removeItem('formState');
+        localStorage.removeItem('currentStep');
+    }
+
+    // Event listeners for form navigation
     nextBtns.forEach(button => {
         button.addEventListener('click', () => {
             if (currentStep < steps.length - 1) {
@@ -31,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Event listener for form submission
     submitBtn.addEventListener('click', () => {
         const formData = new FormData(document.getElementById('reportForm'));
         const data = Object.fromEntries(formData.entries());
@@ -49,10 +147,9 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => {
             if (response.status === 'success') {
                 alert('Report generated successfully!');
-                // Redirect or open the PDF and HTML report
-                window.open(response.pdf_url, '_blank'); // Opens PDF in a new tab
-                // Optionally redirect to the HTML version
+                window.open(response.pdf_url, '_blank');
                 window.location.href = `/view_report/${response.report_id}`;
+                clearFormState();
             } else {
                 alert('Error: ' + response.message);
             }
@@ -62,6 +159,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Initialize the form by showing the first step
+    // Save form state on input change
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('input', function() {
+            validateStep();
+            updateProgress();
+            saveFormState();
+        });
+    });
+
+    // Restore form state on page load
+    restoreFormState();
+
     showStep(currentStep);
+
+    // Initialize Bootstrap tooltips
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
 });
