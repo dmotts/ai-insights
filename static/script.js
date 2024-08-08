@@ -10,27 +10,18 @@ document.addEventListener('DOMContentLoaded', function() {
     function showStep(step) {
         steps.forEach((el, index) => {
             el.classList.remove('previous', 'next');
-            if (index < step) {
-                el.classList.add('previous');
-            } else if (index > step) {
-                el.classList.add('next');
-            } else {
-                el.classList.add('active');
-            }
             el.classList.toggle('active', index === step);
         });
         updateProgress();
         if (step === steps.length - 1) {
             populateSummary();
         }
-        validateStep();
     }
 
     // Function to update progress bar
     function updateProgress() {
-        const fields = document.querySelectorAll('.form-control');
-        const filledFields = Array.from(fields).filter(field => field.value.trim() !== '');
-        const progressPercentage = (filledFields.length / fields.length) * 100;
+        const totalSteps = steps.length;
+        const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
         progress.style.width = `${progressPercentage}%`;
         progress.innerText = `${Math.round(progressPercentage)}%`;
     }
@@ -55,31 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
             summaryItem.className = 'summary-item';
             summaryItem.innerHTML = `<strong>${question}:</strong><br>${answer}`;
             summaryDiv.appendChild(summaryItem);
-        }
-    }
-
-    // Function to validate the current step
-    function validateStep() {
-        const activeStep = steps[currentStep];
-        const inputs = activeStep.querySelectorAll('input[required]');
-        let allValid = true;
-
-        inputs.forEach(input => {
-            if (!input.checkValidity()) {
-                input.classList.add('is-invalid');
-                allValid = false;
-            } else {
-                input.classList.remove('is-invalid');
-            }
-        });
-
-        const nextBtn = activeStep.querySelector('.next-step');
-        if (nextBtn) {
-            nextBtn.disabled = !allValid;
-        }
-
-        if (currentStep === steps.length - 1) {
-            submitBtn.disabled = !allValid;
         }
     }
 
@@ -169,15 +135,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Save form state on input change
     document.querySelectorAll('.form-control').forEach(input => {
         input.addEventListener('input', function() {
-            validateStep();
-            updateProgress();
             saveFormState();
         });
     });
 
     document.querySelectorAll('input[type="radio"]').forEach(input => {
         input.addEventListener('change', function() {
-            validateStep();
             saveFormState();
         });
     });
