@@ -17,7 +17,7 @@ class EmailService:
 
     def send_email(self, recipient: str, subject: str, body: str):
         if not Config.ENABLE_EMAIL_SERVICE:
-            self.logger.info('Email service is disabled. Skipping email sending.')
+            logging.info('Email service is disabled. Skipping email sending.')
             return
 
         msg = MIMEMultipart()
@@ -40,7 +40,7 @@ class EmailService:
 
     def send_follow_up_email(self, recipient: str, report_id: str):
         if not Config.ENABLE_EMAIL_SERVICE:
-            self.logger.info('Email service is disabled. Skipping follow-up email sending.')
+            logging.info('Email service is disabled. Skipping follow-up email sending.')
             return
 
         subject = "Follow-up on Your AI Insights Report"
@@ -61,7 +61,7 @@ class EmailService:
 
     def schedule_follow_up(self, recipient: str, report_id: str):
         if not Config.ENABLE_EMAIL_SERVICE:
-            self.logger.info('Email service is disabled. Skipping follow-up email scheduling.')
+            logging.info('Email service is disabled. Skipping follow-up email scheduling.')
             return
 
         # For demonstration, we can simulate scheduling with a simple print statement.

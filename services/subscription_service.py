@@ -12,7 +12,7 @@ class SubscriptionService:
 
     def add_subscriber(self, email: str, industry: str):
         if not Config.ENABLE_SUBSCRIPTION_SERVICE:
-            self.logger.info('Subscription service is disabled. Skipping subscriber addition.')
+            logging.info('Subscription service is disabled. Skipping subscriber addition.')
             return
 
         if email not in [subscriber['email'] for subscriber in self.subscribers]:
@@ -23,7 +23,7 @@ class SubscriptionService:
 
     def remove_subscriber(self, email: str):
         if not Config.ENABLE_SUBSCRIPTION_SERVICE:
-            self.logger.info('Subscription service is disabled. Skipping subscriber removal.')
+            logging.info('Subscription service is disabled. Skipping subscriber removal.')
             return
 
         self.subscribers = [subscriber for subscriber in self.subscribers if subscriber['email'] != email]
@@ -31,7 +31,7 @@ class SubscriptionService:
 
     def send_trend_updates(self):
         if not Config.ENABLE_SUBSCRIPTION_SERVICE:
-            self.logger.info('Subscription service is disabled. Skipping trend updates.')
+            logging.info('Subscription service is disabled. Skipping trend updates.')
             return
 
         for subscriber in self.subscribers:
@@ -43,7 +43,7 @@ class SubscriptionService:
 
     def perform_trend_analysis(self, industry: str) -> str:
         if not Config.ENABLE_SUBSCRIPTION_SERVICE:
-            self.logger.info('Subscription service is disabled. Skipping trend analysis.')
+            logging.info('Subscription service is disabled. Skipping trend analysis.')
             return "Subscription service is disabled."
 
         # Placeholder for trend analysis logic

@@ -16,7 +16,7 @@ class PDFService:
 
     def generate_pdf(self, html_content):
         if not Config.ENABLE_PDF_SERVICE:
-            self.logger.info('PDF service is disabled. Skipping PDF generation.')
+            logging.info('PDF service is disabled. Skipping PDF generation.')
             return None
 
         self.logger.debug('Generating PDF with PDF.co')
@@ -43,7 +43,7 @@ class PDFService:
 
     def generate_graphs(self, analysis_data):
         if not Config.ENABLE_PDF_SERVICE:
-            self.logger.info('PDF service is disabled. Skipping graph generation.')
+            logging.info('PDF service is disabled. Skipping graph generation.')
             return None, None
 
         self.logger.debug('Generating graphs')

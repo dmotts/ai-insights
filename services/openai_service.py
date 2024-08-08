@@ -19,7 +19,7 @@ class OpenAIService:
     @cached(cache=lambda self: self.cache)
     def get_industry_trends(self, industry: str) -> str:
         if not Config.ENABLE_OPENAI_SERVICE:
-            self.logger.info('OpenAI service is disabled. Skipping industry trends generation.')
+            logging.info('OpenAI service is disabled. Skipping industry trends generation.')
             return "OpenAI service is disabled."
 
         prompt = f"Provide the latest AI trends and developments in the {industry} industry."
@@ -42,7 +42,7 @@ class OpenAIService:
     @cached(cache=lambda self: self.cache)
     def get_industry_benchmarks(self, industry: str) -> str:
         if not Config.ENABLE_OPENAI_SERVICE:
-            self.logger.info('OpenAI service is disabled. Skipping industry benchmarks generation.')
+            logging.info('OpenAI service is disabled. Skipping industry benchmarks generation.')
             return "OpenAI service is disabled."
 
         prompt = f"Provide industry benchmarks for the {industry} sector. Include key performance indicators and standard metrics used for comparison."
@@ -64,7 +64,7 @@ class OpenAIService:
 
     def generate_report_content(self, industry: str, answers: List[str], include_sections: dict) -> str:
         if not Config.ENABLE_OPENAI_SERVICE:
-            self.logger.info('OpenAI service is disabled. Skipping report content generation.')
+            logging.info('OpenAI service is disabled. Skipping report content generation.')
             return "OpenAI service is disabled."
 
         industry_trends = self.get_industry_trends(industry)
@@ -125,7 +125,7 @@ class OpenAIService:
 
     def perform_trend_analysis(self, industry: str) -> str:
         if not Config.ENABLE_OPENAI_SERVICE:
-            self.logger.info('OpenAI service is disabled. Skipping trend analysis.')
+            logging.info('OpenAI service is disabled. Skipping trend analysis.')
             return "OpenAI service is disabled."
 
         prompt = f"Analyze historical data to identify trends and predict future developments in the {industry} industry."
@@ -147,7 +147,7 @@ class OpenAIService:
 
     def get_case_studies(self, industry: str) -> str:
         if not Config.ENABLE_OPENAI_SERVICE:
-            self.logger.info('OpenAI service is disabled. Skipping case studies generation.')
+            logging.info('OpenAI service is disabled. Skipping case studies generation.')
             return "OpenAI service is disabled."
 
         prompt = f"Provide case studies of successful AI implementation in the {industry} industry."
