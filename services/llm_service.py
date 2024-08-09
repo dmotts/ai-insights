@@ -53,66 +53,98 @@ class LLMService:
         """Injects CSS styles into the HTML content."""
         styles = """
         <style>
-        body {
-            font-family: Arial, sans-serif;
-            color: #333;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-            overflow: hidden;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        header {
-            background-color: #4CAF50;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center.
-        }
-        header img {
-            width: 150px;
-            margin: 0 auto.
-        }
-        h1, h2 {
-            color: #4CAF50.
-        }
-        section {
-            margin: 20px 0.
-        }
-        .cta {
-            margin: 40px 0.
-            padding: 20px.
-            background-color: #e7f7e7.
-            text-align: center.
-            border: 2px solid #4CAF50.
-        }
-        .cta a {
-            color: #fff.
-            background-color: #4CAF50.
-            padding: 10px 20px.
-            text-decoration: none.
-            font-weight: bold.
-            border-radius: 5px.
-        }
-        footer {
-            text-align: center.
-            margin-top: 20px.
-            padding: 10px 0.
-            background-color: #333.
-            color: #fff.
-            position: relative.
-            bottom: 0.
-            width: 100%.
-        }
-        footer p {
-            margin: 0.
-        }
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color: #333;
+                line-height: 1.6;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+    
+            .container {
+                width: 80%;
+                margin: auto;
+                background: #fff;
+                padding: 40px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+            }
+    
+            header {
+                background-color: #4CAF50;
+                color: #fff;
+                padding: 20px 0;
+                text-align: center;
+                border-radius: 10px 10px 0 0;
+                position: relative;
+            }
+    
+            header h1 {
+                font-size: 2.5rem;
+                margin: 0;
+                padding: 0;
+            }
+    
+            header h2 {
+                font-size: 1.5rem;
+                margin: 0;
+                padding: 0;
+                font-weight: 300;
+            }
+    
+            section {
+                margin: 20px 0;
+            }
+    
+            h2 {
+                color: #4CAF50;
+                font-size: 1.8rem;
+                margin-bottom: 10px;
+            }
+    
+            p {
+                font-size: 1.1rem;
+                margin: 10px 0;
+            }
+    
+            .cta {
+                margin: 40px 0;
+                padding: 20px;
+                background-color: #e7f7e7;
+                text-align: center;
+                border: 2px solid #4CAF50;
+                border-radius: 10px;
+            }
+    
+            .cta a {
+                color: #fff;
+                background-color: #4CAF50;
+                padding: 10px 20px;
+                text-decoration: none;
+                font-weight: bold;
+                border-radius: 5px;
+                display: inline-block;
+                transition: background-color 0.3s ease;
+            }
+    
+            .cta a:hover {
+                background-color: #45a049;
+            }
+    
+            footer {
+                text-align: center;
+                margin-top: 20px;
+                padding: 20px 0;
+                background-color: #333;
+                color: #fff;
+                border-radius: 0 0 10px 10px;
+            }
+    
+            footer p {
+                margin: 0;
+                font-size: 1rem;
+            }
         </style>
         """
         return f"<html><head>{styles}</head>{html_content}</html>"
