@@ -66,18 +66,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showLoading() {
         const activeStep = document.querySelector('.form-step.active');
-        $(activeStep).fadeOut(400, function() {
-            loadingAnimation.classList.remove('d-none');
-            loadingAnimation.classList.add('d-block');
-        });
+        activeStep.style.opacity = 1;
+        let fadeEffect = setInterval(function () {
+            if (!activeStep.style.opacity) {
+                activeStep.style.opacity = 1;
+            }
+            if (activeStep.style.opacity > 0) {
+                activeStep.style.opacity -= 0.1;
+            } else {
+                clearInterval(fadeEffect);
+                loadingAnimation.classList.remove('d-none');
+                loadingAnimation.classList.add('d-block');
+            }
+        }, 50);
     }
 
     function showSuccess(downloadUrl) {
-        $(loadingAnimation).fadeOut(400, function() {
-            successMessage.classList.remove('d-none');
-            successMessage.classList.add('d-block');
-            downloadButton.href = downloadUrl;
-        });
+        loadingAnimation.style.opacity = 1;
+        let fadeEffect = setInterval(function () {
+            if (loadingAnimation.style.opacity > 0) {
+                loadingAnimation.style.opacity -= 0.1;
+            } else {
+                clearInterval(fadeEffect);
+                loadingAnimation.classList.remove('d-block');
+                loadingAnimation.classList.add('d-none');
+
+                successMessage.classList.remove('d-none');
+                successMessage.classList.add('d-block');
+                successMessage.style.opacity = 0;
+                let fadeInEffect = setInterval(function () {
+                    if (successMessage.style.opacity < 1) {
+                        successMessage.style.opacity = parseFloat(successMessage.style.opacity) + 0.1;
+                    } else {
+                        clearInterval(fadeInEffect);
+                    }
+                }, 50);
+
+                downloadButton.href = downloadUrl;
+            }
+        }, 50);
     }
 
     submitBtn.addEventListener('click', () => {
