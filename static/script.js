@@ -6,9 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const progress = document.getElementById('progress');
     const loadingAnimation = document.getElementById('loadingAnimation');
     const successMessage = document.getElementById('successMessage');
-    const errorMessage = document.getElementById('errorMessage');
     const downloadButton = document.getElementById('downloadButton');
-    const submissionSection = document.getElementById('submissionSection');
     let currentStep = 0;
 
     // Function to show the current step
@@ -54,44 +52,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Save form state to localStorage
-    function saveFormState() {
-        const formData = new FormData(document.getElementById('reportForm'));
-        const data = Object.fromEntries(formData.entries());
-        localStorage.setItem('formState', JSON.stringify(data));
-        localStorage.setItem('currentStep', currentStep);
-    }
-
-    // Restore form state from localStorage
-    function restoreFormState() {
-        const savedState = JSON.parse(localStorage.getItem('formState'));
-        const savedStep = localStorage.getItem('currentStep');
-
-        if (savedState) {
-            for (const [key, value] of Object.entries(savedState)) {
-                const input = document.querySelector(`[name="${key}"]`);
-                if (input) {
-                    if (input.type === 'radio') {
-                        document.querySelector(`input[name="${key}"][value="${value}"]`).checked = true;
-                    } else {
-                        input.value = value;
-                    }
-                }
-            }
-        }
-
-        if (savedStep !== null) {
-            currentStep = parseInt(savedStep, 10);
-            showStep(currentStep);
-        }
-    }
-
-    // Clear form state from localStorage
-    function clearFormState() {
-        localStorage.removeItem('formState');
-        localStorage.removeItem('currentStep');
-    }
-
     // Client-side validation (Basic example)
     function validateStep() {
         const currentFields = steps[currentStep].querySelectorAll('input, textarea');
@@ -105,28 +65,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showLoading() {
-        progress.style.display = 'none';
-        submissionSection.style.display = 'none';
-        loadingAnimation.style.display = 'inline-block';
-    }
-
-    function hideLoading() {
-        loadingAnimation.style.display = 'none';
+        document.querySelector('.form-step.active').classList.add('fade-out');
+        loadingAnimation.style.display = 'block';
     }
 
     function showSuccess(downloadUrl) {
-        hideLoading();
+        loadingAnimation.style.display = 'none';
         successMessage.style.display = 'block';
         downloadButton.href = downloadUrl;
     }
 
-    function showError() {
-        hideLoading();
-        submissionSection.style.display = 'block';
-        errorMessage.style.display = 'block';
-    }
-
-    // Event listener for form submission
     submitBtn.addEventListener('click', () => {
         if (validateStep()) {
             showLoading();
@@ -144,12 +92,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (response.status === 'success') {
                     showSuccess(response.pdf_url);
                 } else {
-                    showError();
+                    alert('An error occurred, please try again.');
+                    window.location.reload();
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showError();
+                alert('An unexpected error occurred. Please try again.');
+                window.location.reload();
             });
         }
     });
@@ -172,22 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
-    // Save form state on input change
-    document.querySelectorAll('.form-control').forEach(input => {
-        input.addEventListener('input', function() {
-            saveFormState();
-        });
-    });
-
-    document.querySelectorAll('input[type="radio"]').forEach(input => {
-        input.addEventListener('change', function() {
-            saveFormState();
-        });
-    });
-
-    // Restore form state on page load
-    restoreFormState();
 
     showStep(currentStep);
 

@@ -158,27 +158,23 @@
                         <div id="summary">
                             <!-- Summary content will be populated by JavaScript -->
                         </div>
-                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-
-                        <!-- Submit Button and Loading Animation -->
-                        <div class="text-center" id="submissionSection">
-                            <div id="loadingAnimation" class="spinner-border text-primary" role="status" style="display: none;">
-                                <span class="sr-only">Loading...</span>
-                            </div>
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary prev-step">Previous</button>
                             <button type="button" class="btn btn-success submit-form">Submit</button>
-                            <div id="errorMessage" class="alert alert-danger mt-4" style="display: none;">
-                                Sorry, this service is unavailable. For a personalized AI insights report, 
-                                <a href="https://dmotts.github.io/portfolio/" target="_blank">contact us</a>.
-                            </div>
-                        </div>
-
-                        <!-- Success Message and Download Button -->
-                        <div id="successMessage" class="text-center mt-4" style="display: none;">
-                            <h5>Report generated successfully!</h5>
-                            <a id="downloadButton" href="#" class="btn btn-primary mt-3">Download Your Report</a>
                         </div>
                     </div>
                 </form>
+
+                <!-- Loading and Success Message Sections -->
+                <div id="loadingAnimation" class="text-center" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                <div id="successMessage" class="text-center mt-4" style="display: none;">
+                    <h5>Your report is ready!</h5>
+                    <a id="downloadButton" href="#" class="btn btn-primary btn-lg mt-3">Download Your Report</a>
+                </div>
             </div>
         </div>
     </div>

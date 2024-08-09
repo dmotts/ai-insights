@@ -54,6 +54,11 @@ h4 {
     transform: translateX(100%);
 }
 
+.form-navigation {
+    display: flex;
+    justify-content: space-between;
+}
+
 /* Buttons */
 button {
     margin-top: 10px;
@@ -83,11 +88,18 @@ button.submit-form:hover {
 /* Loading Animation */
 #loadingAnimation {
     margin-top: 20px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#loadingAnimation.show {
+    opacity: 1;
 }
 
 /* Success Message */
 #successMessage {
     display: none;
+    opacity: 0;
     animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -96,9 +108,10 @@ button.submit-form:hover {
     padding: 10px 20px;
 }
 
-/* Error Message */
-#errorMessage {
-    display: none;
+/* Fade Out Effect */
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease;
 }
 
 /* Animations */
