@@ -13,7 +13,7 @@ class LLMService:
             self.model = Config.LLM_MODEL
             self.client = OpenAI(
                 api_key = self.openai_api_key
-            }
+            )
         else:
             logging.info('LLM service is disabled.')
             self.client = None
