@@ -76,13 +76,11 @@ def generate_report():
 
         # Render the report content to HTML
         html_content = render_template('report_template.html', 
-                                        introduction=report_content['introduction'],
-                                        industry_trends=report_content['industry_trends'],
-                                        ai_solutions=report_content['ai_solutions'],
-                                        analysis=report_content['analysis'],
-                                        conclusion=report_content['conclusion'],
-                                        graph1=report_content['graph1'],
-                                        graph2=report_content['graph2']
+                                        introduction=report_content.get('introduction'),
+                                        industry_trends=report_content.get('industry_trends'),
+                                        ai_solutions=report_content.get('ai_solutions'),
+                                        analysis=report_content.get('analysis'),
+                                        conclusion=report_content.get('conclusion')
                                         )
 
         # Generate a PDF from the HTML content
