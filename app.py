@@ -122,9 +122,7 @@ def generate_report():
 
         if Config.ENABLE_SHEETS_SERVICE:
             logger.info("Saving report data to Google Sheets and database")
-            sheets_service.write_data(report_data)
-        else:
-            logger.warning("Sheets service is disabled, skipping data saving")
+            sheets_service.write_data(data=report_data, db=db)        else:            logger.warning("Sheets service is disabled, skipping data saving")
 
         if Config.ENABLE_EMAIL_SERVICE:
             logger.info("Sending report via email")

@@ -37,6 +37,8 @@ class OpenAIService:
             report_content = response.choices[0].message.content
             self.logger.info('Report content generated successfully')
 
+            self.logger.info('Your AI Insights Report', report_content')
+
             # Parse and return the content
             return {
                                 'introduction': self.extract_section(report_content, "Introduction") if report_content else "",
@@ -65,6 +67,55 @@ class OpenAIService:
         5. **Conclusion**: Summarize the key insights and recommend next steps.
 
         Ensure the report is structured professionally, with clear headings and well-organized content. Also, include a call-to-action encouraging the business owner to engage with Daley Mottley AI Consulting for further AI consulting services.
+
+        The report should be in the following format embedded in HTML code with the brackets filled in with the appropraite content:
+
+        ## Format
+        ```
+        <body>
+            <header>
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Daley Mottley AI Consulting">
+                <h1>AI Insights Report</h1>
+            </header>
+
+            <div class="container">
+                <section>
+                    <h2>Introduction</h2>
+                    <p>{{ introduction }}</p>
+                </section>
+
+                <section>
+                    <h2>Industry Trends</h2>
+                    <p>{{ industry_trends }}</p>
+                </section>
+
+                <section>
+                    <h2>AI Solutions</h2>
+                    <p>{{ ai_solutions }}</p>
+                </section>
+
+                <section>
+                    <h2>Analysis</h2>
+                    <p>{{ analysis }}</p>
+                </section>
+
+                <section>
+                    <h2>Conclusion</h2>
+                    <p>{{ conclusion }}</p>
+                </section>
+
+                <section class="cta">
+                    <h2>Ready to Implement AI in Your Business?</h2>
+                    <p>Contact Daley Mottley AI Consulting for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
+                    <a href="mailto:daley.mottley@hotmail.com">Contact Us Today</a>
+                </section>
+            </div>
+
+            <footer>
+                <p>Daley Mottley AI Consulting | All Rights Reserved &copy; {{ current_year }}</p>
+            </footer>
+        </body>
+        ```
         """
 
     def extract_section(self, content: str, section_title: str) -> str:
