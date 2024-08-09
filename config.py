@@ -34,6 +34,9 @@ class Config:
     ENABLE_INTEGRATION_SERVICE = strtobool(os.getenv('ENABLE_INTEGRATION_SERVICE', 'True'))
     ENABLE_SUBSCRIPTION_SERVICE = strtobool(os.getenv('ENABLE_SUBSCRIPTION_SERVICE', 'True'))
 
+    # New OpenAI API Usage Flag
+    USE_OPENAI_API = os.getenv('USE_OPENAI_API', 'True') == 'True'
+
     @classmethod
     def validate_config(cls):
         """Raise errors if critical configurations are missing."""

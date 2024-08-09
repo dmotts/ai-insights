@@ -17,9 +17,9 @@ class OpenAIService:
         self.cache = TTLCache(maxsize=100, ttl=300)  # Cache results for 5 minutes
 
     def generate_report_content(self, industry: str, answers: List[str]) -> str:
-        if not Config.ENABLE_OPENAI_SERVICE:
-            logging.info('OpenAI service is disabled. Skipping report content generation.')
-            return ""
+        if not Config.USE_OPENAI_API:
+            self.logger.info('Using mock OpenAI response for testing.')
+            return self.mock_openai_response()
 
         try:
             # Construct the prompt
@@ -48,6 +48,48 @@ class OpenAIService:
         except Exception as e:
             self.logger.error(f'Error generating report content: {e}', exc_info=True)
             return ""
+
+    def mock_openai_response(self) -> str:
+        """Returns a mock HTML response for testing."""
+        mock_html = """
+        <body>
+            <header>
+                <img src="https://example.com/static/images/logo.png" alt="Daley Mottley AI Consulting">
+                <h1>AI Insights Report</h1>
+            </header>
+            <div class="container">
+                <section>
+                    <h2>Introduction</h2>
+                    <p>This is a mock introduction for testing purposes.</p>
+                </section>
+                <section>
+                    <h2>Industry Trends</h2>
+                    <p>These are mock industry trends for testing purposes.</p>
+                </section>
+                <section>
+                    <h2>AI Solutions</h2>
+                    <p>These are mock AI solutions for testing purposes.</p>
+                </section>
+                <section>
+                    <h2>Analysis</h2>
+                    <p>This is a mock analysis for testing purposes.</p>
+                </section>
+                <section>
+                    <h2>Conclusion</h2>
+                    <p>This is a mock conclusion for testing purposes.</p>
+                </section>
+                <section class="cta">
+                    <h2>Ready to Implement AI in Your Business?</h2>
+                    <p>Contact Daley Mottley AI Consulting for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
+                    <a href="https://dmotts.github.io/portfolio/">Contact Us Today</a>
+                </section>
+            </div>
+            <footer>
+                <p>Daley Mottley AI Consulting | All Rights Reserved &copy; 2024</p>
+            </footer>
+        </body>
+        """
+        return self.inject_styles(mock_html)
 
     def inject_styles(self, html_content: str) -> str:
         """Injects CSS styles into the HTML content."""
@@ -117,7 +159,6 @@ class OpenAIService:
         """
         return f"<html><head>{styles}</head>{html_content}</html>"
 
-
     def build_prompt(self, industry: str, answers: List[str]) -> str:
         return f"""
         You are an AI consultant preparing a comprehensive report for a business owner in the {industry} industry. The report must be detailed, insightful, and structured into the following sections:
@@ -174,7 +215,7 @@ class OpenAIService:
                 <section class="cta">
                     <h2>Ready to Implement AI in Your Business?</h2>
                     <p>Contact Daley Mottley AI Consulting for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
-                    <a href="daley.mottley@hotmail.com">Contact Us Today</a>
+                    <a href="https://dmotts.github.io/portfolio/">Contact Us Today</a>
                 </section>
             </div>
 
@@ -196,4 +237,3 @@ class OpenAIService:
             self.logger.error("HTML content not found in the response")
             return content  # Fallback to returning the whole content
         return content[start:end]
-
