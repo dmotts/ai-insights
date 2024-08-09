@@ -38,7 +38,7 @@ class Config:
     @classmethod
     def validate_config(cls):
         """Raise errors if critical configurations are missing."""
-        if cls.ENABLE_LLM_SERVICE and not cls.LLM_API_KEY:
+        if cls.ENABLE_LLM_SERVICE and not cls.OPENAI_API_KEY:
             raise ValueError("LLM_API_KEY must be set in the environment.")
         if not cls.PDFCO_API_KEY:
             raise ValueError("PDFCO_API_KEY must be set in the environment.")
