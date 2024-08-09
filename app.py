@@ -75,25 +75,33 @@ def generate_report():
         report_content = openai_service.generate_report_content(industry, answers)
 
         # Render the report content to HTML
-        html_content = render_template('report_template.html', report_content=report_content)
+        html_content = render_template('report_template.html', 
+                                        introduction=report_content['introduction'],
+                                        industry_trends=report_content['industry_trends'],
+                                        ai_solutions=report_content['ai_solutions'],
+                                        analysis=report_content['analysis'],
+                                        conclusion=report_content['conclusion'],
+                                        graph1=report_content['graph1'],
+                                        graph2=report_content['graph2']
+                                        )
 
         # Generate a PDF from the HTML content
         pdf_url = pdf_service.generate_pdf(html_content) if Config.ENABLE_PDF_SERVICE else "PDF service is disabled."
 
         # Create a Google Doc for the report
         report_id = generate_report_id()
-        doc_url = sheets_service.create_google_doc(report_id, report_content) if Config.ENABLE_SHEETS_SERVICE else "Sheets service is disabled."
+        doc_url = sheets_service.create_google_doc(report_id, html_content) if Config.ENABLE_SHEETS_SERVICE else "Sheets service is disabled."
 
         # Save report data to Google Sheets and database
-        report_data = [
-            report_id,
-            validated_data['client_name'],
-            validated_data['client_email'],
-            industry,
-            pdf_url,
-            doc_url,
-            datetime.datetime.now().isoformat()
-        ]
+        report_data = {
+            'report_id': report_id,
+            'client_name': validated_data['client_name'],
+            'client_email': validated_data['client_email'],
+            'industry': industry,
+            'pdf_url': pdf_url,
+            'doc_url': doc_url,
+            'created_at': datetime.datetime.now().isoformat()
+        }
 
         if Config.ENABLE_SHEETS_SERVICE:
             sheets_service.write_data(report_data)
@@ -124,7 +132,7 @@ def download_report(report_id):
     try:
         # Fetch the report from the database or Google Sheets
         report = sheets_service.get_report_by_id(report_id)
-        if report and report['pdf_url']:
+        if report and 'pdf_url' in report:
             return send_file(report['pdf_url'], as_attachment=True)
         else:
             logger.warning(f"Report not found: {report_id}")
