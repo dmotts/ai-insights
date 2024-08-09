@@ -16,10 +16,10 @@ class OpenAIService:
         self.logger = logging.getLogger(__name__)
         self.cache = TTLCache(maxsize=100, ttl=300)  # Cache results for 5 minutes
 
-    def generate_report_content(self, industry: str, answers: List[str]) -> dict:
+    def generate_report_content(self, industry: str, answers: List[str]) -> str:
         if not Config.ENABLE_OPENAI_SERVICE:
             logging.info('OpenAI service is disabled. Skipping report content generation.')
-            return {}
+            return ""
 
         try:
             # Construct the prompt
@@ -37,19 +37,86 @@ class OpenAIService:
             report_content = response.choices[0].message.content
             self.logger.info('Report content generated successfully')
 
-            self.logger.info(f'Your AI Insights Report:  {report_content}')
+            # Extract HTML content from the response
+            html_body_content = self.extract_html(report_content)
+            self.logger.info('HTML content extracted from the response')
 
-            # Parse and return the content
-            return {
-                                'introduction': self.extract_section(report_content, "Introduction") if report_content else "",
-                                'industry_trends': self.extract_section(report_content, "Industry Trends") if report_content else "",
-                'ai_solutions': self.extract_section(report_content, "AI Solutions") if report_content else "",
-                'analysis': self.extract_section(report_content, "Analysis") if report_content else "",
-                'conclusion': self.extract_section(report_content, "Conclusion") if report_content else ""
-            }
+            # Inject CSS styles into the HTML content
+            styled_html_content = self.inject_styles(html_body_content)
+
+            return styled_html_content
         except Exception as e:
-            self.logger.error(f'Error generating report content: {e}')
-            return {}
+            self.logger.error(f'Error generating report content: {e}', exc_info=True)
+            return ""
+
+    def inject_styles(self, html_content: str) -> str:
+        """Injects CSS styles into the HTML content."""
+        styles = """
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        header {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        header img {
+            width: 150px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #4CAF50;
+        }
+        section {
+            margin: 20px 0;
+        }
+        .cta {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: #e7f7e7;
+            text-align: center;
+            border: 2px solid #4CAF50;
+        }
+        .cta a {
+            color: #fff;
+            background-color: #4CAF50;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px 0;
+            background-color: #333;
+            color: #fff;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        footer p {
+            margin: 0;
+        }
+        </style>
+        """
+        return f"<html><head>{styles}</head>{html_content}</html>"
+
 
     def build_prompt(self, industry: str, answers: List[str]) -> str:
         return f"""
@@ -107,7 +174,7 @@ class OpenAIService:
                 <section class="cta">
                     <h2>Ready to Implement AI in Your Business?</h2>
                     <p>Contact Daley Mottley AI Consulting for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
-                    <a href="mailto:daley.mottley@hotmail.com">Contact Us Today</a>
+                    <a href="daley.mottley@hotmail.com">Contact Us Today</a>
                 </section>
             </div>
 
@@ -118,10 +185,15 @@ class OpenAIService:
         ```
         """
 
-    def extract_section(self, content: str, section_title: str) -> str:
-        # Simple method to extract sections from the generated content
-        start = content.find(f"**{section_title}**")
-        if start == -1:
-            return ""
-        end = content.find("**", start + len(section_title) + 4)
-        return content[start + len(section_title) + 4:end].strip() if end != -1 else content[start + len(section_title) + 4:].strip()
+    def extract_html(self, content: str) -> str:
+        """
+        Extracts HTML content from the OpenAI response.
+        Assumes the content is wrapped in a ```html block.
+        """
+        start = content.find("<body>")
+        end = content.find("</body>") + len("</body>")
+        if start == -1 or end == -1:
+            self.logger.error("HTML content not found in the response")
+            return content  # Fallback to returning the whole content
+        return content[start:end]
+

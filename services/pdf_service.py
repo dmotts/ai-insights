@@ -26,7 +26,7 @@ class PDFService:
             "Content-Type": "application/json"
         }
         payload = {
-            "html": html_content,
+            "html": html_content,  # The HTML content already includes styles
             "name": "report.pdf"
         }
         try:
@@ -44,6 +44,7 @@ class PDFService:
         except Exception as e:
             self.logger.error(f'Error generating PDF: {e}')
         return None
+
 
     def generate_graphs(self, analysis_data):
         if not Config.ENABLE_PDF_SERVICE:

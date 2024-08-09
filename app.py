@@ -78,17 +78,8 @@ def generate_report():
 
         # Generate the report content using OpenAI service
         logger.info("Generating report content using OpenAI service")
-        report_content = openai_service.generate_report_content(industry, answers)
-        logger.debug(f"Generated report content: {report_content}")
-
-        # Render the report content to HTML
-        html_content = render_template('report_template.html', 
-                                        introduction=report_content.get('introduction'),
-                                        industry_trends=report_content.get('industry_trends'),
-                                        ai_solutions=report_content.get('ai_solutions'),
-                                        analysis=report_content.get('analysis'),
-                                        conclusion=report_content.get('conclusion'))
-        logger.info("Report content rendered to HTML")
+        html_content = openai_service.generate_report_content(industry, answers)
+        logger.debug(f"Generated HTML content: {html_content}")
 
         # Generate a PDF from the HTML content
         if Config.ENABLE_PDF_SERVICE:
@@ -123,7 +114,8 @@ def generate_report():
         if Config.ENABLE_SHEETS_SERVICE:
             logger.info("Saving report data to Google Sheets and database")
             sheets_service.write_data(data=report_data)
-        else:            logger.warning("Sheets service is disabled, skipping data saving")
+        else:            
+            logger.warning("Sheets service is disabled, skipping data saving")
 
         if Config.ENABLE_EMAIL_SERVICE:
             logger.info("Sending report via email")
