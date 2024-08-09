@@ -12,8 +12,8 @@ class Config:
     logging.basicConfig(level=LOG_LEVEL)
 
     # LLM Configuration
-    LLM_API_KEY = os.getenv('LLM_API_KEY')
-    LLM_MODEL = os.getenv('LLM_MODEL', 'gpt-4')
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+    LLM_MODEL = os.getenv('LLM_MODEL', 'gpt-4o-mini')
     USE_OPENAI_API = strtobool(os.getenv('USE_OPENAI_API', 'True'))
 
     # PDF.co Configuration

@@ -1,5 +1,4 @@
 from openai import OpenAI
-import openai
 import logging
 from typing import List
 from cachetools import cached, TTLCache
