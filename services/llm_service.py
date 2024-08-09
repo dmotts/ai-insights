@@ -10,7 +10,7 @@ class LLMService:
 
         if Config.USE_OPENAI_API:
             self.api_key = Config.OPENAI_API_KEY
-            self.model = Config.OPENAI_MODEL
+            self.model = Config.LLM_MODEL
             self.client = openai
         else:
             logging.info('LLM service is disabled.')
@@ -30,7 +30,7 @@ class LLMService:
             prompt = self.build_prompt(industry, answers)
             self.logger.debug('Generating report content with LLM API')
 
-            response = self.client.ChatCompletion.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
