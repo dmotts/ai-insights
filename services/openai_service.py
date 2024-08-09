@@ -39,11 +39,11 @@ class OpenAIService:
 
             # Parse and return the content
             return {
-                'introduction': self.extract_section(report_content, "Introduction"),
-                'industry_trends': self.extract_section(report_content, "Industry Trends"),
-                'ai_solutions': self.extract_section(report_content, "AI Solutions"),
-                'analysis': self.extract_section(report_content, "Analysis"),
-                'conclusion': self.extract_section(report_content, "Conclusion")
+                                'introduction': self.extract_section(report_content, "Introduction") if report_content else "",
+                                'industry_trends': self.extract_section(report_content, "Industry Trends") if report_content else "",
+                'ai_solutions': self.extract_section(report_content, "AI Solutions") if report_content else "",
+                'analysis': self.extract_section(report_content, "Analysis") if report_content else "",
+                'conclusion': self.extract_section(report_content, "Conclusion") if report_content else ""
             }
         except Exception as e:
             self.logger.error(f'Error generating report content: {e}')
