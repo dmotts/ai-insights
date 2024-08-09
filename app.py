@@ -17,6 +17,10 @@ from marshmallow import Schema, fields, ValidationError
 app = Flask(__name__)
 app.config.from_object(Config)
 
+# Initialize logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 # Initialize services
 sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], "AI Insights Report Email List")
 openai_service = OpenAIService(app.config['OPENAI_API_KEY'], app.config['OPENAI_MODEL'])
@@ -25,6 +29,7 @@ email_service = EmailService()
 integration_service = IntegrationService()
 subscription_service = SubscriptionService()
 
+# Schema for validating incoming report generation requests
 class ReportRequestSchema(Schema):
     client_name = fields.String(required=True)
     client_email = fields.Email(required=True)
@@ -33,10 +38,28 @@ class ReportRequestSchema(Schema):
     question2 = fields.String(required=True)
     question3 = fields.String(required=True)
 
+# Error handler for HTTP exceptions
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    logger.error(f"HTTP error occurred: {e}")
+    return jsonify({"status": "error", "message": e.description}), e.code
+
+# General error handler
+@app.errorhandler(Exception)
+def handle_exception(e):
+    logger.error(f"Error occurred: {e}")
+    return jsonify({"status": "error", "message": "An internal error occurred"}), 500
+
+# Route to render the main report generation page
+@app.route('/')
+def index():
+    return render_template('generate_report.html')
+
+# Route to handle report generation requests
 @app.route('/generate_report', methods=['POST'])
 def generate_report():
     try:
-        # Validate and deserialize input
+        # Validate and deserialize input data
         data = request.json
         schema = ReportRequestSchema()
         validated_data = schema.load(data)
@@ -48,20 +71,20 @@ def generate_report():
             validated_data.get('question3'),
         ]
 
-        # Generate the report content using the enhanced OpenAI service
+        # Generate the report content using OpenAI service
         report_content = openai_service.generate_report_content(industry, answers)
 
-        # Render the content to HTML for the report
+        # Render the report content to HTML
         html_content = render_template('report_template.html', report_content=report_content)
 
-        # Generate PDF from the HTML content
+        # Generate a PDF from the HTML content
         pdf_url = pdf_service.generate_pdf(html_content) if Config.ENABLE_PDF_SERVICE else "PDF service is disabled."
 
         # Create a Google Doc for the report
         report_id = generate_report_id()
         doc_url = sheets_service.create_google_doc(report_id, report_content) if Config.ENABLE_SHEETS_SERVICE else "Sheets service is disabled."
 
-        # Save the report data to Google Sheets and database
+        # Save report data to Google Sheets and database
         report_data = [
             report_id,
             validated_data['client_name'],
@@ -76,15 +99,17 @@ def generate_report():
             sheets_service.write_data(report_data)
 
         if Config.ENABLE_EMAIL_SERVICE:
+            # Send an email to the user with links to the generated report
             email_service.send_email(
                 validated_data['client_email'],
                 "Your AI Insights Report is Ready",
                 f"Your report has been generated. Download it here: {pdf_url}\nView it online: {doc_url}"
             )
 
-        # Add user to subscription list
+        # Add the user to the subscription list
         subscription_service.add_subscriber(validated_data['client_email'], industry)
 
+        logger.info(f'Report generated with ID: {report_id}')
         return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url, "doc_url": doc_url})
     except ValidationError as err:
         logger.error(f"Validation error: {err.messages}")
@@ -93,22 +118,26 @@ def generate_report():
         logger.error(f"Error generating report: {e}")
         return jsonify({"status": "error", "message": "An error occurred while generating the report."}), 500
 
-
+# Route to handle report download requests
 @app.route('/download_report/<report_id>', methods=['GET'])
 def download_report(report_id):
-    # Logic to fetch and send the PDF file
     try:
+        # Fetch the report from the database or Google Sheets
         report = sheets_service.get_report_by_id(report_id)
         if report and report['pdf_url']:
             return send_file(report['pdf_url'], as_attachment=True)
         else:
+            logger.warning(f"Report not found: {report_id}")
             return jsonify({"status": "error", "message": "Report not found"}), 404
     except Exception as e:
+        logger.error(f"Error retrieving report: {e}")
         return jsonify({"status": "error", "message": "An error occurred while downloading the report."}), 500
 
+# Function to generate a unique report ID based on timestamp
 def generate_report_id():
     return str(int(datetime.datetime.now().timestamp()))
 
+# Main entry point to run the application
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)

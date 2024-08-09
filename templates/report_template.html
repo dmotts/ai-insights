@@ -1,36 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Insights Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        header img {
+            width: 150px;
+            margin: 0 auto;
+        }
+
+        h1, h2 {
+            color: #4CAF50;
+        }
+
+        section {
+            margin: 20px 0;
+        }
+
+        .graphs img {
+            width: 100%;
+            margin-bottom: 20px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: #e7f7e7;
+            text-align: center;
+            border: 2px solid #4CAF50;
+        }
+
+        .cta a {
+            color: #fff;
+            background-color: #4CAF50;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px 0;
+            background-color: #333;
+            color: #fff;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>AI Insights Report</h1>
-    <section>
-        <h2>Introduction</h2>
-        <p>{{ introduction }}</p>
-    </section>
-    <section>
-        <h2>Industry Trends</h2>
-        <p>{{ industry_trends }}</p>
-    </section>
-    <section>
-        <h2>AI Solutions</h2>
-        <p>{{ ai_solutions }}</p>
-    </section>
-    <section>
-        <h2>Analysis</h2>
-        <p>{{ analysis }}</p>
-    </section>
-    <section>
-        <h2>Conclusion</h2>
-        <p>{{ conclusion }}</p>
-    </section>
-    <section>
-        <h2>Graphs</h2>
-        <img src="{{ graph1 }}" alt="Graph 1">
-        <img src="{{ graph2 }}" alt="Graph 2">
-    </section>
+    <header>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Daley Mottley AI Consulting">
+        <h1>AI Insights Report</h1>
+    </header>
+
+    <div class="container">
+        <section>
+            <h2>Introduction</h2>
+            <p>{{ introduction }}</p>
+        </section>
+
+        <section>
+            <h2>Industry Trends</h2>
+            <p>{{ industry_trends }}</p>
+        </section>
+
+        <section>
+            <h2>AI Solutions</h2>
+            <p>{{ ai_solutions }}</p>
+        </section>
+
+        <section>
+            <h2>Analysis</h2>
+            <p>{{ analysis }}</p>
+        </section>
+
+        <section>
+            <h2>Conclusion</h2>
+            <p>{{ conclusion }}</p>
+        </section>
+
+        <section class="graphs">
+            <h2>Graphs</h2>
+            <img src="{{ graph1 }}" alt="Graph 1">
+            <img src="{{ graph2 }}" alt="Graph 2">
+        </section>
+
+        <section class="cta">
+            <h2>Ready to Implement AI in Your Business?</h2>
+            <p>Contact Daley Mottley AI Consulting for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
+            <a href="mailto:daley.mottley@hotmail.com">Contact Us Today</a>
+        </section>
+    </div>
+
+    <footer>
+        <p>Daley Mottley AI Consulting | All Rights Reserved &copy; {{ current_year }}</p>
+    </footer>
 </body>
+
 </html>
