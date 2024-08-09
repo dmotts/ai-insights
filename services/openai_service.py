@@ -37,7 +37,7 @@ class OpenAIService:
             report_content = response.choices[0].message.content
             self.logger.info('Report content generated successfully')
 
-            self.logger.info('Your AI Insights Report', report_content')
+            self.logger.info(f'Your AI Insights Report:  {report_content}')
 
             # Parse and return the content
             return {
