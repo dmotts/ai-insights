@@ -1,3 +1,4 @@
+/* General Styles */
 body {
     background-color: #f5f5f5;
 }
@@ -7,39 +8,32 @@ body {
     margin-top: 40px;
 }
 
+h4 {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.summary-item {
+    margin-bottom: 10px;
+}
+
+/* Tooltip Icon */
+.fas.fa-question-circle {
+    margin-left: 5px;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+/* Progress Bar */
 .progress-bar {
     background-color: #28a745;
     transition: width 0.4s ease;
 }
 
-button {
-    margin-top: 10px;
-}
-
-button.prev-step {
-    background-color: #007bff;
-}
-
-button.prev-step:hover {
-    background-color: #0056b3;
-}
-
-button.next-step {
-    background-color: #28a745;
-}
-
-button.next-step:hover {
-    background-color: #218838;
-}
-
-button.submit-form {
-    background-color: #28a745;
-}
-
-button.submit-form:hover {
-    background-color: #218838;
-}
-
+/* Form Steps */
 .form-step {
     display: none;
     opacity: 0;
@@ -60,20 +54,55 @@ button.submit-form:hover {
     transform: translateX(100%);
 }
 
-h4 {
-    margin-bottom: 20px;
+/* Buttons */
+button {
+    margin-top: 10px;
+    color: #fff;
 }
 
-.form-group {
-    margin-bottom: 15px;
+/* Previous Step Button */
+button.prev-step {
+    background-color: #007bff;
 }
 
-.summary-item {
-    margin-bottom: 10px;
+button.prev-step:hover {
+    background-color: #0056b3;
 }
 
-.fas.fa-question-circle {
-    margin-left: 5px;
-    color: #6c757d;
-    cursor: pointer;
+/* Next Step Button */
+button.next-step,
+button.submit-form {
+    background-color: #28a745;
+}
+
+button.next-step:hover,
+button.submit-form:hover {
+    background-color: #218838;
+}
+
+/* Loading Animation */
+#loadingAnimation {
+    margin-top: 20px;
+}
+
+/* Success Message */
+#successMessage {
+    display: none;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+#downloadButton {
+    font-size: 1.5rem;
+    padding: 10px 20px;
+}
+
+/* Error Message */
+#errorMessage {
+    display: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }

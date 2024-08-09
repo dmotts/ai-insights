@@ -3,7 +3,7 @@ import os
 import logging
 import datetime
 from services.sheets_service import SheetsService
-from services.llm_service import LLMService  # Updated to LLMService
+from services.llm_service import LLMService 
 from services.pdf_service import PDFService
 from services.email_service import EmailService
 from services.integration_service import IntegrationService
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize services
 sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], "AI Insights Report Email List")
-llm_service = LLMService()  # Changed from OpenAIService to LLMService
+llm_service = LLMService() 
 pdf_service = PDFService(app.config['PDFCO_API_KEY'])
 email_service = EmailService()
 integration_service = IntegrationService()
@@ -78,7 +78,7 @@ def generate_report():
 
         # Generate the report content using LLM service
         logger.info("Generating report content using LLM service")
-        html_content = llm_service.generate_report_content(industry, answers)  # Updated to use LLMService
+        html_content = llm_service.generate_report_content(industry, answers)  
         logger.debug(f"Generated HTML content: {html_content}")
 
         # Generate a PDF from the HTML content

@@ -159,15 +159,20 @@
                             <!-- Summary content will be populated by JavaScript -->
                         </div>
                         <button type="button" class="btn btn-secondary prev-step">Previous</button>
+
                         <!-- Submit Button and Loading Animation -->
-                        <div class="text-center">
-                            <div id="loading" class="spinner-border text-primary" role="status" style="display: none;">
+                        <div class="text-center" id="submissionSection">
+                            <div id="loadingAnimation" class="spinner-border text-primary" role="status" style="display: none;">
                                 <span class="sr-only">Loading...</span>
                             </div>
                             <button type="button" class="btn btn-success submit-form">Submit</button>
+                            <div id="errorMessage" class="alert alert-danger mt-4" style="display: none;">
+                                Sorry, this service is unavailable. For a personalized AI insights report, 
+                                <a href="https://dmotts.github.io/portfolio/" target="_blank">contact us</a>.
+                            </div>
                         </div>
 
-                        <!-- Placeholder for Success Message and Download Button -->
+                        <!-- Success Message and Download Button -->
                         <div id="successMessage" class="text-center mt-4" style="display: none;">
                             <h5>Report generated successfully!</h5>
                             <a id="downloadButton" href="#" class="btn btn-primary mt-3">Download Your Report</a>
