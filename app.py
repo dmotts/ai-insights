@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_file
 import os
 import logging
 import datetime
@@ -17,12 +17,8 @@ from marshmallow import Schema, fields, ValidationError
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Initialize logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 # Initialize services
-sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], app.config['SHEET_NAME'])
+sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], "AI Insights Report Email List")
 openai_service = OpenAIService(app.config['OPENAI_API_KEY'], app.config['OPENAI_MODEL'])
 pdf_service = PDFService(app.config['PDFCO_API_KEY'])
 email_service = EmailService()
@@ -36,23 +32,6 @@ class ReportRequestSchema(Schema):
     question1 = fields.String(required=True)
     question2 = fields.String(required=True)
     question3 = fields.String(required=True)
-    question4 = fields.String(required=True)
-    question5 = fields.String(required=True)
-    question6 = fields.String(required=True)
-
-@app.errorhandler(HTTPException)
-def handle_http_exception(e):
-    logger.error(f"HTTP error occurred: {e}")
-    return jsonify({"status": "error", "message": e.description}), e.code
-
-@app.errorhandler(Exception)
-def handle_exception(e):
-    logger.error(f"Error occurred: {e}")
-    return jsonify({"status": "error", "message": "An internal error occurred"}), 500
-
-@app.route('/')
-def index():
-    return render_template('generate_report.html')
 
 @app.route('/generate_report', methods=['POST'])
 def generate_report():
@@ -67,61 +46,22 @@ def generate_report():
             validated_data.get('question1'),
             validated_data.get('question2'),
             validated_data.get('question3'),
-            validated_data.get('question4'),
-            validated_data.get('question5'),
-            validated_data.get('question6')
         ]
 
-        # Get customization options
-        include_sections = {
-            "introduction": data.get('includeIntroduction', True),
-            "industry_trends": data.get('includeIndustryTrends', True),
-            "ai_solutions": data.get('includeAISolutions', True),
-            "analysis": data.get('includeAnalysis', True),
-            "conclusion": data.get('includeConclusion', True)
-        }
+        # Generate the report content using the enhanced OpenAI service
+        report_content = openai_service.generate_report_content(industry, answers)
 
-        # Generate report content
-        if Config.ENABLE_OPENAI_SERVICE:
-            report_content = openai_service.generate_report_content(industry, answers, include_sections)
-        else:
-            report_content = "OpenAI service is disabled. Report content generation skipped."
+        # Render the content to HTML for the report
+        html_content = render_template('report_template.html', report_content=report_content)
 
-        # Safely split the generated content into sections
-        sections = report_content.split('\n\n')
-        content_dict = {
-            'introduction': sections[0] if len(sections) > 0 and include_sections['introduction'] else "Introduction section is unavailable.",
-            'industry_trends': sections[1] if len(sections) > 1 and include_sections['industry_trends'] else "Industry trends section is unavailable.",
-            'ai_solutions': sections[2] if len(sections) > 2 and include_sections['ai_solutions'] else "AI solutions section is unavailable.",
-            'analysis': sections[3] if len(sections) > 3 and include_sections['analysis'] else "Analysis section is unavailable.",
-            'conclusion': sections[4] if len(sections) > 4 and include_sections['conclusion'] else "Conclusion section is unavailable."
-        }
-
-        # Generate graphs with analysis data
-        if Config.ENABLE_PDF_SERVICE:
-            analysis_data = {
-                'x': [1, 2, 3, 4, 5],
-                'y': [10, 20, 15, 30, 25],
-                'categories': ['HR', 'Finance', 'IT', 'Operations', 'Sales'],
-                'values': [75, 85, 95, 80, 90]
-            }
-            graph1, graph2 = pdf_service.generate_graphs(analysis_data)
-            content_dict['graph1'] = graph1
-            content_dict['graph2'] = graph2
-        else:
-            content_dict['graph1'] = "PDF service is disabled. Graph generation skipped."
-            content_dict['graph2'] = "PDF service is disabled. Graph generation skipped."
-
-        html_content = render_template('report_template.html', **content_dict)
-
-        # Generate PDF using PDF.co
+        # Generate PDF from the HTML content
         pdf_url = pdf_service.generate_pdf(html_content) if Config.ENABLE_PDF_SERVICE else "PDF service is disabled."
 
         # Create a Google Doc for the report
         report_id = generate_report_id()
         doc_url = sheets_service.create_google_doc(report_id, report_content) if Config.ENABLE_SHEETS_SERVICE else "Sheets service is disabled."
 
-        # Write report data to Google Sheets and Database
+        # Save the report data to Google Sheets and database
         report_data = [
             report_id,
             validated_data['client_name'],
@@ -133,27 +73,18 @@ def generate_report():
         ]
 
         if Config.ENABLE_SHEETS_SERVICE:
-            with Session(engine) as db:
-                sheets_service.write_data(db, report_data)
+            sheets_service.write_data(report_data)
 
         if Config.ENABLE_EMAIL_SERVICE:
             email_service.send_email(
                 validated_data['client_email'],
                 "Your AI Insights Report is Ready",
-                f"Your report has been generated. You can download it from the following links:\n\nPDF: {pdf_url}\nGoogle Doc: {doc_url}"
+                f"Your report has been generated. Download it here: {pdf_url}\nView it online: {doc_url}"
             )
 
-            # Schedule follow-up email (for demonstration, replace with actual scheduling)
-            email_service.send_follow_up_email(validated_data['client_email'], report_id)
+        # Add user to subscription list
+        subscription_service.add_subscriber(validated_data['client_email'], industry)
 
-        if Config.ENABLE_INTEGRATION_SERVICE:
-            integration_service.export_to_crm(report_data)
-            integration_service.export_to_bi_tool(report_data)
-
-        if Config.ENABLE_SUBSCRIPTION_SERVICE:
-            subscription_service.add_subscriber(validated_data['client_email'], industry)
-
-        logger.info(f'Report generated with ID: {report_id}')
         return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url, "doc_url": doc_url})
     except ValidationError as err:
         logger.error(f"Validation error: {err.messages}")
@@ -162,21 +93,18 @@ def generate_report():
         logger.error(f"Error generating report: {e}")
         return jsonify({"status": "error", "message": "An error occurred while generating the report."}), 500
 
-@app.route('/get_report/<report_id>', methods=['GET'])
-def get_report(report_id):
-    try:
-        all_reports = sheets_service.read_data()
-        report = next((report for report in all_reports if report['Report ID'] == report_id), None)
 
-        if report:
-            logger.info(f'Report found: {report_id}')
-            return jsonify(report)
+@app.route('/download_report/<report_id>', methods=['GET'])
+def download_report(report_id):
+    # Logic to fetch and send the PDF file
+    try:
+        report = sheets_service.get_report_by_id(report_id)
+        if report and report['pdf_url']:
+            return send_file(report['pdf_url'], as_attachment=True)
         else:
-            logger.warning(f'Report not found: {report_id}')
             return jsonify({"status": "error", "message": "Report not found"}), 404
     except Exception as e:
-        logger.error(f"Error retrieving report: {e}")
-        return jsonify({"status": "error", "message": "An error occurred while retrieving the report."}), 500
+        return jsonify({"status": "error", "message": "An error occurred while downloading the report."}), 500
 
 def generate_report_id():
     return str(int(datetime.datetime.now().timestamp()))
