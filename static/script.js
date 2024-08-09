@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevBtns = document.querySelectorAll('.prev-step');
     const submitBtn = document.querySelector('.submit-form');
     const progress = document.getElementById('progress');
+    const loading = document.getElementById('loading');
+    const successMessage = document.getElementById('successMessage');
+    const downloadButton = document.getElementById('downloadButton');
     let currentStep = 0;
 
     // Function to show the current step
@@ -99,6 +102,41 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
+    // Event listener for form submission
+    submitBtn.addEventListener('click', () => {
+        if (validateStep()) {
+            submitBtn.style.display = 'none';
+            loading.style.display = 'inline-block'; // Show loading animation
+
+            const formData = new FormData(document.getElementById('reportForm'));
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('/generate_report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'success') {
+                    loading.style.display = 'none'; // Hide loading animation
+                    successMessage.style.display = 'block'; // Show success message
+                    downloadButton.href = response.pdf_url; // Set download URL
+                } else {
+                    alert('Error: ' + response.message);
+                    submitBtn.style.display = 'inline-block'; // Re-enable the button if an error occurs
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An unexpected error occurred. Please try again.');
+                submitBtn.style.display = 'inline-block'; // Re-enable the button if an error occurs
+                loading.style.display = 'none'; // Hide loading animation
+            });
+        }
+    });
+
+
     // Event listeners for form navigation
     nextBtns.forEach(button => {
         button.addEventListener('click', () => {
@@ -172,4 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
+
+    
 });
