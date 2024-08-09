@@ -158,7 +158,7 @@
                         <div id="summary">
                             <!-- Summary content will be populated by JavaScript -->
                         </div>
-                        <div class="form-navigation">
+                        <div class="form-navigation d-flex justify-content-between">
                             <button type="button" class="btn btn-secondary prev-step">Previous</button>
                             <button type="button" class="btn btn-success submit-form">Submit</button>
                         </div>
@@ -166,12 +166,12 @@
                 </form>
 
                 <!-- Loading and Success Message Sections -->
-                <div id="loadingAnimation" class="text-center" style="display: none;">
+                <div id="loadingAnimation" class="text-center d-none">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
                 </div>
-                <div id="successMessage" class="text-center mt-4" style="display: none;">
+                <div id="successMessage" class="text-center mt-4 d-none">
                     <h5>Your report is ready!</h5>
                     <a id="downloadButton" href="#" class="btn btn-primary btn-lg mt-3">Download Your Report</a>
                 </div>

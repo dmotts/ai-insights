@@ -88,12 +88,14 @@ button.submit-form:hover {
 /* Loading Animation */
 #loadingAnimation {
     margin-top: 20px;
-    opacity: 0;
-    transition: opacity 0.5s ease;
 }
 
-#loadingAnimation.show {
-    opacity: 1;
+.d-none {
+    display: none;
+}
+
+.d-block {
+    display: block;
 }
 
 /* Success Message */
@@ -106,12 +108,6 @@ button.submit-form:hover {
 #downloadButton {
     font-size: 1.5rem;
     padding: 10px 20px;
-}
-
-/* Fade Out Effect */
-.fade-out {
-    opacity: 0;
-    transition: opacity 0.5s ease;
 }
 
 /* Animations */

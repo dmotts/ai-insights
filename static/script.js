@@ -65,14 +65,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showLoading() {
-        document.querySelector('.form-step.active').classList.add('fade-out');
-        loadingAnimation.style.display = 'block';
+        const activeStep = document.querySelector('.form-step.active');
+        $(activeStep).fadeOut(400, function() {
+            loadingAnimation.classList.remove('d-none');
+            loadingAnimation.classList.add('d-block');
+        });
     }
 
     function showSuccess(downloadUrl) {
-        loadingAnimation.style.display = 'none';
-        successMessage.style.display = 'block';
-        downloadButton.href = downloadUrl;
+        $(loadingAnimation).fadeOut(400, function() {
+            successMessage.classList.remove('d-none');
+            successMessage.classList.add('d-block');
+            downloadButton.href = downloadUrl;
+        });
     }
 
     submitBtn.addEventListener('click', () => {
