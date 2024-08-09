@@ -75,26 +75,23 @@ class SheetsService:
             # Write to Google Sheets
             self.sheet.append_row(data)
             self.logger.info('Data written to Google Sheets successfully')
-        except Exception as e:
-            self.logger.error(f'Error writing to Google Sheets: {e}')
 
-        if not Config.ENABLE_DATABASE:
-            self.logger.info(
-                'Database operations are disabled. Skipping database writing.')
-            return
+            if Config.ENABLE_DATABASE:
+                # Write to database
+                report = Report(
+                    client_name=data[1],
+                    client_email=data[2],
+                    industry=data[3],
+                    pdf_url=data[4],
+                    doc_url=data[5]
+                )
+                db.add(report)
+                db.commit()
+                self.logger.info('Data written to database successfully')
 
-        try:
-            # Write to database
-            report = Report(client_name=data[1],
-                            client_email=data[2],
-                            industry=data[3],
-                            pdf_url=data[4],
-                            doc_url=data[5])
-            db.add(report)
-            db.commit()
-            self.logger.info('Data written to database successfully')
         except Exception as e:
-            self.logger.error(f'Error writing data to database: {e}')
+            self.logger.error(f'Error writing data: {e}')
+            # Optional: Consider rolling back the Google Sheets operation here if the database fails.
 
     def create_google_doc(self, report_id, content):
         if not Config.ENABLE_SHEETS_SERVICE:

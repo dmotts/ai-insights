@@ -21,12 +21,32 @@ class OpenAIService:
             logging.info('OpenAI service is disabled. Skipping report content generation.')
             return "OpenAI service is disabled."
 
-        # Get industry trends and AI benchmarks
-        industry_trends = self.get_industry_trends(industry)
-        benchmark_data = self.get_industry_benchmarks(industry)
+        try:
+            # Fetch required data
+            industry_trends = self.get_industry_trends(industry)
+            benchmark_data = self.get_industry_benchmarks(industry)
 
-        # Constructing a detailed report prompt
-        prompt = f"""
+            # Construct the prompt
+            prompt = self.build_prompt(industry, industry_trends, benchmark_data, answers)
+
+            self.logger.debug('Generating report content with OpenAI')
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=1500
+            )
+            report_content = response.choices[0].message.content
+            self.logger.info('Report content generated successfully')
+            return report_content
+        except Exception as e:
+            self.logger.error(f'Error generating report content: {e}')
+            return f"Error generating report content: {str(e)}"
+
+    def build_prompt(self, industry: str, industry_trends: str, benchmark_data: str, answers: List[str]) -> str:
+        return f"""
         You are an AI consultant preparing a comprehensive report for a business owner in the {industry} industry. The report must be detailed, insightful, and structured into the following sections:
 
         1. **Introduction**: Provide a brief overview of the business's context based on the industry.
@@ -43,22 +63,6 @@ class OpenAIService:
 
         Ensure the report is structured professionally, with clear headings and well-organized content. Also, include a call-to-action encouraging the business owner to engage with Daley Mottley AI Consulting for further AI consulting services.
         """
-
-        self.logger.debug('Generating report content with OpenAI')
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=1500
-            )
-            self.logger.info('Report content generated successfully')
-            return response.choices[0].message.content
-        except Exception as e:
-            self.logger.error(f'Error generating report content: {e}')
-            return "Error generating report content"
 
     @cached(cache=lambda self: self.cache)
     def get_industry_trends(self, industry: str) -> str:
