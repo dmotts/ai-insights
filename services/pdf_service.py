@@ -33,8 +33,12 @@ class PDFService:
             response = requests.post(url, headers=headers, json=payload)
             response.raise_for_status()
             result = response.json()
-            self.logger.info('PDF generated successfully')
-            return result['url']
+            if 'url' in result:
+                self.logger.info('PDF generated successfully')
+                return result['url']
+            else:
+                self.logger.error(f"Unexpected response format: {result}")
+                return None
         except requests.exceptions.RequestException as e:
             self.logger.error(f'HTTP error generating PDF: {e}')
         except Exception as e:
@@ -48,7 +52,7 @@ class PDFService:
 
         self.logger.debug('Generating graphs')
         try:
-            # Example graph 1
+            # Example graph 1: Line plot for AI Implementation Efficiency Over Time
             fig, ax = plt.subplots()
             ax.plot(analysis_data['x'], analysis_data['y'], marker='o')
             ax.set_title('AI Implementation Efficiency Over Time')
@@ -60,7 +64,7 @@ class PDFService:
             graph1 = base64.b64encode(buf.getvalue()).decode('utf-8')
             plt.close(fig)
 
-            # Example graph 2
+            # Example graph 2: Bar chart for Operational Efficiency Scores by Department
             fig, ax = plt.subplots()
             ax.bar(analysis_data['categories'], analysis_data['values'])
             ax.set_title('Operational Efficiency Scores by Department')
