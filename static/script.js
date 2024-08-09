@@ -87,10 +87,22 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.removeItem('currentStep');
     }
 
+    // Client-side validation (Basic example)
+    function validateStep() {
+        const currentFields = steps[currentStep].querySelectorAll('input, textarea');
+        for (const field of currentFields) {
+            if (!field.checkValidity()) {
+                alert('Please complete all required fields before proceeding.');
+                return false;
+            }
+        }
+        return true;
+    }
+
     // Event listeners for form navigation
     nextBtns.forEach(button => {
         button.addEventListener('click', () => {
-            if (currentStep < steps.length - 1) {
+            if (validateStep() && currentStep < steps.length - 1) {
                 currentStep++;
                 showStep(currentStep);
             }
@@ -108,28 +120,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listener for form submission
     submitBtn.addEventListener('click', () => {
-        const formData = new FormData(document.getElementById('reportForm'));
-        const data = Object.fromEntries(formData.entries());
+        if (validateStep()) {
+            submitBtn.disabled = true; // Disable submit button to prevent multiple submissions
+            const formData = new FormData(document.getElementById('reportForm'));
+            const data = Object.fromEntries(formData.entries());
 
-        fetch('/generate_report', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        })
-        .then(response => response.json())
-        .then(response => {
-            if (response.status === 'success') {
-                alert('Report generated successfully!');
-                window.open(response.pdf_url, '_blank');
-                window.location.href = `/view_report/${response.report_id}`;
-                clearFormState();
-            } else {
-                alert('Error: ' + response.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+            fetch('/generate_report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'success') {
+                    alert('Report generated successfully!');
+                    window.open(response.pdf_url, '_blank');
+                    window.location.href = `/view_report/${response.report_id}`;
+                    clearFormState();
+                } else {
+                    alert('Error: ' + response.message);
+                    submitBtn.disabled = false; // Re-enable the button if an error occurs
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An unexpected error occurred. Please try again.');
+                submitBtn.disabled = false; // Re-enable the button if an error occurs
+            });
+        }
     });
 
     // Save form state on input change
