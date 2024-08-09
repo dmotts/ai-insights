@@ -9,16 +9,16 @@ class LLMService:
         self.logger = logging.getLogger(__name__)
 
         if Config.USE_OPENAI_API:
-            self.api_key = Config.OPENAI_API_KEY
+            self.openai_api_key = Config.OPENAI_API_KEY
             self.model = Config.LLM_MODEL
-            self.client = openai
+            self.client = OpenAI(
+                api_key = self.openai_api_key
+            }
         else:
             logging.info('LLM service is disabled.')
             self.client = None
             self.model = None
 
-        if self.client:
-            self.client.api_key = self.api_key
         self.cache = TTLCache(maxsize=100, ttl=300)  # Cache results for 5 minutes
 
     def generate_report_content(self, industry: str, answers: List[str]) -> str:
