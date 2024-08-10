@@ -13,6 +13,9 @@ oauth2client = "^4.1.3"
 openai = "^1.38.0"
 flask-mail = "^0.10.0"
 requests = "^2.32.3"
+werkzeug = "^3.0.3"
+marshmallow = "^3.21.3"
+sqlalchemy = "^2.0.32"
 
 [tool.pyright]
 # https://github.com/microsoft/pyright/blob/main/docs/configuration.md

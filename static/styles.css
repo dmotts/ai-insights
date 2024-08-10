@@ -84,6 +84,10 @@ button.submit-form:hover {
     background-color: #218838;
 }
 
+button.btn.btn-success.submit-form {
+    margin-left: 4px;
+}
+
 /* Loading Animation */
 #loadingAnimation {
     margin-top: 20px;

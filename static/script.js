@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 activeStep.style.opacity -= 0.1;
             } else {
                 clearInterval(fadeEffect);
+                activeStep.style.display = 'none'; // Ensure the block is not displayed
                 loadingAnimation.classList.remove('d-none');
                 loadingAnimation.classList.add('d-block');
             }
