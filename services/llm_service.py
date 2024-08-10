@@ -204,13 +204,13 @@ class LLMService:
 
                 <section class="cta">
                     <h2>Ready to Implement AI in Your Business?</h2>
-                    <p>Contact Daley Mottley AI Consulting for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
+                    <p>Contact <a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
                     <a href="https://dmotts.github.io/portfolio/">Get Started</a>
                 </section>
             </div>
 
             <footer>
-                <p>Daley Mottley AI Consulting | All Rights Reserved &copy; {{ current_year }}</p>
+                <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> | All Rights Reserved &copy; {{ current_year }}</p>
             </footer>
         </body>
         ```
