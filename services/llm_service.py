@@ -1,4 +1,5 @@
 import logging
+from typing import List  # Import List from typing
 from openai import OpenAI  # Ensure OpenAI is imported
 from cachetools import cached, TTLCache
 from config import Config
