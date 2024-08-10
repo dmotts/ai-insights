@@ -72,7 +72,7 @@ class LLMService:
             }
     
             header {
-                background-color: #7a26b1;
+                background-color: #9b52fb;
                 color: #fff;
                 padding: 20px 0;
                 text-align: center;
@@ -98,7 +98,7 @@ class LLMService:
             }
     
             h2 {
-                color: #7a26b1;
+                color: #9b52fb;
                 font-size: 1.8rem;
                 margin-bottom: 10px;
             }
@@ -113,13 +113,13 @@ class LLMService:
                 padding: 20px;
                 background-color: #e7f7e7;
                 text-align: center;
-                border: 2px solid #7a26b1;
+                border: 2px solid #9b52fb;
                 border-radius: 10px;
             }
     
             .cta a {
                 color: #fff;
-                background-color: #7a26b1;
+                background-color: #9b52fb;
                 padding: 10px 20px;
                 text-decoration: none;
                 font-weight: bold;
@@ -266,7 +266,7 @@ class LLMService:
                 <section class="cta">
                     <h2>Ready to Implement AI in Your Business?</h2>
                     <p>Contact Daley Mottley AI Consulting for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
-                    <a href="https://dmotts.github.io/portfolio/">Contact Us Today</a>
+                    <a href="https://dmotts.github.io/portfolio/">Get Started</a>
                 </section>
             </div>
 
