@@ -183,7 +183,7 @@ class LLMService:
         ```
         <body>
             <header>
-                <p>Daley Mottley AI Consulting"</pm>
+                <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a></p>
                 <h1>AI Insights Report</h1>
             </header>
 
