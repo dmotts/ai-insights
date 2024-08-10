@@ -72,7 +72,7 @@ class LLMService:
             }
     
             header {
-                background-color: #9b52fb;
+                background-color: #2a0052;
                 color: #fff;
                 padding: 20px 0;
                 text-align: center;
@@ -98,7 +98,7 @@ class LLMService:
             }
     
             h2 {
-                color: #9b52fb;
+                color: #2a0052;
                 font-size: 1.8rem;
                 margin-bottom: 10px;
             }
@@ -113,13 +113,13 @@ class LLMService:
                 padding: 20px;
                 background-color: #e7f7e7;
                 text-align: center;
-                border: 2px solid #9b52fb;
+                border: 2px solid #2a0052;
                 border-radius: 10px;
             }
     
             .cta a {
                 color: #fff;
-                background-color: #9b52fb;
+                background-color: #2a0052;
                 padding: 10px 20px;
                 text-decoration: none;
                 font-weight: bold;
