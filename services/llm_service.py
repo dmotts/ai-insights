@@ -1,10 +1,10 @@
 import logging
+from openai import OpenAI  # Ensure OpenAI is imported
 from cachetools import cached, TTLCache
 from config import Config
 from services.report_generator import ReportGenerator  # Import the ReportGenerator
 
 class LLMService:
-
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
