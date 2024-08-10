@@ -122,7 +122,7 @@ class LLMService:
             .cta {
                 margin: 40px 0;
                 padding: 20px;
-                background-color: #e7f7e7;
+                background-color: rgb(229, 226, 247);
                 text-align: center;
                 border: 2px solid #7a26b1;
                 border-radius: 10px;
