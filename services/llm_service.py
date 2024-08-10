@@ -4,26 +4,29 @@ from typing import List
 from cachetools import cached, TTLCache
 from config import Config
 
+
 class LLMService:
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
         if Config.USE_OPENAI_API:
             self.openai_api_key = Config.OPENAI_API_KEY
             self.model = Config.LLM_MODEL
-            self.client = OpenAI(
-                api_key = self.openai_api_key
-            )
+            self.client = OpenAI(api_key=self.openai_api_key)
         else:
             logging.info('LLM service is disabled.')
             self.client = None
             self.model = None
 
-        self.cache = TTLCache(maxsize=100, ttl=300)  # Cache results for 5 minutes
+        self.cache = TTLCache(maxsize=100,
+                              ttl=300)  # Cache results for 5 minutes
 
-    def generate_report_content(self, industry: str, answers: List[str]) -> str:
+    def generate_report_content(self, industry: str,
+                                answers: List[str]) -> str:
         if not self.client:
-            logging.info('LLM API usage is disabled. Returning mock report content.')
+            logging.info(
+                'LLM API usage is disabled. Returning mock report content.')
             return self.generate_mock_report(industry, answers)
 
         try:
@@ -32,12 +35,14 @@ class LLMService:
 
             response = self.client.chat.completions.create(
                 model=self.model,
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=1500
-            )
+                messages=[{
+                    "role": "system",
+                    "content": "You are a helpful assistant."
+                }, {
+                    "role": "user",
+                    "content": prompt
+                }],
+                max_tokens=1500)
             report_content = response.choices[0].message.content
 
             self.logger.info('Report content generated successfully')
@@ -46,7 +51,8 @@ class LLMService:
             styled_html_content = self.inject_styles(html_body_content)
             return styled_html_content
         except Exception as e:
-            self.logger.error(f'Error generating report content: {e}', exc_info=True)
+            self.logger.error(f'Error generating report content: {e}',
+                              exc_info=True)
             return ""
 
     def inject_styles(self, html_content: str) -> str:
@@ -60,6 +66,11 @@ class LLMService:
                 margin: 0;
                 padding: 0;
                 background-color: #f4f4f4;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
             }
     
             .container {
