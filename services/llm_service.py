@@ -205,7 +205,7 @@ class LLMService:
                 <section class="cta">
                     <h2>Ready to Implement AI in Your Business?</h2>
                     <p>Contact Daley Mottley AI Consulting for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
-                    <a href="https://dmotts.github.io/portfolio/">Contact Us Today</a>
+                    <a href="https://dmotts.github.io/portfolio/">Get Started</a>
                 </section>
             </div>
 
