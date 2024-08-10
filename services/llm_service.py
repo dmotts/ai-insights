@@ -3,6 +3,7 @@ import logging
 from typing import List
 from cachetools import cached, TTLCache
 from config import Config
+from services.utilities_service import UtilitiesService  
 
 
 class LLMService:
@@ -21,6 +22,8 @@ class LLMService:
 
         self.cache = TTLCache(maxsize=100,
                               ttl=300)  # Cache results for 5 minutes
+        self.util = UtilitiesService()  # Instantiate UtilitiesService
+
 
     def generate_report_content(self, industry: str,
                                 answers: List[str]) -> str:
@@ -215,7 +218,7 @@ class LLMService:
             </div>
 
             <footer>
-                <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> | All Rights Reserved &copy; {{ current_year }}</p>
+                <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> | All Rights Reserved &copy; { self.util.get_current_year() }</p>
             </footer>
         </body>
         ```
@@ -276,7 +279,7 @@ class LLMService:
             </div>
 
             <footer>
-                <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> | All Rights Reserved &copy; {{ current_year }}</p>
+                <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> | All Rights Reserved &copy; { self.util.get_current_year() }</p>
             </footer>
         </body>
         """
