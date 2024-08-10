@@ -166,11 +166,11 @@ class LLMService:
 
         1. **Introduction**: Provide a brief overview of the business's context based on the industry.
         2. **Industry Trends**: Provide the latest AI trends in the {industry} industry.
-        3. **AI Solutions**: Offer AI-driven solutions for the following business needs:
+            
+        3. **Analysis and Recommendations**:
             - Current data management and utilization challenges: {answers[0]}
             - Areas of technology integration and inefficiency: {answers[1]}
             - Long-term business goals and AI's role in achieving them: {answers[2]}
-        4. **Analysis and Recommendations**:
             - Include a detailed analysis of how AI can address the specific challenges mentioned.
             - Offer actionable recommendations for AI implementation.
         5. **Conclusion**: Summarize the key insights and recommend next steps.
@@ -197,14 +197,8 @@ class LLMService:
                     <h2>Industry Trends</h2>
                     <p>{{ industry_trends }}</p>
                 </section>
-
                 <section>
-                    <h2>AI Solutions</h2>
-                    <p>{{ ai_solutions }}</p>
-                </section>
-
-                <section>
-                    <h2>Analysis</h2>
+                    <h2>Analysis & Recommendations</h2>
                     <p>{{ analysis }}</p>
                 </section>
 
@@ -216,7 +210,7 @@ class LLMService:
                 <section class="cta">
                     <h2>Ready to Implement AI in Your Business?</h2>
                     <p>Contact <a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
-                    <a href="https://dmotts.github.io/portfolio/">Get Started</a>
+                    <a href="https://dmotts.github.io/portfolio/" class="cta-btn">Get Started</a>
                 </section>
             </div>
 
