@@ -18,10 +18,10 @@ class ReportGenerator:
 
         if not self.client:
             logger.info('LLM API usage is disabled. Returning mock report content.')
-            return self.generate_mock_report(industry, answers, user_name)
+            return self.generate_mock_report(industry, answers)
 
         try:
-            prompt = self.build_prompt(industry, answers)
+            prompt = self.build_prompt(industry, answers, user_name)
             logger.debug('Generating report content with LLM API')
 
             response = self.client.chat.completions.create(
@@ -39,13 +39,13 @@ class ReportGenerator:
             logger.info('Report content generated successfully')
             html_body_content = self.extract_html(report_content)
             logger.info('HTML content extracted from the response')
-            styled_html_content = self.inject_styles(html_body_content, user_name)
+            styled_html_content = self.inject_styles(html_body_content)
             return styled_html_content
         except Exception as e:
             logger.error(f'Error generating report content: {e}', exc_info=True)
             return ""
 
-    def inject_styles(self, html_content: str, user_name: str) -> str:
+    def inject_styles(self, html_content: str) -> str:
         """Injects CSS styles and user's name into the HTML content."""
         styles = """
         <style>
@@ -150,15 +150,11 @@ class ReportGenerator:
         """
         return f"""
         <html><head>{styles}</head><body>
-            <header>
-                <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a></p>
-                <h1>{user_name}'s AI Insights Report</h1>
-            </header>
             {html_content}
         </body></html>
         """
 
-    def build_prompt(self, industry: str, answers: List[str]) -> str:
+    def build_prompt(self, industry: str, answers: List[str], user_name) -> str:
         return f"""
         You are an AI consultant preparing a comprehensive report for a business owner in the {industry} industry. The report must be detailed, insightful, and structured into the following sections:
 
@@ -182,7 +178,7 @@ class ReportGenerator:
         <body>
             <header>
                 <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a></p>
-                <h1>AI Insights Report</h1>
+                <h1>{ user_name}'s AI Insights Report</h1>
             </header>
 
             <div class="container">
@@ -231,13 +227,13 @@ class ReportGenerator:
             return content  # Fallback to returning the whole content
         return content[start:end]
 
-    def generate_mock_report(self, industry: str, answers: List[str], user_name: str) -> str:
+    def generate_mock_report(self, industry: str, answers: List[str]) -> str:
         """Generates a mock report for testing without using the LLM API."""
         mock_content = f"""
         <body>
             <header>
                 <p>Daley Mottley AI Consulting</p>
-                <h1>{user_name}'s AI Insights Report - Mock</h1>
+                <h1>AI Insights Report - Mock</h1>
             </header>
 
             <div class="container">
@@ -278,5 +274,5 @@ class ReportGenerator:
             </footer>
         </body>
         """
-        return self.inject_styles(mock_content, user_name)
+        return self.inject_styles(mock_content)
 
