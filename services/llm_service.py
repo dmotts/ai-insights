@@ -117,7 +117,7 @@ class LLMService:
                 border-radius: 10px;
             }
     
-            .cta a {
+            .cta a.cta-btn {
                 color: #fff;
                 background-color: #7a26b1;
                 padding: 10px 20px;
@@ -266,7 +266,7 @@ class LLMService:
                 <section class="cta">
                     <h2>Ready to Implement AI in Your Business?</h2>
                     <p>Contact <a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
-                    <a href="https://dmotts.github.io/portfolio/">Get Started</a>
+                    <a href="https://dmotts.github.io/portfolio/" class="cta-btn">Get Started</a>
                 </section>
             </div>
 
