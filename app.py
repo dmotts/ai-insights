@@ -8,6 +8,7 @@ from services.pdf_service import PDFService
 from services.email_service import EmailService
 from services.integration_service import IntegrationService
 from services.subscription_service import SubscriptionService
+from services.report_generator import ReportGenerator  # Import the ReportGenerator
 from config import Config
 from sqlalchemy.orm import Session
 from services.models import engine
@@ -28,6 +29,12 @@ pdf_service = PDFService(app.config['PDFCO_API_KEY'])
 email_service = EmailService()
 integration_service = IntegrationService()
 subscription_service = SubscriptionService()
+
+# Initialize the ReportGenerator with the services
+report_generator = ReportGenerator(
+    client=llm_service.client,  # Pass the LLM client
+    model=llm_service.model     # Pass the LLM model
+)
 
 # Schema for validating incoming report generation requests
 class ReportRequestSchema(Schema):
@@ -69,6 +76,7 @@ def generate_report():
         validated_data = schema.load(data)
         logger.debug(f"Validated data: {validated_data}")
 
+        user_name = validated_data.get('client_name')
         industry = validated_data.get('industry')
         answers = [
             validated_data.get('question1'),
@@ -76,9 +84,9 @@ def generate_report():
             validated_data.get('question3'),
         ]
 
-        # Generate the report content using LLM service
+        # Delegate report generation to the ReportGenerator class
         logger.info("Generating report content using LLM service")
-        html_content = llm_service.generate_report_content(industry, answers)  
+        html_content = report_generator.generate_report_content(industry, answers, user_name)
         logger.debug(f"Generated HTML content: {html_content}")
 
         # Generate a PDF from the HTML content
@@ -122,8 +130,9 @@ def generate_report():
             # Send an email to the user with links to the generated report
             email_service.send_email(
                 validated_data['client_email'],
-                "Your AI Insights Report is Ready",
-                f"Your report has been generated. Download it here: {pdf_url}\nView it online: {doc_url}"
+                f"{user_name.capitalize()}'s AI Insights Report is Ready",
+                f"Hi {user_name.capitalize()},\n\nYour report has been generated. "
+                f"Download it here: {pdf_url}\nView it online: {doc_url}\n\nBest regards,\nDaley Mottley AI Consulting"
             )
 
         # Add the user to the subscription list
