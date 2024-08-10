@@ -216,8 +216,7 @@ class ReportGenerator:
                 <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> | All Rights Reserved &copy; { self.util.get_current_year() }</p>
             </footer>
         </body>
-        ```
-        """
+        ```       
         """
 
     def extract_html(self, content: str) -> str:
