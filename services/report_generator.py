@@ -174,6 +174,50 @@ class ReportGenerator:
         5. **Conclusion**: Summarize the key insights and recommend next steps.
 
         Ensure the report is structured professionally, with clear headings and well-organized content. Also, include a call-to-action encouraging the business owner to engage with Daley Mottley AI Consulting for further AI consulting services.
+
+        The report should be in the following format embedded in HTML code with the brackets filled in with the appropriate content:
+
+        ## Format
+        ```
+        <body>
+            <header>
+                <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a></p>
+                <h1>AI Insights Report</h1>
+            </header>
+
+            <div class="container">
+                <section>
+                    <h2>Introduction</h2>
+                    <p>{{ introduction }}</p>
+                </section>
+
+                <section>
+                    <h2>Industry Trends</h2>
+                    <p>{{ industry_trends }}</p>
+                </section>
+                <section>
+                    <h2>Analysis & Recommendations</h2>
+                    <p>{{ analysis }}</p>
+                </section>
+
+                <section>
+                    <h2>Conclusion</h2>
+                    <p>{{ conclusion }}</p>
+                </section>
+
+                <section class="cta">
+                    <h2>Ready to Implement AI in Your Business?</h2>
+                    <p>Contact <a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
+                    <a href="https://dmotts.github.io/portfolio/" class="cta-btn">Get Started</a>
+                </section>
+            </div>
+
+            <footer>
+                <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> | All Rights Reserved &copy; { self.util.get_current_year() }</p>
+            </footer>
+        </body>
+        ```
+        """
         """
 
     def extract_html(self, content: str) -> str:
