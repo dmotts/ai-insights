@@ -183,7 +183,7 @@ class LLMService:
         ```
         <body>
             <header>
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Daley Mottley AI Consulting">
+                <p>Daley Mottley AI Consulting"</pm>
                 <h1>AI Insights Report</h1>
             </header>
 
@@ -244,7 +244,7 @@ class LLMService:
         mock_content = f"""
         <body>
             <header>
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Daley Mottley AI Consulting">
+                <p>Daley Mottley AI Consulting</p>
                 <h1>AI Insights Report - Mock</h1>
             </header>
 
