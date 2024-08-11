@@ -8,7 +8,8 @@ from services.pdf_service import PDFService
 from services.email_service import EmailService
 from services.integration_service import IntegrationService
 from services.subscription_service import SubscriptionService
-from services.report_generator import ReportGenerator  # Import the ReportGenerator
+from services.report_generator import ReportGenerator
+from services.utilities_service import UtilitiesService  # Import the UtilitiesService
 from config import Config
 from sqlalchemy.orm import Session
 from services.models import engine
@@ -29,12 +30,13 @@ pdf_service = PDFService(app.config['PDFCO_API_KEY']) if Config.ENABLE_PDF_SERVI
 email_service = EmailService() if Config.ENABLE_EMAIL_SERVICE else None
 integration_service = IntegrationService() if Config.ENABLE_INTEGRATION_SERVICE else None
 subscription_service = SubscriptionService() if Config.ENABLE_SUBSCRIPTION_SERVICE else None
+utilities_service = UtilitiesService('path_to/GeoLite2-City.mmdb')  # Initialize the UtilitiesService
 
 # Initialize the ReportGenerator with the services
 if llm_service:
     report_generator = ReportGenerator(
-        client=llm_service.client,  # Pass the LLM client
-        model=llm_service.model     # Pass the LLM model
+        client=llm_service.client,
+        model=llm_service.model
     )
 
 # Schema for validating incoming report generation requests
@@ -55,7 +57,7 @@ def handle_http_exception(e):
 # General error handler
 @app.errorhandler(Exception)
 def handle_exception(e):
-    logger.error(f"Error occurred: {e}", exc_info=True)  # Log the full traceback for debugging
+    logger.error(f"Error occurred: {e}", exc_info=True)
     return jsonify({"status": "error", "message": "An internal error occurred"}), 500
 
 # Route to render the main report generation page
@@ -85,6 +87,9 @@ def generate_report():
             validated_data.get('question3'),
         ]
 
+        # Get user information from headers using UtilitiesService
+        user_device_info = utilities_service.extract_user_info(request)
+
         # Delegate report generation to the ReportGenerator class
         if Config.ENABLE_LLM_SERVICE and report_generator:
             logger.info("Generating report content using LLM service")
@@ -100,8 +105,8 @@ def generate_report():
             pdf_url = pdf_service.generate_pdf(html_content)
             if pdf_url:
                 logger.info(f"PDF generated successfully at: {pdf_url}")
-                file_name = f"report-{user_name}-{generate_report_id()}.pdf"
-                output_path = os.path.join("/tmp", file_name)  # Save the file temporarily
+                file_name = f"report-{user_name}-{utilities_service.generate_report_id()}.pdf"
+                output_path = os.path.join("/tmp", file_name)
                 pdf_service.download_pdf(pdf_url, output_path)
                 google_drive_pdf_url = sheets_service.save_pdf_to_drive(output_path, file_name) if Config.ENABLE_SHEETS_SERVICE else "Google Sheets service is disabled."
                 logger.debug(f"PDF saved to Google Drive at URL: {google_drive_pdf_url}")
@@ -113,7 +118,7 @@ def generate_report():
             logger.warning("PDF service is disabled")
 
         # Create a Google Doc for the report
-        report_id = generate_report_id()
+        report_id = utilities_service.generate_report_id()
         if Config.ENABLE_SHEETS_SERVICE and sheets_service:
             logger.info(f"Creating Google Doc for report ID: {report_id}")
             doc_url = sheets_service.create_google_doc(report_id, html_content)
@@ -122,7 +127,7 @@ def generate_report():
             doc_url = "Sheets service is disabled."
             logger.warning("Sheets service is disabled")
 
-        # Save report data to Google Sheets and database
+        # Save report data and user information to Google Sheets and database
         report_data = {
             'report_id': report_id,
             'client_name': validated_data['client_name'],
@@ -130,24 +135,22 @@ def generate_report():
             'industry': industry,
             'pdf_url': google_drive_pdf_url,
             'doc_url': doc_url,
-            'created_at': datetime.datetime.now().isoformat()
+            'created_at': utilities_service.get_current_timestamp(),
+            **user_device_info
         }
 
+        spreadsheet_url = None
         if Config.ENABLE_SHEETS_SERVICE and sheets_service:
             logger.info("Saving report data to Google Sheets and database")
             with Session(engine) as session:
                 sheets_service.write_data(db=session, data=report_data)
-        else:
-            logger.warning("Sheets service is disabled, skipping data saving")
+            # Construct spreadsheet URL
+            spreadsheet_url = f"https://docs.google.com/spreadsheets/d/{sheets_service.sheet.id}/edit"
 
+        # Send notification email
         if Config.ENABLE_EMAIL_SERVICE and email_service:
-            logger.info("Sending report via email")
-            email_service.send_email(
-                validated_data['client_email'],
-                f"{user_name.capitalize()}'s AI Insights Report is Ready",
-                f"Hi {user_name.capitalize()},\n\nYour report has been generated. "
-                f"Download it here: {google_drive_pdf_url}\nView it online: {doc_url}\n\nBest regards,\nDaley Mottley AI Consulting"
-            )
+            logger.info("Sending notification email")
+            email_service.send_notification_email(report_data, user_device_info, spreadsheet_url)
 
         if Config.ENABLE_SUBSCRIPTION_SERVICE and subscription_service:
             subscription_service.add_subscriber(validated_data['client_email'], industry)
@@ -168,7 +171,6 @@ def generate_report():
 def download_report(report_id):
     logger.info(f"Received a request to download report with ID: {report_id}")
     try:
-        # Fetch the report from the database or Google Sheets
         report = sheets_service.get_report_by_id(report_id) if Config.ENABLE_SHEETS_SERVICE and sheets_service else None
         if report and 'pdf_url' in report:
             logger.info(f"Report found, sending file: {report['pdf_url']}")
@@ -177,14 +179,8 @@ def download_report(report_id):
             logger.warning(f"Report not found: {report_id}")
             return jsonify({"status": "error", "message": "Report not found"}), 404
     except Exception as e:
-        logger.error(f"Error retrieving report: {e}", exc_info=True)  # Log the full traceback
+        logger.error(f"Error retrieving report: {e}", exc_info=True)
         return jsonify({"status": "error", "message": "An error occurred while downloading the report."}), 500
-
-# Function to generate a unique report ID based on timestamp
-def generate_report_id():
-    report_id = str(int(datetime.datetime.now().timestamp()))
-    logger.debug(f"Generated report ID: {report_id}")
-    return report_id
 
 # Main entry point to run the application
 if __name__ == '__main__':
