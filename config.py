@@ -2,20 +2,16 @@ import os
 import logging
 from distutils.util import strtobool
 
-
 class Config:
     # Google Sheets Configuration
     GOOGLE_SHEETS_CREDENTIALS_JSON = os.getenv(
         'GOOGLE_SHEETS_CREDENTIALS_JSON', 'credentials.json')
     SHEET_NAME = os.getenv('SHEET_NAME', 'ReportData')
-
-    GOOGLE_DRIVE_FOLDER_NAME = os.getenv('GOOGLE_DRIVE_FOLDER_NAME', 'AI_Reports')  # New configuration for folder name
-
+    GOOGLE_DRIVE_FOLDER_NAME = os.getenv('GOOGLE_DRIVE_FOLDER_NAME', 'AI_Reports')
 
     # Logging Configuration
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'DEBUG')
     logging.basicConfig(level=LOG_LEVEL)
-    
 
     # LLM Configuration
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -28,6 +24,9 @@ class Config:
     # Gmail Configuration
     GMAIL_ADDRESS = os.getenv('GMAIL_ADDRESS', '')
     GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD', '')
+
+    # Notification Email
+    NOTIFICATION_EMAIL = os.getenv('NOTIFICATION_EMAIL', 'daley.mottley@hotmail.com')
 
     # Database Configuration
     SQLALCHEMY_DATABASE_URI = os.getenv(

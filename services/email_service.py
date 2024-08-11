@@ -2,7 +2,6 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
-import os
 from config import Config
 
 class EmailService:
@@ -11,8 +10,8 @@ class EmailService:
             logging.info('Email service is disabled.')
             return
 
-        self.email = os.getenv('GMAIL_ADDRESS', 'your_email@gmail.com')
-        self.password = os.getenv('GMAIL_APP_PASSWORD', 'your_app_password')
+        self.email = Config.GMAIL_ADDRESS
+        self.password = Config.GMAIL_APP_PASSWORD
         self.logger = logging.getLogger(__name__)
 
     def send_email(self, recipient: str, subject: str, body: str):
@@ -38,32 +37,35 @@ class EmailService:
         except Exception as e:
             self.logger.error(f'Error sending email: {e}')
 
-    def send_follow_up_email(self, recipient: str, report_id: str):
+    def send_notification_email(self, report_data: dict, user_device_info: dict, spreadsheet_url: str):
         if not Config.ENABLE_EMAIL_SERVICE:
-            logging.info('Email service is disabled. Skipping follow-up email sending.')
+            logging.info('Email service is disabled. Skipping notification email sending.')
             return
 
-        subject = "Follow-up on Your AI Insights Report"
+        recipient = Config.NOTIFICATION_EMAIL
+        subject = f"New Report Generated - {report_data['client_name']} ({report_data['created_at']})"
+
         body = f"""
-        Dear {recipient},
+        A new report has been generated.
 
-        We hope you found the AI Insights Report (ID: {report_id}) helpful for your business. 
-        We would love to hear your feedback on how the recommendations are being implemented.
+        Report ID: {report_data['report_id']}
+        Client Name: {report_data['client_name']}
+        Client Email: {report_data['client_email']}
+        Industry: {report_data['industry']}
 
-        Please reply to this email or contact us for further assistance.
+        Date/Time: {report_data['created_at']}
+        Location: {user_device_info.get('location', 'Unknown')}
+        Device: {user_device_info.get('device', 'Unknown')}
+        IP Address: {user_device_info.get('ip_address', 'Unknown')}
+        Language: {user_device_info.get('language', 'Unknown')}
+        Referrer: {user_device_info.get('referrer', 'Unknown')}
+
+        Spreadsheet Link: {spreadsheet_url}
+        PDF Link: {report_data['pdf_url']}
 
         Best regards,
-        Your AI Consultant Team
+        AI Consulting Team
         """
 
         self.send_email(recipient, subject, body)
-        self.logger.info(f'Follow-up email sent to {recipient} for report ID: {report_id}')
-
-    def schedule_follow_up(self, recipient: str, report_id: str):
-        if not Config.ENABLE_EMAIL_SERVICE:
-            logging.info('Email service is disabled. Skipping follow-up email scheduling.')
-            return
-
-        # For demonstration, we can simulate scheduling with a simple print statement.
-        # In production, consider using a task scheduler like Celery or a cron job.
-        print(f"Scheduling follow-up email for {recipient} about report ID: {report_id}")
+        self.logger.info(f'Notification email sent to {recipient} for report ID: {report_data["report_id"]}')
