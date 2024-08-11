@@ -24,7 +24,7 @@ class PDFService:
         }
         payload = {
             "html": html_content,  # The HTML content already includes styles
-            "name": "report.pdf"
+            "name": "ai-insights-report.pdf"
         }
         try:
             response = requests.post(url, headers=headers, json=payload)
