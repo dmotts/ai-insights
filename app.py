@@ -9,7 +9,7 @@ from services.email_service import EmailService
 from services.integration_service import IntegrationService
 from services.subscription_service import SubscriptionService
 from services.report_generator import ReportGenerator
-from services.utilities_service import UtilitiesService  # Import the UtilitiesService
+from services.utilities_service import UtilitiesService
 from config import Config
 from sqlalchemy.orm import Session
 from services.models import engine
@@ -30,7 +30,7 @@ pdf_service = PDFService(app.config['PDFCO_API_KEY']) if Config.ENABLE_PDF_SERVI
 email_service = EmailService() if Config.ENABLE_EMAIL_SERVICE else None
 integration_service = IntegrationService() if Config.ENABLE_INTEGRATION_SERVICE else None
 subscription_service = SubscriptionService() if Config.ENABLE_SUBSCRIPTION_SERVICE else None
-utilities_service = UtilitiesService('path_to/GeoLite2-City.mmdb')  # Initialize the UtilitiesService
+utilities_service = UtilitiesService('path_to/GeoLite2-City.mmdb')
 
 # Initialize the ReportGenerator with the services
 if llm_service:
@@ -51,14 +51,12 @@ class ReportRequestSchema(Schema):
 # Error handler for HTTP exceptions
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
-    logger.error(f"HTTP error occurred: {e}")
-    return jsonify({"status": "error", "message": e.description}), e.code
+    return utilities_service.handle_http_exception(e)
 
 # General error handler
 @app.errorhandler(Exception)
 def handle_exception(e):
-    logger.error(f"Error occurred: {e}", exc_info=True)
-    return jsonify({"status": "error", "message": "An internal error occurred"}), 500
+    return utilities_service.handle_general_exception(e)
 
 # Route to render the main report generation page
 @app.route('/')
@@ -147,10 +145,15 @@ def generate_report():
             # Construct spreadsheet URL
             spreadsheet_url = f"https://docs.google.com/spreadsheets/d/{sheets_service.sheet.id}/edit"
 
-        # Send notification email
+        # Send notification email to admin
         if Config.ENABLE_EMAIL_SERVICE and email_service:
             logger.info("Sending notification email")
             email_service.send_notification_email(report_data, user_device_info, spreadsheet_url)
+
+        # Send report email to user
+        if Config.ENABLE_EMAIL_SERVICE and email_service:
+            logger.info("Sending report email to user")
+            email_service.send_report_email_to_user(report_data)
 
         if Config.ENABLE_SUBSCRIPTION_SERVICE and subscription_service:
             subscription_service.add_subscriber(validated_data['client_email'], industry)
@@ -164,7 +167,6 @@ def generate_report():
     except Exception as e:
         logger.error(f"Error generating report: {e}", exc_info=True)
         return jsonify({"status": "error", "message": "An error occurred while generating the report."}), 500
-
 
 # Route to handle report download requests
 @app.route('/download_report/<report_id>', methods=['GET'])
@@ -181,6 +183,12 @@ def download_report(report_id):
     except Exception as e:
         logger.error(f"Error retrieving report: {e}", exc_info=True)
         return jsonify({"status": "error", "message": "An error occurred while downloading the report."}), 500
+
+# Function to generate a unique report ID based on timestamp
+def generate_report_id():
+    report_id = str(int(datetime.datetime.now().timestamp()))
+    logger.debug(f"Generated report ID: {report_id}")
+    return report_id
 
 # Main entry point to run the application
 if __name__ == '__main__':

@@ -1,6 +1,8 @@
 from datetime import datetime
 import geoip2.database
 import logging
+from flask import jsonify
+from werkzeug.exceptions import HTTPException
 
 class UtilitiesService:
     """Service class for utility functions."""
@@ -46,3 +48,13 @@ class UtilitiesService:
             "request_time": self.get_current_timestamp()
         }
         return user_info
+
+    def handle_http_exception(self, e: HTTPException):
+        """Handles HTTP exceptions."""
+        self.logger.error(f"HTTP error occurred: {e}")
+        return jsonify({"status": "error", "message": e.description}), e.code
+
+    def handle_general_exception(self, e: Exception):
+        """Handles general exceptions."""
+        self.logger.error(f"Error occurred: {e}", exc_info=True)
+        return jsonify({"status": "error", "message": "An internal error occurred"}), 500
