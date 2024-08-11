@@ -17,3 +17,4 @@ SQLAlchemy==1.4.27
 marshmallow==3.14.1
 requests==2.26.0
 python-dotenv==0.19.2
+geoip2
