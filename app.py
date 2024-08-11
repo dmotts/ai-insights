@@ -3,7 +3,7 @@ import os
 import logging
 import datetime
 from services.sheets_service import SheetsService
-from services.llm_service import LLMService 
+from services.llm_service import LLMService
 from services.pdf_service import PDFService
 from services.email_service import EmailService
 from services.integration_service import IntegrationService
@@ -36,7 +36,8 @@ utilities_service = UtilitiesService('path_to/GeoLite2-City.mmdb')
 if llm_service:
     report_generator = ReportGenerator(
         client=llm_service.client,
-        model=llm_service.model
+        model=llm_service.model,
+        utilities_service=utilities_service  # Pass the existing UtilitiesService instance
     )
 
 # Schema for validating incoming report generation requests

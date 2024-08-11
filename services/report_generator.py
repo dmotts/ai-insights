@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 
 class ReportGenerator:
 
-    def __init__(self, client=None, model=None):
+    def __init__(self, client=None, model=None, utilities_service=None):
         self.client = client
         self.model = model
-        self.util = UtilitiesService()
+        self.util = utilities_service  
 
     def generate_report_content(self, industry: str, answers: List[str],
                                 user_name: str) -> str:
