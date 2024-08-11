@@ -204,7 +204,7 @@ class ReportGenerator:
                 <section class="cta">
                     <h2>Ready to Implement AI in Your Business?</h2>
                     <p>Contact <a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
-                    <a href="https://dmotts.github.io/portfolio/" class="cta-btn">Get Started</a>
+                    <a href="https://dmotts.github.io/portfolio/" class="cta-btn">Learn More</a>
                 </section>
             </div>
 
@@ -265,7 +265,7 @@ class ReportGenerator:
                 <section class="cta">
                     <h2>Ready to Implement AI in Your Business?</h2>
                     <p>Contact <a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a> for expert guidance on how AI can transform your business. Let us help you stay ahead of the competition with cutting-edge AI solutions.</p>
-                    <a href="https://dmotts.github.io/portfolio/" class="cta-btn">Get Started</a>
+                    <a href="https://dmotts.github.io/portfolio/" class="cta-btn">Learn More</a>
                 </section>
             </div>
 
