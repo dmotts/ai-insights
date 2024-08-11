@@ -1,5 +1,6 @@
 import logging
 import requests
+import os
 from config import Config
 
 class PDFService:
@@ -31,8 +32,9 @@ class PDFService:
             response.raise_for_status()
             result = response.json()
             if 'url' in result:
-                self.logger.info('PDF generated successfully')
-                return result['url']
+                pdf_url = result['url']
+                self.logger.info(f'PDF generated successfully: {pdf_url}')
+                return pdf_url
             else:
                 self.logger.error(f"Unexpected response format: {result}")
                 return None
@@ -41,3 +43,19 @@ class PDFService:
         except Exception as e:
             self.logger.error(f'Error generating PDF: {e}')
         return None
+
+    def download_pdf(self, pdf_url, output_path):
+        try:
+            self.logger.debug(f'Downloading PDF from: {pdf_url}')
+            response = requests.get(pdf_url)
+            response.raise_for_status()
+            with open(output_path, 'wb') as pdf_file:
+                pdf_file.write(response.content)
+            self.logger.info(f'PDF downloaded and saved to: {output_path}')
+            return output_path
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f'HTTP error downloading PDF: {e}')
+            return None
+        except Exception as e:
+            self.logger.error(f'Error downloading PDF: {e}')
+            return None

@@ -22,19 +22,20 @@ app.config.from_object(Config)
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Initialize services
-sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], "AI Insights Report Email List")
-llm_service = LLMService() 
-pdf_service = PDFService(app.config['PDFCO_API_KEY'])
-email_service = EmailService()
-integration_service = IntegrationService()
-subscription_service = SubscriptionService()
+# Initialize services based on configuration flags
+sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], app.config['SHEET_NAME']) if Config.ENABLE_SHEETS_SERVICE else None
+llm_service = LLMService() if Config.ENABLE_LLM_SERVICE else None
+pdf_service = PDFService(app.config['PDFCO_API_KEY']) if Config.ENABLE_PDF_SERVICE else None
+email_service = EmailService() if Config.ENABLE_EMAIL_SERVICE else None
+integration_service = IntegrationService() if Config.ENABLE_INTEGRATION_SERVICE else None
+subscription_service = SubscriptionService() if Config.ENABLE_SUBSCRIPTION_SERVICE else None
 
 # Initialize the ReportGenerator with the services
-report_generator = ReportGenerator(
-    client=llm_service.client,  # Pass the LLM client
-    model=llm_service.model     # Pass the LLM model
-)
+if llm_service:
+    report_generator = ReportGenerator(
+        client=llm_service.client,  # Pass the LLM client
+        model=llm_service.model     # Pass the LLM model
+    )
 
 # Schema for validating incoming report generation requests
 class ReportRequestSchema(Schema):
@@ -85,22 +86,35 @@ def generate_report():
         ]
 
         # Delegate report generation to the ReportGenerator class
-        logger.info("Generating report content using LLM service")
-        html_content = report_generator.generate_report_content(industry, answers, user_name)
-        logger.debug(f"Generated HTML content: {html_content}")
+        if Config.ENABLE_LLM_SERVICE and report_generator:
+            logger.info("Generating report content using LLM service")
+            html_content = report_generator.generate_report_content(industry, answers, user_name)
+            logger.debug(f"Generated HTML content: {html_content}")
+        else:
+            html_content = "LLM service is disabled, and report generation cannot proceed."
+            logger.warning("LLM service is disabled")
 
         # Generate a PDF from the HTML content
-        if Config.ENABLE_PDF_SERVICE:
+        if Config.ENABLE_PDF_SERVICE and pdf_service:
             logger.info("Generating PDF from HTML content")
             pdf_url = pdf_service.generate_pdf(html_content)
-            logger.debug(f"PDF generated at URL: {pdf_url}")
+            if pdf_url:
+                logger.info(f"PDF generated successfully at: {pdf_url}")
+                file_name = f"report-{user_name}-{generate_report_id()}.pdf"
+                output_path = os.path.join("/tmp", file_name)  # Save the file temporarily
+                pdf_service.download_pdf(pdf_url, output_path)
+                google_drive_pdf_url = sheets_service.save_pdf_to_drive(output_path, file_name) if Config.ENABLE_SHEETS_SERVICE else "Google Sheets service is disabled."
+                logger.debug(f"PDF saved to Google Drive at URL: {google_drive_pdf_url}")
+            else:
+                logger.error("PDF generation failed")
+                google_drive_pdf_url = "PDF generation failed."
         else:
-            pdf_url = "PDF service is disabled."
+            google_drive_pdf_url = "PDF service is disabled."
             logger.warning("PDF service is disabled")
 
         # Create a Google Doc for the report
         report_id = generate_report_id()
-        if Config.ENABLE_SHEETS_SERVICE:
+        if Config.ENABLE_SHEETS_SERVICE and sheets_service:
             logger.info(f"Creating Google Doc for report ID: {report_id}")
             doc_url = sheets_service.create_google_doc(report_id, html_content)
             logger.debug(f"Google Doc created at URL: {doc_url}")
@@ -114,39 +128,40 @@ def generate_report():
             'client_name': validated_data['client_name'],
             'client_email': validated_data['client_email'],
             'industry': industry,
-            'pdf_url': pdf_url,
+            'pdf_url': google_drive_pdf_url,
             'doc_url': doc_url,
             'created_at': datetime.datetime.now().isoformat()
         }
 
-        if Config.ENABLE_SHEETS_SERVICE:
+        if Config.ENABLE_SHEETS_SERVICE and sheets_service:
             logger.info("Saving report data to Google Sheets and database")
-            sheets_service.write_data(data=report_data)
-        else:            
+            with Session(engine) as session:
+                sheets_service.write_data(db=session, data=report_data)
+        else:
             logger.warning("Sheets service is disabled, skipping data saving")
 
-        if Config.ENABLE_EMAIL_SERVICE:
+        if Config.ENABLE_EMAIL_SERVICE and email_service:
             logger.info("Sending report via email")
-            # Send an email to the user with links to the generated report
             email_service.send_email(
                 validated_data['client_email'],
                 f"{user_name.capitalize()}'s AI Insights Report is Ready",
                 f"Hi {user_name.capitalize()},\n\nYour report has been generated. "
-                f"Download it here: {pdf_url}\nView it online: {doc_url}\n\nBest regards,\nDaley Mottley AI Consulting"
+                f"Download it here: {google_drive_pdf_url}\nView it online: {doc_url}\n\nBest regards,\nDaley Mottley AI Consulting"
             )
 
-        # Add the user to the subscription list
-        subscription_service.add_subscriber(validated_data['client_email'], industry)
-        logger.info(f"Subscriber added to the list: {validated_data['client_email']}")
+        if Config.ENABLE_SUBSCRIPTION_SERVICE and subscription_service:
+            subscription_service.add_subscriber(validated_data['client_email'], industry)
+            logger.info(f"Subscriber added to the list: {validated_data['client_email']}")
 
         logger.info(f'Report generated successfully with ID: {report_id}')
-        return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url, "doc_url": doc_url})
+        return jsonify({"status": "success", "report_id": report_id, "pdf_url": google_drive_pdf_url, "doc_url": doc_url})
     except ValidationError as err:
         logger.error(f"Validation error: {err.messages}")
         return jsonify({"status": "error", "message": "Validation error", "details": err.messages}), 400
     except Exception as e:
-        logger.error(f"Error generating report: {e}", exc_info=True)  # Log the full traceback
+        logger.error(f"Error generating report: {e}", exc_info=True)
         return jsonify({"status": "error", "message": "An error occurred while generating the report."}), 500
+
 
 # Route to handle report download requests
 @app.route('/download_report/<report_id>', methods=['GET'])
@@ -154,7 +169,7 @@ def download_report(report_id):
     logger.info(f"Received a request to download report with ID: {report_id}")
     try:
         # Fetch the report from the database or Google Sheets
-        report = sheets_service.get_report_by_id(report_id)
+        report = sheets_service.get_report_by_id(report_id) if Config.ENABLE_SHEETS_SERVICE and sheets_service else None
         if report and 'pdf_url' in report:
             logger.info(f"Report found, sending file: {report['pdf_url']}")
             return send_file(report['pdf_url'], as_attachment=True)
