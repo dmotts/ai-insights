@@ -5,7 +5,6 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 from sqlalchemy.orm import Session
 from .models import Report
-import os
 import logging
 from config import Config
 
@@ -19,7 +18,7 @@ class SheetsService:
         self.logger = logging.getLogger(__name__)
 
         self.scope = [
-            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive",
             "https://www.googleapis.com/auth/documents"
         ]
@@ -28,22 +27,27 @@ class SheetsService:
         self.client = gspread.authorize(self.creds)
         self.drive_service = build('drive', 'v3', credentials=self.creds)
         self.docs_service = build('docs', 'v1', credentials=self.creds)
+        self.sheets_service = build('sheets', 'v4', credentials=self.creds)
         self.sheet = self._get_or_create_sheet(sheet_name)
         self.folder_id = self._get_or_create_folder(Config.GOOGLE_DRIVE_FOLDER_NAME)
 
     def _get_or_create_sheet(self, sheet_name):
         try:
+            # Try to open the existing sheet by name
             sheet = self.client.open(sheet_name).sheet1
             self.logger.info(f'Using existing sheet: {sheet_name}')
             return sheet
         except gspread.SpreadsheetNotFound:
-            self.logger.info(
-                f'Sheet "{sheet_name}" not found. Creating a new sheet.')
+            self.logger.info(f'Sheet "{sheet_name}" not found. Creating a new sheet.')
             try:
-                sheet = self.client.create(sheet_name).sheet1
-                self.logger.info(f'Created new sheet: {sheet_name}')
-                return sheet
-            except Exception as e:
+                spreadsheet = {"properties": {"title": sheet_name}}
+                spreadsheet = self.sheets_service.spreadsheets().create(
+                    body=spreadsheet, fields="spreadsheetId"
+                ).execute()
+                sheet_id = spreadsheet.get("spreadsheetId")
+                self.logger.info(f'Created new sheet: {sheet_name}, ID: {sheet_id}')
+                return self.client.open_by_key(sheet_id).sheet1  # Open the newly created sheet
+            except HttpError as e:
                 self.logger.error(f'Error creating Google Sheet: {e}')
                 raise
 
@@ -83,7 +87,7 @@ class SheetsService:
             file_id = file.get('id')
             pdf_url = f"https://drive.google.com/file/d/{file_id}/view?usp=sharing"
 
-            # Share the PDF
+            # Make the PDF publicly accessible
             self.drive_service.permissions().create(
                 fileId=file_id,
                 body={
@@ -100,13 +104,12 @@ class SheetsService:
 
     def create_google_doc(self, report_id, content):
         if not Config.ENABLE_SHEETS_SERVICE:
-            logging.info(
-                'Sheets service is disabled. Skipping Google Doc creation.')
+            logging.info('Sheets service is disabled. Skipping Google Doc creation.')
             return None
 
         self.logger.debug('Creating Google Doc for the report')
         try:
-            # Create the document
+            # Create the Google Doc
             doc_title = f"AI Insights Report - {report_id}"
             body = {'title': doc_title}
             doc = self.docs_service.documents().create(body=body).execute()
@@ -121,11 +124,10 @@ class SheetsService:
                 }
             }]
             self.docs_service.documents().batchUpdate(
-                documentId=doc.get('documentId'), body={
-                    'requests': requests
-                }).execute()
+                documentId=doc.get('documentId'), body={'requests': requests}
+            ).execute()
 
-            # Share the document
+            # Make the document publicly accessible
             self.drive_service.permissions().create(
                 fileId=doc.get('documentId'),
                 body={
@@ -143,12 +145,24 @@ class SheetsService:
 
     def write_data(self, db: Session, data):
         try:
-            # Write to Google Sheets
-            self.sheet.append_row(list(data.values()))
-            self.logger.info('Data written to Google Sheets successfully')
+            # Append data to the Google Sheet starting at the first available row
+            range_name = "A1"
+            values = [list(data.values())]
+            body = {"values": values}
+
+            # Append the data to the sheet
+            result = self.sheets_service.spreadsheets().values().append(
+                spreadsheetId=self.sheet.id,
+                range=range_name,
+                valueInputOption="USER_ENTERED",
+                insertDataOption="INSERT_ROWS",
+                body=body
+            ).execute()
+
+            self.logger.info(f"{result.get('updates').get('updatedCells')} cells updated in Google Sheets.")
 
             if Config.ENABLE_DATABASE:
-                # Write to database
+                # Write data to the database
                 report = Report(
                     client_name=data['client_name'],
                     client_email=data['client_email'],
@@ -160,5 +174,7 @@ class SheetsService:
                 db.commit()
                 self.logger.info('Data written to database successfully')
 
+        except HttpError as error:
+            self.logger.error(f'An error occurred while writing data to Google Sheets: {error}')
         except Exception as e:
             self.logger.error(f'Error writing data: {e}')
