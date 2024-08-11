@@ -98,6 +98,49 @@ class SheetsService:
             self.logger.error(f'Error saving PDF to Google Drive: {e}')
             return None
 
+    def create_google_doc(self, report_id, content):
+        if not Config.ENABLE_SHEETS_SERVICE:
+            logging.info(
+                'Sheets service is disabled. Skipping Google Doc creation.')
+            return None
+
+        self.logger.debug('Creating Google Doc for the report')
+        try:
+            # Create the document
+            doc_title = f"AI Insights Report - {report_id}"
+            body = {'title': doc_title}
+            doc = self.docs_service.documents().create(body=body).execute()
+
+            # Insert content into the document
+            requests = [{
+                'insertText': {
+                    'location': {
+                        'index': 1
+                    },
+                    'text': content
+                }
+            }]
+            self.docs_service.documents().batchUpdate(
+                documentId=doc.get('documentId'), body={
+                    'requests': requests
+                }).execute()
+
+            # Share the document
+            self.drive_service.permissions().create(
+                fileId=doc.get('documentId'),
+                body={
+                    'type': 'anyone',
+                    'role': 'reader'
+                }
+            ).execute()
+
+            doc_url = f"https://docs.google.com/document/d/{doc.get('documentId')}/edit"
+            self.logger.info(f'Document created successfully: {doc_url}')
+            return doc_url
+        except Exception as e:
+            self.logger.error(f'Error creating Google Doc: {e}')
+            return None
+
     def write_data(self, db: Session, data):
         try:
             # Write to Google Sheets
