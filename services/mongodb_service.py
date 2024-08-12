@@ -11,8 +11,8 @@ class MongoDBService:
         self.logger = logging.getLogger(__name__)
 
         try:
-            # Initialize MongoDB client with Server API version 1
-            self.client = MongoClient(Config.MONGODB_URI, server_api=ServerApi('1'))
+            # Create a new client and connect to the server with SSL validation bypassed
+            self.client = MongoClient(Config.MONGODB_URI, server_api=ServerApi('1'), tlsAllowInvalidCertificates=True)
 
             # Ping the server to confirm a successful connection
             self.client.admin.command('ping')
