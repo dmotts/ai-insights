@@ -12,7 +12,21 @@ class MongoDBService:
         # Initialize MongoDB client
         self.client = MongoClient(Config.MONGODB_URI)
         self.db = self.client[Config.MONGODB_DATABASE_NAME]
-        self.collection = self.db[Config.MONGODB_COLLECTION_NAME]
+        self.collection_name = Config.MONGODB_COLLECTION_NAME
+        self.collection = self.db[self.collection_name]
+
+        # Ensure collection is created
+        self._ensure_collection()
+
+    def _ensure_collection(self):
+        """
+        Ensures the collection exists in the database.
+        """
+        if self.collection_name not in self.db.list_collection_names():
+            self.db.create_collection(self.collection_name)
+            self.logger.info(f'Collection {self.collection_name} created successfully')
+        else:
+            self.logger.info(f'Collection {self.collection_name} already exists')
 
     def save_report_data(self, report_data: dict):
         """
