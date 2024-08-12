@@ -145,12 +145,14 @@ class SheetsService:
 
     def write_data(self, db: Session, data):
         try:
-            # Append data to the Google Sheet starting at the first available row
+            # Ensure spreadsheet ID is correct
+            if not self.sheet or not self.sheet.id:
+                raise ValueError("Spreadsheet ID is not correctly set.")
+
             range_name = "A1"
             values = [list(data.values())]
             body = {"values": values}
 
-            # Append the data to the sheet
             result = self.sheets_service.spreadsheets().values().append(
                 spreadsheetId=self.sheet.id,
                 range=range_name,
@@ -162,7 +164,6 @@ class SheetsService:
             self.logger.info(f"{result.get('updates').get('updatedCells')} cells updated in Google Sheets.")
 
             if Config.ENABLE_DATABASE:
-                # Write data to the database
                 report = Report(
                     client_name=data['client_name'],
                     client_email=data['client_email'],

@@ -52,16 +52,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Client-side validation (Basic example)
+    // Client-side validation (Enhanced)
     function validateStep() {
-        const currentFields = steps[currentStep].querySelectorAll('input, textarea');
+        const currentFields = steps[currentStep].querySelectorAll('input, textarea, select');
+        let isValid = true;
+
         for (const field of currentFields) {
             if (!field.checkValidity()) {
-                alert('Please complete all required fields before proceeding.');
-                return false;
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
             }
         }
-        return true;
+
+        if (!isValid) {
+            alert('Please complete all required fields correctly before proceeding.');
+        }
+
+        return isValid;
     }
 
     function showLoading() {
