@@ -25,17 +25,52 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(leve
 # Initialize services based on configuration flags
 try:
     email_service = EmailService() if Config.ENABLE_EMAIL_SERVICE else None
+    if email_service:
+        logger.info("EmailService is enabled.")
+    else:
+        logger.info("EmailService is disabled.")
 except Exception as e:
     logger.error(f"Failed to initialize EmailService: {e}")
     email_service = None
 
 sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], app.config['SHEET_NAME']) if Config.ENABLE_SHEETS_SERVICE else None
+if sheets_service:
+    logger.info("SheetsService is enabled.")
+else:
+    logger.info("SheetsService is disabled.")
+
 mongodb_service = MongoDBService() if Config.ENABLE_DATABASE else None
+if mongodb_service:
+    logger.info("MongoDBService is enabled.")
+else:
+    logger.info("MongoDBService is disabled.")
+
 llm_service = LLMService() if Config.ENABLE_LLM_SERVICE else None
+if llm_service:
+    logger.info("LLMService is enabled.")
+else:
+    logger.info("LLMService is disabled.")
+
 pdf_service = PDFService(app.config['PDFCO_API_KEY']) if Config.ENABLE_PDF_SERVICE else None
+if pdf_service:
+    logger.info("PDFService is enabled.")
+else:
+    logger.info("PDFService is disabled.")
+
 integration_service = IntegrationService() if Config.ENABLE_INTEGRATION_SERVICE else None
+if integration_service:
+    logger.info("IntegrationService is enabled.")
+else:
+    logger.info("IntegrationService is disabled.")
+
 subscription_service = SubscriptionService() if Config.ENABLE_SUBSCRIPTION_SERVICE else None
+if subscription_service:
+    logger.info("SubscriptionService is enabled.")
+else:
+    logger.info("SubscriptionService is disabled.")
+
 utilities_service = UtilitiesService('path_to/GeoLite2-City.mmdb')
+logger.info("UtilitiesService is initialized.")
 
 # Initialize the ReportGenerator if LLM service is enabled
 if llm_service:
@@ -44,6 +79,10 @@ if llm_service:
         model=llm_service.model,
         utilities_service=utilities_service
     )
+    logger.info("ReportGenerator is initialized with LLM service.")
+else:
+    report_generator = None
+    logger.info("ReportGenerator is not initialized because LLM service is disabled.")
 
 # Schema for validating incoming report generation requests
 class ReportRequestSchema(Schema):
