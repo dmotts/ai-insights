@@ -27,7 +27,7 @@ class Config:
     PROTONMAIL_SMTP_PORT = int(os.getenv('PROTONMAIL_SMTP_PORT', 587))
 
     # Notification Email
-    NOTIFICATION_EMAIL = os.getenv('NOTIFICATION_EMAIL', 'admin@example.com')
+    NOTIFICATION_EMAIL = os.getenv('NOTIFICATION_EMAIL')
 
     # MongoDB Configuration
     MONGODB_URI = os.getenv('MONGODB_URI', 'your-mongodb-connection-string-here')
