@@ -9,7 +9,7 @@ from services.integration_service import IntegrationService
 from services.subscription_service import SubscriptionService
 from services.report_generator import ReportGenerator
 from services.utilities_service import UtilitiesService
-from services.firestore_service import FirestoreService  # Renamed from database_service.py
+from services.mongodb_service import MongoDBService  # Updated from FirestoreService
 from config import Config
 from werkzeug.exceptions import HTTPException
 from marshmallow import Schema, fields, ValidationError
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize services based on configuration flags
 sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], app.config['SHEET_NAME']) if Config.ENABLE_SHEETS_SERVICE else None
-firestore_service = FirestoreService() if Config.ENABLE_DATABASE else None
+mongodb_service = MongoDBService() if Config.ENABLE_DATABASE else None  # Updated to MongoDBService
 llm_service = LLMService() if Config.ENABLE_LLM_SERVICE else None
 pdf_service = PDFService(app.config['PDFCO_API_KEY']) if Config.ENABLE_PDF_SERVICE else None
 email_service = EmailService() if Config.ENABLE_EMAIL_SERVICE else None
@@ -133,12 +133,12 @@ def generate_report():
             **user_device_info
         }
 
-        # Save report data to Firestore
-        if Config.ENABLE_DATABASE and firestore_service:
+        # Save report data to MongoDB
+        if Config.ENABLE_DATABASE and mongodb_service:
             try:
-                firestore_service.save_report_data(report_data)
+                mongodb_service.save_report_data(report_data)
             except Exception as e:
-                logger.error(f"Error saving report data to Firestore: {e}")
+                logger.error(f"Error saving report data to MongoDB: {e}")
 
         # Save report data to Google Sheets
         if Config.ENABLE_SHEETS_SERVICE and sheets_service:
