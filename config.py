@@ -20,12 +20,14 @@ class Config:
     # PDF.co Configuration
     PDFCO_API_KEY = os.getenv('PDFCO_API_KEY')
 
-    # Gmail Configuration
-    GMAIL_ADDRESS = os.getenv('GMAIL_ADDRESS', '')
-    GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD', '')
+    # ProtonMail Configuration
+    PROTONMAIL_ADDRESS = os.getenv('PROTONMAIL_ADDRESS', '')
+    PROTONMAIL_PASSWORD = os.getenv('PROTONMAIL_PASSWORD', '')
+    PROTONMAIL_SMTP_SERVER = os.getenv('PROTONMAIL_SMTP_SERVER', 'smtp.protonmail.com')
+    PROTONMAIL_SMTP_PORT = int(os.getenv('PROTONMAIL_SMTP_PORT', 587))
 
     # Notification Email
-    NOTIFICATION_EMAIL = os.getenv('NOTIFICATION_EMAIL', 'daley.mottley@hotmail.com')
+    NOTIFICATION_EMAIL = os.getenv('NOTIFICATION_EMAIL', 'admin@example.com')
 
     # MongoDB Configuration
     MONGODB_URI = os.getenv('MONGODB_URI', 'your-mongodb-connection-string-here')
@@ -45,11 +47,11 @@ class Config:
     def validate_config(cls):
         """Raise errors if critical configurations are missing."""
         if cls.ENABLE_LLM_SERVICE and not cls.OPENAI_API_KEY:
-            raise ValueError("LLM_API_KEY must be set in the environment.")
-        if not cls.PDFCO_API_KEY:
+            raise ValueError("OPENAI_API_KEY must be set in the environment.")
+        if cls.ENABLE_PDF_SERVICE and not cls.PDFCO_API_KEY:
             raise ValueError("PDFCO_API_KEY must be set in the environment.")
-        if cls.ENABLE_EMAIL_SERVICE and (not cls.GMAIL_ADDRESS or not cls.GMAIL_APP_PASSWORD):
-            raise ValueError("GMAIL_ADDRESS and GMAIL_APP_PASSWORD must be set in the environment.")
+        if cls.ENABLE_EMAIL_SERVICE and (not cls.PROTONMAIL_ADDRESS or not cls.PROTONMAIL_PASSWORD):
+            raise ValueError("PROTONMAIL_ADDRESS and PROTONMAIL_PASSWORD must be set in the environment.")
         if cls.ENABLE_DATABASE and not cls.MONGODB_URI:
             raise ValueError("MONGODB_URI must be set in the environment.")
 

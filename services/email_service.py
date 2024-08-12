@@ -2,6 +2,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
+from logging.handlers import SMTPHandler
 from config import Config
 import re
 from datetime import datetime
@@ -10,15 +11,89 @@ class EmailService:
 
     def __init__(self):
         """
-        Initializes the EmailService with Gmail credentials for sending emails.
+        Initializes the EmailService with ProtonMail credentials for sending emails.
+        Sets up logging and sends a test email to verify the configuration.
         """
         if not Config.ENABLE_EMAIL_SERVICE:
             logging.info('Email service is disabled.')
             return
 
-        self.email = Config.GMAIL_ADDRESS
-        self.password = Config.GMAIL_APP_PASSWORD
+        self.email = Config.PROTONMAIL_ADDRESS
+        self.password = Config.PROTONMAIL_PASSWORD
+        self.smtp_server = Config.PROTONMAIL_SMTP_SERVER
+        self.smtp_port = Config.PROTONMAIL_SMTP_PORT
         self.logger = logging.getLogger(__name__)
+
+        # Set up email alerts for errors
+        self.setup_email_alerts()
+
+        # Send a test email to verify configuration
+        self.send_test_email()
+
+    def setup_email_alerts(self):
+        """
+        Sets up logging to send email alerts for errors.
+        """
+        try:
+            mail_handler = SMTPHandler(
+                mailhost=(self.smtp_server, self.smtp_port),
+                fromaddr=self.email,
+                toaddrs=[Config.NOTIFICATION_EMAIL],
+                subject="Critical Error in Your Application",
+                credentials=(self.email, self.password),
+                secure=()
+            )
+            mail_handler.setLevel(logging.ERROR)
+            self.logger.addHandler(mail_handler)
+            self.logger.info("Email alerts have been set up successfully.")
+        except Exception as e:
+            self.logger.error(f"Failed to set up email alerts: {e}")
+
+    def send_test_email(self):
+        """
+        Sends a test email to verify that the email service is correctly configured.
+        """
+        test_recipient = self.email  # Send the test email to the configured ProtonMail address
+        test_subject = "Test Email: ProtonMail Configuration"
+        test_body = "This is a test email sent to verify the ProtonMail configuration."
+
+        msg = MIMEMultipart('alternative')
+        msg['From'] = self.email
+        msg['To'] = test_recipient
+        msg['Subject'] = test_subject
+        msg.attach(MIMEText(test_body, 'plain'))
+
+        try:
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            server.starttls()
+
+            try:
+                server.login(self.email, self.password)
+            except smtplib.SMTPAuthenticationError:
+                self.logger.error("Authentication failed: Please check your ProtonMail email address and password.")
+                return
+            except smtplib.SMTPException as e:
+                self.logger.error(f"SMTP error during login: {e}")
+                return
+
+            try:
+                server.sendmail(self.email, test_recipient, msg.as_string())
+            except smtplib.SMTPRecipientsRefused:
+                self.logger.error(f"The recipient address was refused: {test_recipient}. Please check the email address.")
+                return
+            except smtplib.SMTPException as e:
+                self.logger.error(f"SMTP error sending test email: {e}")
+                return
+
+            server.quit()
+            self.logger.info(f'Test email sent successfully to {test_recipient}')
+
+        except smtplib.SMTPConnectError:
+            self.logger.error("Failed to connect to the SMTP server. Please check the server address and port.")
+        except smtplib.SMTPServerDisconnected:
+            self.logger.error("Disconnected from the SMTP server. Please check the server status or your network connection.")
+        except Exception as e:
+            self.logger.error(f"An unexpected error occurred while sending the test email: {e}")
 
     def is_valid_email(self, email: str) -> bool:
         """
@@ -32,7 +107,7 @@ class EmailService:
         Sends an email to the specified recipient with both plain text and HTML options.
         """
         if not Config.ENABLE_EMAIL_SERVICE:
-            logging.info('Email service is disabled. Skipping email sending.')
+            self.logger.info('Email service is disabled. Skipping email sending.')
             return
 
         if not self.is_valid_email(recipient):
@@ -48,7 +123,7 @@ class EmailService:
             msg.attach(MIMEText(html_body, 'html'))
 
         try:
-            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
             server.starttls()
             server.login(self.email, self.password)
             server.sendmail(self.email, recipient, msg.as_string())
@@ -158,7 +233,7 @@ class EmailService:
         Sends a report email to the user with a link to the PDF report.
         """
         if not Config.ENABLE_EMAIL_SERVICE:
-            logging.info('Email service is disabled. Skipping user report email sending.')
+            self.logger.info('Email service is disabled. Skipping user report email sending.')
             return
 
         recipient = report_data['client_email']
@@ -216,7 +291,7 @@ class EmailService:
         Sends a notification email to the admin with links to the PDF report, database record, and Google Sheets entry.
         """
         if not Config.ENABLE_EMAIL_SERVICE:
-            logging.info('Email service is disabled. Skipping admin notification email sending.')
+            self.logger.info('Email service is disabled. Skipping admin notification email sending.')
             return
 
         recipient = Config.NOTIFICATION_EMAIL

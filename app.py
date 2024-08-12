@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, send_file
+from flask import Flask, request, jsonify, render_template
 import os
 import logging
 from services.sheets_service import SheetsService
@@ -9,7 +9,7 @@ from services.integration_service import IntegrationService
 from services.subscription_service import SubscriptionService
 from services.report_generator import ReportGenerator
 from services.utilities_service import UtilitiesService
-from services.mongodb_service import MongoDBService  # Updated from FirestoreService
+from services.mongodb_service import MongoDBService
 from config import Config
 from werkzeug.exceptions import HTTPException
 from marshmallow import Schema, fields, ValidationError
@@ -18,15 +18,21 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Set up logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # Initialize services based on configuration flags
+try:
+    email_service = EmailService() if Config.ENABLE_EMAIL_SERVICE else None
+except Exception as e:
+    logger.error(f"Failed to initialize EmailService: {e}")
+    email_service = None
+
 sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], app.config['SHEET_NAME']) if Config.ENABLE_SHEETS_SERVICE else None
-mongodb_service = MongoDBService() if Config.ENABLE_DATABASE else None  # Updated to MongoDBService
+mongodb_service = MongoDBService() if Config.ENABLE_DATABASE else None
 llm_service = LLMService() if Config.ENABLE_LLM_SERVICE else None
 pdf_service = PDFService(app.config['PDFCO_API_KEY']) if Config.ENABLE_PDF_SERVICE else None
-email_service = EmailService() if Config.ENABLE_EMAIL_SERVICE else None
 integration_service = IntegrationService() if Config.ENABLE_INTEGRATION_SERVICE else None
 subscription_service = SubscriptionService() if Config.ENABLE_SUBSCRIPTION_SERVICE else None
 utilities_service = UtilitiesService('path_to/GeoLite2-City.mmdb')
@@ -149,18 +155,27 @@ def generate_report():
 
         # Send report email to user
         if Config.ENABLE_EMAIL_SERVICE and email_service:
-            logger.info("Sending report email to user")
-            email_service.send_report_email_to_user(report_data)
+            try:
+                logger.info("Sending report email to user")
+                email_service.send_report_email_to_user(report_data)
+            except Exception as e:
+                logger.error(f"Failed to send report email to user: {e}")
 
         # Send notification email to admin
         if Config.ENABLE_EMAIL_SERVICE and email_service:
-            logger.info("Sending notification email to admin")
-            email_service.send_notification_email_to_admin(report_data)
+            try:
+                logger.info("Sending notification email to admin")
+                email_service.send_notification_email_to_admin(report_data)
+            except Exception as e:
+                logger.error(f"Failed to send notification email to admin: {e}")
 
         # Add the user to the subscription list if enabled
         if Config.ENABLE_SUBSCRIPTION_SERVICE and subscription_service:
-            subscription_service.add_subscriber(validated_data['client_email'], industry)
-            logger.info(f"Subscriber added to the list: {validated_data['client_email']}")
+            try:
+                subscription_service.add_subscriber(validated_data['client_email'], industry)
+                logger.info(f"Subscriber added to the list: {validated_data['client_email']}")
+            except Exception as e:
+                logger.error(f"Failed to add subscriber: {e}")
 
         logger.info(f'Report generated successfully with ID: {report_id}')
         return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url, "doc_url": doc_url})
