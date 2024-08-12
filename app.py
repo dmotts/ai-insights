@@ -9,10 +9,8 @@ from services.integration_service import IntegrationService
 from services.subscription_service import SubscriptionService
 from services.report_generator import ReportGenerator
 from services.utilities_service import UtilitiesService
-from services.database_service import DatabaseService
+from services.firestore_service import FirestoreService  # Renamed from database_service.py
 from config import Config
-from sqlalchemy.orm import Session
-from services.models import engine
 from werkzeug.exceptions import HTTPException
 from marshmallow import Schema, fields, ValidationError
 
@@ -25,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize services based on configuration flags
 sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], app.config['SHEET_NAME']) if Config.ENABLE_SHEETS_SERVICE else None
-database_service = DatabaseService(Session(engine)) if Config.ENABLE_DATABASE else None
+firestore_service = FirestoreService() if Config.ENABLE_DATABASE else None
 llm_service = LLMService() if Config.ENABLE_LLM_SERVICE else None
 pdf_service = PDFService(app.config['PDFCO_API_KEY']) if Config.ENABLE_PDF_SERVICE else None
 email_service = EmailService() if Config.ENABLE_EMAIL_SERVICE else None
@@ -132,9 +130,15 @@ def generate_report():
             'pdf_url': google_drive_pdf_url,
             'doc_url': doc_url,
             'created_at': utilities_service.get_current_timestamp(),
-            'sheet_id': sheets_service.sheet.id if sheets_service else None,  # Save Google Sheet ID
             **user_device_info
         }
+
+        # Save report data to Firestore
+        if Config.ENABLE_DATABASE and firestore_service:
+            try:
+                firestore_service.save_report_data(report_data)
+            except Exception as e:
+                logger.error(f"Error saving report data to Firestore: {e}")
 
         # Save report data to Google Sheets
         if Config.ENABLE_SHEETS_SERVICE and sheets_service:
@@ -142,13 +146,6 @@ def generate_report():
                 sheets_service.write_data(data=report_data)
             except Exception as e:
                 logger.error(f"Error writing data to Google Sheets: {e}")
-
-        # Save report data to Database
-        if Config.ENABLE_DATABASE and database_service:
-            try:
-                database_service.save_report_data(report_data)
-            except Exception as e:
-                logger.error(f"Error saving report data to the database: {e}")
 
         # Send report email to user
         if Config.ENABLE_EMAIL_SERVICE and email_service:
