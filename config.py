@@ -23,15 +23,13 @@ class Config:
     # ProtonMail Configuration
     PROTONMAIL_ADDRESS = os.getenv('PROTONMAIL_ADDRESS', '')
     PROTONMAIL_PASSWORD = os.getenv('PROTONMAIL_PASSWORD', '')
-    PROTONMAIL_SMTP_SERVER = os.getenv('PROTONMAIL_SMTP_SERVER', 'smtp.protonmail.com')
-    PROTONMAIL_SMTP_PORT = int(os.getenv('PROTONMAIL_SMTP_PORT', 587))
 
     # Notification Email
     NOTIFICATION_EMAIL = os.getenv('NOTIFICATION_EMAIL')
 
     # MongoDB Configuration
-    MONGODB_URI = os.getenv('MONGODB_URI', 'your-mongodb-connection-string-here')
-    MONGODB_DATABASE_NAME = os.getenv('MONGODB_DATABASE_NAME', 'your-database-name')
+    MONGODB_URI = os.getenv('MONGODB_URI')
+    MONGODB_DATABASE_NAME = os.getenv('MONGODB_DATABASE_NAME', 'ai')
     MONGODB_COLLECTION_NAME = os.getenv('MONGODB_COLLECTION_NAME', 'reports')
 
     # Feature Flags to enable/disable services

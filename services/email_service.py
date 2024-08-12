@@ -1,8 +1,5 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from protonmail import ProtonMail
 import logging
-from logging.handlers import SMTPHandler
 from config import Config
 import re
 from datetime import datetime
@@ -12,7 +9,7 @@ class EmailService:
     def __init__(self):
         """
         Initializes the EmailService with ProtonMail credentials for sending emails.
-        Sets up logging and sends a test email to verify the configuration.
+        Sets up the ProtonMail API client.
         """
         if not Config.ENABLE_EMAIL_SERVICE:
             logging.info('Email service is disabled.')
@@ -20,80 +17,54 @@ class EmailService:
 
         self.email = Config.PROTONMAIL_ADDRESS
         self.password = Config.PROTONMAIL_PASSWORD
-        self.smtp_server = Config.PROTONMAIL_SMTP_SERVER
-        self.smtp_port = Config.PROTONMAIL_SMTP_PORT
         self.logger = logging.getLogger(__name__)
 
-        # Set up email alerts for errors
-        self.setup_email_alerts()
+        # Set up ProtonMail API client
+        self.proton = ProtonMail()
+        try:
+            self.proton.login(self.email, self.password)
+            self.logger.info("Successfully logged in to ProtonMail.")
+        except Exception as e:
+            self.logger.error(f"Failed to log in to ProtonMail: {e}")
+            raise
 
-        # Send a test email to verify configuration
-        self.send_test_email()
+        # Set up custom logging handler for email alerts
+        self.setup_email_alerts()
 
     def setup_email_alerts(self):
         """
-        Sets up logging to send email alerts for errors.
+        Sets up a custom logging handler to send email alerts for errors.
         """
         try:
-            mail_handler = SMTPHandler(
-                mailhost=(self.smtp_server, self.smtp_port),
-                fromaddr=self.email,
-                toaddrs=[Config.NOTIFICATION_EMAIL],
-                subject="Critical Error in Your Application",
-                credentials=(self.email, self.password),
-                secure=()
-            )
-            mail_handler.setLevel(logging.ERROR)
-            self.logger.addHandler(mail_handler)
+            handler = logging.StreamHandler()  # You can replace this with a file handler or other as needed
+            handler.setLevel(logging.ERROR)
+            handler.addFilter(self.EmailAlertFilter(self))
+
+            # Add the handler to the logger
+            self.logger.addHandler(handler)
             self.logger.info("Email alerts have been set up successfully.")
         except Exception as e:
             self.logger.error(f"Failed to set up email alerts: {e}")
 
-    def send_test_email(self):
+    class EmailAlertFilter(logging.Filter):
         """
-        Sends a test email to verify that the email service is correctly configured.
+        A logging filter that sends an email when an ERROR level log is recorded.
         """
-        test_recipient = self.email  # Send the test email to the configured ProtonMail address
-        test_subject = "Test Email: ProtonMail Configuration"
-        test_body = "This is a test email sent to verify the ProtonMail configuration."
+        def __init__(self, email_service):
+            super().__init__()
+            self.email_service = email_service
 
-        msg = MIMEMultipart('alternative')
-        msg['From'] = self.email
-        msg['To'] = test_recipient
-        msg['Subject'] = test_subject
-        msg.attach(MIMEText(test_body, 'plain'))
-
-        try:
-            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
-            server.starttls()
-
-            try:
-                server.login(self.email, self.password)
-            except smtplib.SMTPAuthenticationError:
-                self.logger.error("Authentication failed: Please check your ProtonMail email address and password.")
-                return
-            except smtplib.SMTPException as e:
-                self.logger.error(f"SMTP error during login: {e}")
-                return
-
-            try:
-                server.sendmail(self.email, test_recipient, msg.as_string())
-            except smtplib.SMTPRecipientsRefused:
-                self.logger.error(f"The recipient address was refused: {test_recipient}. Please check the email address.")
-                return
-            except smtplib.SMTPException as e:
-                self.logger.error(f"SMTP error sending test email: {e}")
-                return
-
-            server.quit()
-            self.logger.info(f'Test email sent successfully to {test_recipient}')
-
-        except smtplib.SMTPConnectError:
-            self.logger.error("Failed to connect to the SMTP server. Please check the server address and port.")
-        except smtplib.SMTPServerDisconnected:
-            self.logger.error("Disconnected from the SMTP server. Please check the server status or your network connection.")
-        except Exception as e:
-            self.logger.error(f"An unexpected error occurred while sending the test email: {e}")
+        def filter(self, record):
+            if record.levelno >= logging.ERROR:
+                try:
+                    self.email_service.send_email(
+                        recipient=Config.NOTIFICATION_EMAIL,
+                        subject=f"Critical Error in Application: {record.levelname}",
+                        body=record.getMessage()
+                    )
+                except Exception as e:
+                    self.email_service.logger.error(f"Failed to send alert email: {e}")
+            return True
 
     def is_valid_email(self, email: str) -> bool:
         """
@@ -102,7 +73,7 @@ class EmailService:
         email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         return re.match(email_regex, email) is not None
 
-    def send_email(self, recipient: str, subject: str, body: str, html_body: str = None):
+    def send_email(self, recipient: str, subject: str, body: str, html_body: str = None, attachments=None):
         """
         Sends an email to the specified recipient with both plain text and HTML options.
         """
@@ -114,23 +85,25 @@ class EmailService:
             self.logger.warning(f'Invalid email address provided: {recipient}')
             return
 
-        msg = MIMEMultipart('alternative')
-        msg['From'] = self.email
-        msg['To'] = recipient
-        msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'plain'))
-        if html_body:
-            msg.attach(MIMEText(html_body, 'html'))
-
         try:
-            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
-            server.starttls()
-            server.login(self.email, self.password)
-            server.sendmail(self.email, recipient, msg.as_string())
-            server.quit()
+            # Create attachments if any
+            attachment_objects = []
+            if attachments:
+                for attachment in attachments:
+                    with open(attachment['file_path'], 'rb') as f:
+                        content = f.read()
+                    attachment_obj = self.proton.create_attachment(content=content, name=attachment['file_name'])
+                    attachment_objects.append(attachment_obj)
+
+            # Send message
+            message = self.proton.create_message(
+                recipients=[recipient],
+                subject=subject,
+                body=html_body if html_body else body,
+                attachments=attachment_objects
+            )
+            sent_message = self.proton.send_message(message)
             self.logger.info(f'Email sent successfully to {recipient}')
-        except smtplib.SMTPException as e:
-            self.logger.error(f'SMTP error sending email: {e}')
         except Exception as e:
             self.logger.error(f'Error sending email: {e}')
 
@@ -227,6 +200,79 @@ class EmailService:
         </style>
         """
         return f"<html><head>{styles}</head><body>{html_content}</body></html>"
+
+    """
+    Injects CSS styles into the email content.
+    """
+    styles = """
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            padding: 0;
+            margin: 0;
+        }
+        .email-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #7a26b1;
+            padding: 20px;
+            text-align: center;
+            color: #ffffff.
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: normal.
+        }
+        .content {
+            padding: 20px.
+            text-align: left.
+        }
+        .content h2 {
+            color: #7a26b1.
+            font-size: 18px.
+            margin-top: 0.
+        }
+        .content p {
+            font-size: 16px.
+            margin: 15px 0.
+        }
+        .cta-button {
+            display: inline-block.
+            padding: 10px 20px.
+            background-color: #7a26b1.
+            color: #ffffff.
+            text-decoration: none.
+            border-radius: 5px.
+            margin-top: 20px.
+            font-size: 16px.
+        }
+        .footer {
+            background-color: #333333.
+            color: #ffffff.
+            text-align: center.
+            padding: 15px 10px.
+            font-size: 14px.
+        }
+        .footer a,
+        .footer a:hover,
+        .footer a:active {
+            color: inherit.
+            text-decoration: none.
+        }
+    </style>
+    """
+    return f"<html><head>{styles}</head><body>{html_content}</body></html>"
 
     def send_report_email_to_user(self, report_data: dict):
         """
