@@ -9,6 +9,9 @@ from datetime import datetime
 class EmailService:
 
     def __init__(self):
+        """
+        Initializes the EmailService with Gmail credentials for sending emails.
+        """
         if not Config.ENABLE_EMAIL_SERVICE:
             logging.info('Email service is disabled.')
             return
@@ -18,11 +21,16 @@ class EmailService:
         self.logger = logging.getLogger(__name__)
 
     def is_valid_email(self, email: str) -> bool:
-        """Validates the email address using regex."""
+        """
+        Validates the email address using a regex pattern.
+        """
         email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         return re.match(email_regex, email) is not None
 
     def send_email(self, recipient: str, subject: str, body: str, html_body: str = None):
+        """
+        Sends an email to the specified recipient with both plain text and HTML options.
+        """
         if not Config.ENABLE_EMAIL_SERVICE:
             logging.info('Email service is disabled. Skipping email sending.')
             return
@@ -52,7 +60,9 @@ class EmailService:
             self.logger.error(f'Error sending email: {e}')
 
     def get_signature(self) -> str:
-        """Returns the email signature."""
+        """
+        Returns the email signature.
+        """
         return """
         <table style="width: 100%; margin-top: 20px;">
             <tr>
@@ -70,7 +80,9 @@ class EmailService:
         """
 
     def inject_styles(self, html_content: str) -> str:
-        """Injects CSS styles into the email content."""
+        """
+        Injects CSS styles into the email content.
+        """
         styles = """
         <style>
             body {
@@ -142,12 +154,18 @@ class EmailService:
         return f"<html><head>{styles}</head><body>{html_content}</body></html>"
 
     def send_report_email_to_user(self, report_data: dict):
+        """
+        Sends a report email to the user with a link to the PDF report.
+        """
         if not Config.ENABLE_EMAIL_SERVICE:
             logging.info('Email service is disabled. Skipping user report email sending.')
             return
 
         recipient = report_data['client_email']
         subject = f"Your AI Insights Report is Ready, {report_data['client_name']}"
+
+        # Get the PDF URL
+        pdf_url = report_data.get('pdf_url', '#')
 
         # Plaintext fallback
         body = f"""
@@ -156,7 +174,7 @@ class EmailService:
         Your AI Insights Report is ready! 
 
         You can download the PDF directly from the link below:
-        {report_data['pdf_url']}
+        {pdf_url}
 
         I hope you find the insights valuable. If you have any questions or would like to discuss further how AI can benefit your business, feel free to reach out. I'm here to help.
 
@@ -175,7 +193,7 @@ class EmailService:
                 <p>Your <strong>AI Insights Report</strong> is ready and waiting for you.</p>
 
                 <p>You can download the PDF directly from the link below:</p>
-                <p><a href="{report_data['pdf_url']}" class="cta-button">Download your report</a></p>
+                <p><a href="{pdf_url}" class="cta-button">Download your report</a></p>
 
                 <p>I hope you find the insights valuable. If you have any questions or would like to discuss further how AI can benefit your business, feel free to reach out. I'm here to help.</p>
 
@@ -190,4 +208,69 @@ class EmailService:
         # Inject styles into the HTML content
         html_body = self.inject_styles(html_body_content)
 
+        # Send the email
+        self.send_email(recipient, subject, body, html_body)
+
+    def send_notification_email_to_admin(self, report_data: dict):
+        """
+        Sends a notification email to the admin with links to the PDF report, database record, and Google Sheets entry.
+        """
+        if not Config.ENABLE_EMAIL_SERVICE:
+            logging.info('Email service is disabled. Skipping admin notification email sending.')
+            return
+
+        recipient = Config.NOTIFICATION_EMAIL
+        subject = f"New AI Insights Report Generated for {report_data['client_name']}"
+
+        # Construct URLs
+        pdf_url = report_data.get('pdf_url', '#')
+        doc_url = report_data.get('doc_url', '#')
+        db_record_url = f"https://yourapp.com/reports/{report_data['report_id']}"
+        sheet_url = f"https://docs.google.com/spreadsheets/d/{report_data['sheet_id']}/edit"
+
+        # Plaintext fallback
+        body = f"""
+        A new AI Insights Report has been generated for {report_data['client_name']}.
+
+        You can download the PDF directly from the link below:
+        {pdf_url}
+
+        View the report record in the database:
+        {db_record_url}
+
+        View the report entry in Google Sheets:
+        {sheet_url}
+
+        Report ID: {report_data['report_id']}
+        """
+
+        # HTML body with refined design
+        html_body_content = f"""
+        <div class="email-container">
+            <div class="header">
+                <h1>New AI Insights Report Generated!</h1>
+            </div>
+            <div class="content">
+                <p>A new <strong>AI Insights Report</strong> has been generated for {report_data['client_name']}.</p>
+
+                <p>You can download the PDF directly from the link below:</p>
+                <p><a href="{pdf_url}" class="cta-button">Download the report</a></p>
+
+                <p>View the report record in the database: <a href="{db_record_url}">Database Record</a></p>
+                <p>View the report entry in Google Sheets: <a href="{sheet_url}">Google Sheet Entry</a></p>
+
+                <p>Report ID: {report_data['report_id']}</p>
+
+                {self.get_signature()}
+            </div>
+            <div class="footer">
+                <p>&copy; {datetime.now().year} <a href="http://daleymottley.com">Daley Mottley AI Consulting</a> | All Rights Reserved</p>
+            </div>
+        </div>
+        """
+
+        # Inject styles into the HTML content
+        html_body = self.inject_styles(html_body_content)
+
+        # Send the email
         self.send_email(recipient, subject, body, html_body)

@@ -3,10 +3,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
-from sqlalchemy.orm import Session
-from .models import Report
-import logging
 from config import Config
+import logging
 
 class SheetsService:
 
@@ -143,37 +141,23 @@ class SheetsService:
             self.logger.error(f'Error creating Google Doc: {e}')
             return None
 
-    def write_data(self, db: Session, data):
+    def write_data(self, data: dict):
         try:
-            # Ensure spreadsheet ID is correct
-            if not self.sheet or not self.sheet.id:
-                raise ValueError("Spreadsheet ID is not correctly set.")
+            # Write to Google Sheets
+            if self.sheet and self.sheet.id:
+                range_name = "A1"
+                values = [list(data.values())]
+                body = {"values": values}
 
-            range_name = "A1"
-            values = [list(data.values())]
-            body = {"values": values}
+                result = self.sheets_service.spreadsheets().values().append(
+                    spreadsheetId=self.sheet.id,
+                    range=range_name,
+                    valueInputOption="USER_ENTERED",
+                    insertDataOption="INSERT_ROWS",
+                    body=body
+                ).execute()
 
-            result = self.sheets_service.spreadsheets().values().append(
-                spreadsheetId=self.sheet.id,
-                range=range_name,
-                valueInputOption="USER_ENTERED",
-                insertDataOption="INSERT_ROWS",
-                body=body
-            ).execute()
-
-            self.logger.info(f"{result.get('updates').get('updatedCells')} cells updated in Google Sheets.")
-
-            if Config.ENABLE_DATABASE:
-                report = Report(
-                    client_name=data['client_name'],
-                    client_email=data['client_email'],
-                    industry=data['industry'],
-                    pdf_url=data['pdf_url'],
-                    doc_url=data['doc_url']
-                )
-                db.add(report)
-                db.commit()
-                self.logger.info('Data written to database successfully')
+                self.logger.info(f"{result.get('updates').get('updatedCells')} cells updated in Google Sheets.")
 
         except HttpError as error:
             self.logger.error(f'An error occurred while writing data to Google Sheets: {error}')
