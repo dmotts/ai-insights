@@ -163,7 +163,7 @@ def generate_report():
             logger.info(f"Subscriber added to the list: {validated_data['client_email']}")
 
         logger.info(f'Report generated successfully with ID: {report_id}')
-        return jsonify({"status": "success", "report_id": report_id, "pdf_url": google_drive_pdf_url, "doc_url": doc_url})
+        return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url, "doc_url": doc_url})
     except ValidationError as err:
         logger.error(f"Validation error: {err.messages}")
         return jsonify({"status": "error", "message": "Validation error", "details": err.messages}), 400
