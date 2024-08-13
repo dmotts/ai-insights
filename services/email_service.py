@@ -212,7 +212,7 @@ class EmailService:
         recipient = report_data['client_email']
         subject = f"Your AI Insights Report is Ready, {report_data['client_name']}"
 
-        # Get the PDF URL
+        # Get the PDF URL (from Google Drive if SheetsService is enabled, otherwise fallback to PDF.co)
         pdf_url = report_data.get('pdf_url', '#')
 
         # Plaintext fallback
@@ -274,7 +274,7 @@ class EmailService:
         pdf_url = report_data.get('pdf_url', '#')
         doc_url = report_data.get('doc_url', '#')
         db_record_url = f"https://yourapp.com/reports/{report_data['report_id']}"
-        sheet_url = f"https://docs.google.com/spreadsheets/d/{report_data['sheet_id']}/edit"
+        sheet_url = f"https://docs.google.com/spreadsheets/d/{report_data.get('sheet_id', '#')}/edit"
 
         # Plaintext fallback
         body = f"""
@@ -322,3 +322,4 @@ class EmailService:
 
         # Send the email
         self.send_email(recipient, subject, body, html_body)
+

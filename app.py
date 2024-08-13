@@ -147,8 +147,12 @@ def generate_report():
                 file_name = f"report-{user_name}-{utilities_service.generate_report_id()}.pdf"
                 output_path = os.path.join("/tmp", file_name)
                 pdf_service.download_pdf(pdf_url, output_path)
-                google_drive_pdf_url = sheets_service.save_pdf_to_drive(output_path, file_name) if Config.ENABLE_SHEETS_SERVICE else None
-                logger.debug(f"PDF saved to Google Drive at URL: {google_drive_pdf_url}")
+
+                if Config.ENABLE_SHEETS_SERVICE and sheets_service:
+                    google_drive_pdf_url = sheets_service.save_pdf_to_drive(output_path, file_name)
+                    logger.debug(f"PDF saved to Google Drive at URL: {google_drive_pdf_url}")
+                else:
+                    google_drive_pdf_url = pdf_url  # Use the PDF.co URL as a fallback
             else:
                 logger.error("PDF generation failed")
                 google_drive_pdf_url = None
@@ -156,7 +160,7 @@ def generate_report():
             google_drive_pdf_url = None
             logger.warning("PDF service is disabled")
 
-        # Create a Google Doc for the report
+        # Create a Google Doc for the report if SheetsService is enabled
         report_id = utilities_service.generate_report_id()
         if Config.ENABLE_SHEETS_SERVICE and sheets_service:
             logger.info(f"Creating Google Doc for report ID: {report_id}")

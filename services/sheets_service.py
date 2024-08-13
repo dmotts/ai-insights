@@ -9,6 +9,9 @@ import logging
 class SheetsService:
 
     def __init__(self, credentials_json, sheet_name):
+        self.sheet = None  # Initialize the sheet attribute
+        self.folder_id = None  # Initialize the folder_id attribute
+
         if not Config.ENABLE_SHEETS_SERVICE:
             logging.info('Sheets service is disabled.')
             return
@@ -74,6 +77,10 @@ class SheetsService:
             raise
 
     def save_pdf_to_drive(self, file_path, file_name):
+        if not Config.ENABLE_SHEETS_SERVICE or not self.folder_id:
+            logging.info('Sheets service is disabled or folder ID is missing. Skipping PDF saving to Drive.')
+            return None
+
         try:
             file_metadata = {
                 'name': file_name,
@@ -142,6 +149,10 @@ class SheetsService:
             return None
 
     def write_data(self, data: dict):
+        if not Config.ENABLE_SHEETS_SERVICE:
+            logging.info('Sheets service is disabled. Skipping data write to Google Sheets.')
+            return
+
         try:
             # Write to Google Sheets
             if self.sheet and self.sheet.id:
