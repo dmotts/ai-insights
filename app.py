@@ -229,6 +229,12 @@ def generate_report():
         logger.error(f"Error generating report: {e}", exc_info=True)
         return jsonify({"status": "error", "message": "An error occurred while generating the report."}), 500
 
+@app.route('/dashboard')
+def dashboard():
+    logger.info("Rendering the dashboard page")
+    return render_template('dashboard.html')
+
+
 # Main entry point to run the application
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
