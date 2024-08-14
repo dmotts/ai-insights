@@ -5,6 +5,8 @@ from distutils.util import strtobool
 
 class Config:
     # Google Sheets Configuration (Check environment variables first, then fall back to file)
+    GOOGLE_SHEETS_CREDENTIALS = None
+
     if os.getenv('GOOGLE_SHEETS_TYPE'):
         GOOGLE_SHEETS_CREDENTIALS = {
             "type": os.getenv('GOOGLE_SHEETS_TYPE', 'service_account'),
@@ -19,8 +21,16 @@ class Config:
             "client_x509_cert_url": os.getenv('GOOGLE_SHEETS_CLIENT_X509_CERT_URL', ''),
         }
     else:
-        with open('credentials.json', 'r') as f:
-            GOOGLE_SHEETS_CREDENTIALS = json.load(f)
+        try:
+            with open('credentials.json', 'r') as f:
+                GOOGLE_SHEETS_CREDENTIALS = json.load(f)
+        except FileNotFoundError:
+            logging.warning("credentials.json not found and no environment variables set for Google Sheets credentials.")
+        except json.JSONDecodeError:
+            logging.error("Invalid JSON format in credentials.json.")
+
+    if not GOOGLE_SHEETS_CREDENTIALS:
+        raise ValueError("Google Sheets credentials are not set. Please configure them via environment variables or credentials.json.")
 
     SHEET_NAME = os.getenv('SHEET_NAME', 'ReportData')
     GOOGLE_DRIVE_FOLDER_NAME = os.getenv('GOOGLE_DRIVE_FOLDER_NAME', 'AI_Reports')
@@ -74,8 +84,8 @@ class Config:
         if cls.ENABLE_SHEETS_SERVICE:
             required_fields = ['project_id', 'private_key_id', 'private_key', 'client_email', 'client_id']
             for field in required_fields:
-                if not cls.GOOGLE_SHEETS_CREDENTIALS.get(field):
-                    raise ValueError(f"Google Sheets {field} must be set in the environment.")
+                if not cls.GOOGLE_SHEETS_CREDENTIALS or not cls.GOOGLE_SHEETS_CREDENTIALS.get(field):
+                    raise ValueError(f"Google Sheets {field} must be set in the environment or credentials.json.")
 
 # Validate configuration on startup
 Config.validate_config()
