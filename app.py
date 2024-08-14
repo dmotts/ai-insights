@@ -232,7 +232,7 @@ def generate_report():
 @app.route('/dashboard')
 def dashboard():
     logger.info("Rendering the dashboard page")
-    return render_template('dashboard.html')
+    return render_template('dashboard/index.html')
 
 
 # Main entry point to run the application
