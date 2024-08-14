@@ -25,8 +25,12 @@ class EmailService:
             self.proton.login(self.email, self.password)
             self.logger.info("Successfully logged in to ProtonMail.")
         except Exception as e:
-            self.logger.error(f"Failed to log in to ProtonMail: {e}")
-            raise
+            if "CAPTCHA" in str(e):
+                self.logger.error("CAPTCHA detected during login to ProtonMail. Login cannot proceed.")
+            else:
+                self.logger.error(f"Failed to log in to ProtonMail: {e}")
+            self.proton = None  # Disable ProtonMail functionality
+            return
 
         # Set up custom logging handler for email alerts
         self.setup_email_alerts()
@@ -55,7 +59,7 @@ class EmailService:
             self.email_service = email_service
 
         def filter(self, record):
-            if record.levelno >= logging.ERROR:
+            if record.levelno >= logging.ERROR and self.email_service.proton:
                 try:
                     self.email_service.send_email(
                         recipient=Config.NOTIFICATION_EMAIL,
@@ -79,6 +83,10 @@ class EmailService:
         """
         if not Config.ENABLE_EMAIL_SERVICE:
             self.logger.info('Email service is disabled. Skipping email sending.')
+            return
+
+        if not self.proton:
+            self.logger.warning('ProtonMail client is not initialized. Email cannot be sent.')
             return
 
         if not self.is_valid_email(recipient):
@@ -322,4 +330,3 @@ class EmailService:
 
         # Send the email
         self.send_email(recipient, subject, body, html_body)
-

@@ -30,13 +30,24 @@ try:
     else:
         logger.info("EmailService is disabled.")
 except Exception as e:
-    logger.error(f"Failed to initialize EmailService: {e}")
+    if "CAPTCHA" in str(e):
+        logger.error("Failed to initialize EmailService: CAPTCHA is required and not implemented.")
+    else:
+        logger.error(f"Failed to initialize EmailService: {e}")
     email_service = None
 
-sheets_service = SheetsService(app.config['GOOGLE_SHEETS_CREDENTIALS_JSON'], app.config['SHEET_NAME']) if Config.ENABLE_SHEETS_SERVICE else None
-if sheets_service:
-    logger.info("SheetsService is enabled.")
+# Check if Google Sheets credentials are provided before initializing the SheetsService
+if Config.ENABLE_SHEETS_SERVICE:
+    google_sheets_credentials = app.config.get('GOOGLE_SHEETS_CREDENTIALS_JSON')
+    sheet_name = app.config.get('SHEET_NAME')
+    if google_sheets_credentials and sheet_name:
+        sheets_service = SheetsService(google_sheets_credentials, sheet_name)
+        logger.info("SheetsService is enabled.")
+    else:
+        logger.error("SheetsService cannot be initialized due to missing credentials or sheet name.")
+        sheets_service = None
 else:
+    sheets_service = None
     logger.info("SheetsService is disabled.")
 
 mongodb_service = MongoDBService() if Config.ENABLE_DATABASE else None
@@ -83,15 +94,6 @@ if llm_service:
 else:
     report_generator = None
     logger.info("ReportGenerator is not initialized because LLM service is disabled.")
-
-# Schema for validating incoming report generation requests
-class ReportRequestSchema(Schema):
-    client_name = fields.String(required=True)
-    client_email = fields.Email(required=True)
-    industry = fields.String(required=True)
-    question1 = fields.String(required=True)
-    question2 = fields.String(required=True)
-    question3 = fields.String(required=True)
 
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
