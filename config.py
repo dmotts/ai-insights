@@ -1,10 +1,27 @@
 import os
+import json
 import logging
 from distutils.util import strtobool
 
 class Config:
-    # Google Sheets Configuration
-    GOOGLE_SHEETS_CREDENTIALS_JSON = os.getenv('GOOGLE_SHEETS_CREDENTIALS_JSON', 'credentials.json')
+    # Google Sheets Configuration (Check environment variables first, then fall back to file)
+    if os.getenv('GOOGLE_SHEETS_TYPE'):
+        GOOGLE_SHEETS_CREDENTIALS = {
+            "type": os.getenv('GOOGLE_SHEETS_TYPE', 'service_account'),
+            "project_id": os.getenv('GOOGLE_SHEETS_PROJECT_ID', ''),
+            "private_key_id": os.getenv('GOOGLE_SHEETS_PRIVATE_KEY_ID', ''),
+            "private_key": os.getenv('GOOGLE_SHEETS_PRIVATE_KEY', '').replace('\\n', '\n'),
+            "client_email": os.getenv('GOOGLE_SHEETS_CLIENT_EMAIL', ''),
+            "client_id": os.getenv('GOOGLE_SHEETS_CLIENT_ID', ''),
+            "auth_uri": os.getenv('GOOGLE_SHEETS_AUTH_URI', 'https://accounts.google.com/o/oauth2/auth'),
+            "token_uri": os.getenv('GOOGLE_SHEETS_TOKEN_URI', 'https://oauth2.googleapis.com/token'),
+            "auth_provider_x509_cert_url": os.getenv('GOOGLE_SHEETS_AUTH_PROVIDER_X509_CERT_URL', 'https://www.googleapis.com/oauth2/v1/certs'),
+            "client_x509_cert_url": os.getenv('GOOGLE_SHEETS_CLIENT_X509_CERT_URL', ''),
+        }
+    else:
+        with open('credentials.json', 'r') as f:
+            GOOGLE_SHEETS_CREDENTIALS = json.load(f)
+
     SHEET_NAME = os.getenv('SHEET_NAME', 'ReportData')
     GOOGLE_DRIVE_FOLDER_NAME = os.getenv('GOOGLE_DRIVE_FOLDER_NAME', 'AI_Reports')
 
@@ -52,6 +69,13 @@ class Config:
             raise ValueError("PROTONMAIL_ADDRESS and PROTONMAIL_PASSWORD must be set in the environment.")
         if cls.ENABLE_DATABASE and not cls.MONGODB_URI:
             raise ValueError("MONGODB_URI must be set in the environment.")
+
+        # Validate Google Sheets credentials
+        if cls.ENABLE_SHEETS_SERVICE:
+            required_fields = ['project_id', 'private_key_id', 'private_key', 'client_email', 'client_id']
+            for field in required_fields:
+                if not cls.GOOGLE_SHEETS_CREDENTIALS.get(field):
+                    raise ValueError(f"Google Sheets {field} must be set in the environment.")
 
 # Validate configuration on startup
 Config.validate_config()
