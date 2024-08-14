@@ -7,27 +7,31 @@ class Config:
     # Google Sheets Configuration (Check environment variables first, then fall back to file)
     GOOGLE_SHEETS_CREDENTIALS = None
 
-    if os.getenv('GOOGLE_SHEETS_TYPE'):
-        GOOGLE_SHEETS_CREDENTIALS = {
-            "type": os.getenv('GOOGLE_SHEETS_TYPE', 'service_account'),
-            "project_id": os.getenv('GOOGLE_SHEETS_PROJECT_ID', ''),
-            "private_key_id": os.getenv('GOOGLE_SHEETS_PRIVATE_KEY_ID', ''),
-            "private_key": os.getenv('GOOGLE_SHEETS_PRIVATE_KEY', '').replace('\\n', '\n'),
-            "client_email": os.getenv('GOOGLE_SHEETS_CLIENT_EMAIL', ''),
-            "client_id": os.getenv('GOOGLE_SHEETS_CLIENT_ID', ''),
-            "auth_uri": os.getenv('GOOGLE_SHEETS_AUTH_URI', 'https://accounts.google.com/o/oauth2/auth'),
-            "token_uri": os.getenv('GOOGLE_SHEETS_TOKEN_URI', 'https://oauth2.googleapis.com/token'),
-            "auth_provider_x509_cert_url": os.getenv('GOOGLE_SHEETS_AUTH_PROVIDER_X509_CERT_URL', 'https://www.googleapis.com/oauth2/v1/certs'),
-            "client_x509_cert_url": os.getenv('GOOGLE_SHEETS_CLIENT_X509_CERT_URL', ''),
-        }
-    else:
-        try:
-            with open('credentials.json', 'r') as f:
-                GOOGLE_SHEETS_CREDENTIALS = json.load(f)
-        except FileNotFoundError:
-            logging.warning("credentials.json not found and no environment variables set for Google Sheets credentials.")
-        except json.JSONDecodeError:
-            logging.error("Invalid JSON format in credentials.json.")
+    def load_google_sheets_credentials():
+        if os.getenv('GOOGLE_SHEETS_TYPE'):
+            return {
+                "type": os.getenv('GOOGLE_SHEETS_TYPE', 'service_account'),
+                "project_id": os.getenv('GOOGLE_SHEETS_PROJECT_ID', ''),
+                "private_key_id": os.getenv('GOOGLE_SHEETS_PRIVATE_KEY_ID', ''),
+                "private_key": os.getenv('GOOGLE_SHEETS_PRIVATE_KEY', '').replace('\\n', '\n'),
+                "client_email": os.getenv('GOOGLE_SHEETS_CLIENT_EMAIL', ''),
+                "client_id": os.getenv('GOOGLE_SHEETS_CLIENT_ID', ''),
+                "auth_uri": os.getenv('GOOGLE_SHEETS_AUTH_URI', 'https://accounts.google.com/o/oauth2/auth'),
+                "token_uri": os.getenv('GOOGLE_SHEETS_TOKEN_URI', 'https://oauth2.googleapis.com/token'),
+                "auth_provider_x509_cert_url": os.getenv('GOOGLE_SHEETS_AUTH_PROVIDER_X509_CERT_URL', 'https://www.googleapis.com/oauth2/v1/certs'),
+                "client_x509_cert_url": os.getenv('GOOGLE_SHEETS_CLIENT_X509_CERT_URL', ''),
+            }
+        else:
+            try:
+                with open('credentials.json', 'r') as f:
+                    return json.load(f)
+            except FileNotFoundError:
+                logging.warning("credentials.json not found and no environment variables set for Google Sheets credentials.")
+            except json.JSONDecodeError:
+                logging.error("Invalid JSON format in credentials.json.")
+            return None
+
+    GOOGLE_SHEETS_CREDENTIALS = load_google_sheets_credentials()
 
     if not GOOGLE_SHEETS_CREDENTIALS:
         raise ValueError("Google Sheets credentials are not set. Please configure them via environment variables or credentials.json.")
