@@ -12,7 +12,7 @@ class ReportGenerator:
     def __init__(self, client=None, model=None, utilities_service=None):
         self.client = client
         self.model = model
-        self.util = utilities_service  
+        self.util = utilities_service
 
     def generate_report_content(self, industry: str, answers: List[str],
                                 user_name: str) -> str:
@@ -197,20 +197,51 @@ footer p {
     def build_prompt(self, industry: str, answers: List[str],
                      user_name) -> str:
         return f"""
-        You are an AI consultant preparing a comprehensive report for a business owner in the {industry} industry. The report must be detailed, insightful, and structured into the following sections:
+        ### Instruction:
+As an AI consultant specializing in business and entrepreneurship, your task is to develop a strategic operational plan for integrating artificial intelligence into the user's business operations within the {industry} industry.
 
-        1. **Introduction**: Provide a brief overview of the business's context based on the industry.
-        2. **Industry Trends**: Provide the latest AI trends in the {industry} industry.
+### Business Overview:
+- **Objectives**: The primary objectives for AI integration are to {answer[0]}.
+- **Current Technology and Data**: The business currently uses {answer[1]}, and AI will need to integrate with these existing systems and data.
+- **Workforce and Training Needs**: The team’s skill level is currently at {answer[2]}, and they will require training to effectively use AI.
 
-        3. **Analysis and Recommendations**:
-            - Current data management and utilization challenges: {answers[0]}
-            - Areas of technology integration and inefficiency: {answers[1]}
-            - Long-term business goals and AI's role in achieving them: {answers[2]}
-            - Include a detailed analysis of how AI can address the specific challenges mentioned.
-            - Offer actionable recommendations for AI implementation.
-        5. **Conclusion**: Summarize the key insights and recommend next steps.
+### Industry Trends:
+- **Current Trends in {industry}**: Identify and analyze the latest trends in the {industry} industry that may impact or benefit from AI integration.
+- **Opportunities**: Suggest ways in which AI can be used to capitalize on these trends, helping the business stay ahead of the competition.
 
-        Ensure the report is structured professionally, with clear headings and well-organized content. Also, include a call-to-action encouraging the business owner to engage with Daley Mottley AI Consulting for further AI consulting services.
+### Requirements:
+1. **Technology Integration**:
+   - **Integration Steps**: Detail the steps for integrating AI technologies into existing business processes, considering the current technology stack.
+   - **System Compatibility**: Evaluate the compatibility of AI tools with existing systems.
+   - **Scalability**: Provide recommendations on how to scale AI solutions as the business grows.
+
+2. **Workforce Training**:
+   - **Training Plan**: Outline a comprehensive training plan based on the team’s current skill level and the specific needs identified.
+   - **Skill Development**: Recommend areas for skill development to maximize the effectiveness of AI integration.
+   - **Continuous Learning**: Suggest methods for ongoing training to keep the workforce up-to-date with AI advancements.
+
+3. **Data Management**:
+   - **Data Strategy**: Describe the strategies for managing and utilizing the data available to support AI implementation.
+   - **Data Security**: Include considerations for data privacy and security, especially in relation to AI processing.
+   - **Compliance**: Ensure that data management practices comply with relevant industry regulations.
+
+4. **Risk and Challenges**:
+   - **Risk Identification**: Identify potential risks and challenges that could arise during AI integration.
+   - **Preventative Measures**: Propose preventative measures to mitigate these risks.
+   - **Contingency Plans**: Develop contingency plans in case these challenges materialize.
+
+### Output Structure:
+- **Executive Summary**: Provide a brief overview of the operational plan.
+- **Industry Trends**: Analysis of current trends in {industry} and AI-driven opportunities.
+- **Technology Integration**: Detailed steps for integrating AI, system compatibility, and scalability.
+- **Workforce Training**: Comprehensive training plan, skill development, and continuous learning strategies.
+- **Data Management**: Data strategies, security considerations, and compliance measures.
+- **Risk and Challenges**: Identification, preventative measures, and contingency plans.
+- **Additional Recommendations**: Offer extra insights or suggest emerging technologies that might be relevant to the business.
+- **Conclusion**: Summarize the expected impact of AI integration on business operations.
+
+
+        Ensure the report is structured professionally, with clear headings and well-organized content. 
 
         The report should be in the following format embedded in HTML code with the brackets filled in with the appropriate content:
 
@@ -229,7 +260,7 @@ footer p {
     <div class="container">
         <section>
             <h2>Introduction</h2>
-            <p>{{ introduction }}</p>
+            <p>{{ executive_summary }}</p>
         </section>
 
         <section>
@@ -238,10 +269,30 @@ footer p {
         </section>
 
         <section>
-            <h2>Analysis & Recommendations</h2>
-            <p>{{ analysis }}</p>
+            <h2>Technology Integration</h2>
+            <p>{{ technology_integration }}</p>
         </section>
 
+        <section>
+            <h2>Workforce Training</h2>
+            <p>{{ workforce_training }}</p>
+        </section>
+
+        <section>
+            <h2>Data Management</h2>
+            <p>{{ data_management }}</p>
+        </section>
+
+        <section>
+            <h2>Risk & Challenges</h2>
+            <p>{{ risk_And_challenges }}</p>
+        </section>
+
+        <section>
+            <h2>Additional Recommendations</h2>
+            <p>{{ additional_recommendations }}</p>
+        </section>
+        
         <section>
             <h2>Conclusion</h2>
             <p>{{ conclusion }}</p>
