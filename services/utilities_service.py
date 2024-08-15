@@ -51,7 +51,7 @@ class UtilitiesService:
 
     def handle_http_exception(self, e: HTTPException):
         """Handles HTTP exceptions."""
-        self.logger.error(f"HTTP error occurred: {e}")
+        self.logger.error(f"HTTP error occurred: {e}, URL: {e.description}")
         return jsonify({"status": "error", "message": e.description}), e.code
 
     def handle_general_exception(self, e: Exception):
