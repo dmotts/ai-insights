@@ -108,6 +108,15 @@ def index():
     logger.info("Rendering the main report generation page")
     return render_template('generate_report.html')
 
+# Define the ReportRequestSchema
+class ReportRequestSchema(Schema):
+    client_name = fields.Str(required=True)
+    client_email = fields.Email(required=True)
+    industry = fields.Str(required=True)
+    question1 = fields.Str(required=True)
+    question2 = fields.Str(required=True)
+    question3 = fields.Str(required=True)
+
 @app.route('/generate_report', methods=['POST'])
 def generate_report():
     logger.info("Received a request to generate a report")
@@ -223,7 +232,7 @@ def generate_report():
                 logger.error(f"Failed to add subscriber: {e}")
 
         logger.info(f'Report generated successfully with ID: {report_id}')
-        return jsonify({"status": "success", "report_id": report_id, "pdf_url": pdf_url, "doc_url": doc_url})
+        return jsonify({"status": "success", "report_id": report_id, "pdf_url": google_drive_pdf_url, "doc_url": doc_url})
     except ValidationError as err:
         logger.error(f"Validation error: {err.messages}")
         return jsonify({"status": "error", "message": "Validation error", "details": err.messages}), 400
