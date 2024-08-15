@@ -292,7 +292,7 @@ As an AI consultant specializing in business and entrepreneurship, your task is 
             <h2>Additional Recommendations</h2>
             <p>{{ additional_recommendations }}</p>
         </section>
-        
+
         <section>
             <h2>Conclusion</h2>
             <p>{{ conclusion }}</p>

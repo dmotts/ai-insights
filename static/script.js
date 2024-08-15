@@ -133,7 +133,12 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(response => {
                 if (response.status === 'success') {
-                    showSuccess(response.pdf_url);
+                    if (response.pdf_url) {
+                        showSuccess(response.pdf_url);
+                    } else {
+                        alert('PDF generation failed. Please try again later.');
+                        window.location.reload();
+                    }
                 } else {
                     alert('An error occurred, please try again.');
                     window.location.reload();

@@ -31,13 +31,14 @@ class PDFService:
             response = requests.post(url, headers=headers, json=payload)
             response.raise_for_status()
             result = response.json()
-            if 'url' in result:
-                pdf_url = result['url']
+            pdf_url = result.get('url')
+
+            if pdf_url:
                 self.logger.info(f'PDF generated successfully: {pdf_url}')
-                return pdf_url
             else:
                 self.logger.error(f"Unexpected response format: {result}")
-                return None
+
+            return pdf_url
         except requests.exceptions.RequestException as e:
             self.logger.error(f'HTTP error generating PDF: {e}')
         except Exception as e:
@@ -45,6 +46,10 @@ class PDFService:
         return None
 
     def download_pdf(self, pdf_url, output_path):
+        if not pdf_url:
+            self.logger.error('No URL provided for PDF download.')
+            return None
+
         try:
             self.logger.debug(f'Downloading PDF from: {pdf_url}')
             response = requests.get(pdf_url)
