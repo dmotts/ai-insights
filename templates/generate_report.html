@@ -72,29 +72,28 @@
                         </div>
                         <button type="button" class="btn btn-primary next-step">Next</button>
                     </div>
-
                     <!-- Step 2 -->
                     <div class="form-step">
                         <h4>Step 2: Business Goals and Objectives</h4>
                         <div class="form-group">
-                            <label>What are the primary objectives you want to achieve with AI integration?
-                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Select the main objectives you want to achieve with AI integration."></i>
+                            <label>What are the primary objectives you want to achieve with AI?
+                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Select the main strategic objectives for AI implementation in your business."></i>
                             </label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question1" id="question1_option1" value="Increase operational efficiency" required>
-                                <label class="form-check-label" for="question1_option1">Increase operational efficiency</label>
+                                <input class="form-check-input" type="radio" name="question1" id="question1_option1" value="Drive innovation and new product development" required>
+                                <label class="form-check-label" for="question1_option1">Drive innovation and new product development</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question1" id="question1_option2" value="Reduce costs" required>
-                                <label class="form-check-label" for="question1_option2">Reduce costs</label>
+                                <input class="form-check-input" type="radio" name="question1" id="question1_option2" value="Increase operational efficiency" required>
+                                <label class="form-check-label" for="question1_option2">Increase operational efficiency</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question1" id="question1_option3" value="Enhance customer experience" required>
-                                <label class="form-check-label" for="question1_option3">Enhance customer experience</label>
+                                <input class="form-check-input" type="radio" name="question1" id="question1_option3" value="Enhance customer satisfaction and engagement" required>
+                                <label class="form-check-label" for="question1_option3">Enhance customer satisfaction and engagement</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question1" id="question1_option4" value="Innovate and create new business opportunities" required>
-                                <label class="form-check-label" for="question1_option4">Innovate and create new business opportunities</label>
+                                <input class="form-check-input" type="radio" name="question1" id="question1_option4" value="Gain a competitive advantage in the market" required>
+                                <label class="form-check-label" for="question1_option4">Gain a competitive advantage in the market</label>
                             </div>
                             <div class="invalid-feedback">Please select an option.</div>
                         </div>
@@ -106,8 +105,8 @@
                     <div class="form-step">
                         <h4>Step 3: Current Technology and Data</h4>
                         <div class="form-group">
-                            <label>What existing technologies or data does your business currently use that AI will need to work with?
-                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Specify the current technologies or data that AI will integrate with."></i>
+                            <label>What key technologies, data, or AI solutions does your business currently utilize?
+                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Select the technologies, data, or AI solutions that are already in use in your business. If you haven't implemented any, select the most appropriate reason."></i>
                             </label>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="question2" id="question2_option1" value="Customer Relationship Management (CRM) systems" required>
@@ -118,12 +117,39 @@
                                 <label class="form-check-label" for="question2_option2">Enterprise Resource Planning (ERP) systems</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question2" id="question2_option3" value="Large datasets stored in cloud or on-premise servers" required>
-                                <label class="form-check-label" for="question2_option3">Large datasets stored in cloud or on-premise servers</label>
+                                <input class="form-check-input" type="radio" name="question2" id="question2_option3" value="Extensive customer and sales data" required>
+                                <label class="form-check-label" for="question2_option3">Extensive customer and sales data</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question2" id="question2_option4" value="Data from IoT devices or sensors" required>
-                                <label class="form-check-label" for="question2_option4">Data from IoT devices or sensors</label>
+                                <input class="form-check-input" type="radio" name="question2" id="question2_option4" value="IoT devices and sensors" required>
+                                <label class="form-check-label" for="question2_option4">IoT devices and sensors</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="question2" id="question2_option5" value="None of the above" required>
+                                <label class="form-check-label" for="question2_option5">None of the above</label>
+                            </div>
+
+                            <!-- Conditional Follow-Up Question if None of the Above is Selected -->
+                            <div class="form-group mt-3">
+                                <label>If none, what has prevented you from implementing these technologies? 
+                                    <i class="fas fa-question-circle" data-toggle="tooltip" title="Understanding the barriers helps us recommend practical solutions."></i>
+                                </label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question2_followup" id="question2_followup1" value="Haven’t identified the need yet" required>
+                                    <label class="form-check-label" for="question2_followup1">Haven’t identified the need yet</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question2_followup" id="question2_followup2" value="Budget constraints" required>
+                                    <label class="form-check-label" for="question2_followup2">Budget constraints</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question2_followup" id="question2_followup3" value="Lack of technical expertise" required>
+                                    <label class="form-check-label" for="question2_followup3">Lack of technical expertise</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question2_followup" id="question2_followup4" value="In planning phase" required>
+                                    <label class="form-check-label" for="question2_followup4">In planning phase</label>
+                                </div>
                             </div>
                             <div class="invalid-feedback">Please select an option.</div>
                         </div>
@@ -133,26 +159,26 @@
 
                     <!-- Step 4 -->
                     <div class="form-step">
-                        <h4>Step 4: Workforce and Training</h4>
+                        <h4>Step 4: Workforce and Training Needs</h4>
                         <div class="form-group">
-                            <label>What is the current skill level of your team, and what training will they need to effectively use AI?
-                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Select the current skill level of your team and their training needs for AI."></i>
+                            <label>What is the current skill level of your team regarding AI and digital tools?
+                                <i class="fas fa-question-circle" data-toggle="tooltip" title="Select the current skill level of your team to determine necessary AI training."></i>
                             </label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question3" id="question3_option1" value="Beginner level – minimal experience with AI and digital tools" required>
-                                <label class="form-check-label" for="question3_option1">Beginner level – minimal experience with AI and digital tools</label>
+                                <input class="form-check-input" type="radio" name="question3" id="question3_option1" value="Minimal experience – would require significant training" required>
+                                <label class="form-check-label" for="question3_option1">Minimal experience – would require significant training</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question3" id="question3_option2" value="Intermediate level – some experience with AI or data analytics" required>
-                                <label class="form-check-label" for="question3_option2">Intermediate level – some experience with AI or data analytics</label>
+                                <input class="form-check-input" type="radio" name="question3" id="question3_option2" value="Intermediate experience – some familiarity with AI concepts" required>
+                                <label class="form-check-label" for="question3_option2">Intermediate experience – some familiarity with AI concepts</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question3" id="question3_option3" value="Advanced level – experienced with AI but needs specific training" required>
-                                <label class="form-check-label" for="question3_option3">Advanced level – experienced with AI but needs specific training</label>
+                                <input class="form-check-input" type="radio" name="question3" id="question3_option3" value="Advanced experience – proficient in AI but needs specific skill updates" required>
+                                <label class="form-check-label" for="question3_option3">Advanced experience – proficient in AI but needs specific skill updates</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question3" id="question3_option4" value="Need to hire new talent with specialized AI skills" required>
-                                <label class="form-check-label" for="question3_option4">Need to hire new talent with specialized AI skills</label>
+                                <input class="form-check-input" type="radio" name="question3" id="question3_option4" value="Highly skilled – team is ready for advanced AI implementation" required>
+                                <label class="form-check-label" for="question3_option4">Highly skilled – team is ready for advanced AI implementation</label>
                             </div>
                             <div class="invalid-feedback">Please select an option.</div>
                         </div>
