@@ -198,47 +198,33 @@ footer p {
                      user_name) -> str:
         return f"""
         ### Instruction:
-As an AI consultant specializing in business and entrepreneurship, your task is to develop a strategic operational plan for integrating artificial intelligence into the user's business operations within the {industry} industry.
+As an AI consultant specializing in business and entrepreneurship, your task is to create a detailed industry-focused report for the user, showcasing the latest AI trends within the {industry} industry, and demonstrating the benefits of implementing AI in their business. The report should also provide specific examples of AI integrations that would be most beneficial based on the user’s current situation and goals.
 
 ### Business Overview:
-- **Objectives**: The primary objectives for AI integration are to {answers[0]}.
-- **Current Technology and Data**: The business currently uses {answers[1]}, and AI will need to integrate with these existing systems and data.
-- **Workforce and Training Needs**: The team’s skill level is currently at {answers[2]}, and they will require training to effectively use AI.
+- **Objectives**: The user's primary business objectives are to {answers[0]}.
+- **Current Technology and Data**: The user’s business currently utilizes {answers[1]}.
+- **Workforce and Training Needs**: The current skill level of the team is {answers[2]}, which will inform the type of AI training and integration strategies recommended.
 
-### Industry Trends:
-- **Current Trends in {industry}**: Identify and analyze the latest trends in the {industry} industry that may impact or benefit from AI integration.
-- **Opportunities**: Suggest ways in which AI can be used to capitalize on these trends, helping the business stay ahead of the competition.
+### Industry AI Trends:
+- **Current AI Trends in {industry}**: Provide an overview of the most relevant and emerging AI trends in the {industry} industry. Discuss how these trends are shaping the industry and influencing business practices.
+- **Impact of AI on the Industry**: Explain how AI is currently impacting the {industry} industry, with specific examples of companies or sectors leading the way.
 
-### Requirements:
-1. **Technology Integration**:
-   - **Integration Steps**: Detail the steps for integrating AI technologies into existing business processes, considering the current technology stack.
-   - **System Compatibility**: Evaluate the compatibility of AI tools with existing systems.
-   - **Scalability**: Provide recommendations on how to scale AI solutions as the business grows.
+### Benefits of AI Implementation:
+- **Strategic Benefits**: Discuss the key benefits of AI implementation for the user's business, aligned with their objectives (e.g., increased efficiency, cost savings, improved customer experience).
+- **Case Studies and Examples**: Provide real-world examples or case studies of similar businesses that have successfully integrated AI and the positive outcomes they achieved.
 
-2. **Workforce Training**:
-   - **Training Plan**: Outline a comprehensive training plan based on the team’s current skill level and the specific needs identified.
-   - **Skill Development**: Recommend areas for skill development to maximize the effectiveness of AI integration.
-   - **Continuous Learning**: Suggest methods for ongoing training to keep the workforce up-to-date with AI advancements.
+### Tailored AI Integration Examples:
+- **Technology Integration**: Recommend specific AI tools or platforms that align with the user’s current technology stack and business goals.
+- **Workforce Training**: Suggest tailored training programs or resources to upskill the user's team, considering their current skill level.
+- **Potential AI Applications**: List practical AI applications and integrations relevant to the user's business, such as predictive analytics, chatbots, or automation tools, with a brief description of how each could benefit their operations.
 
-3. **Data Management**:
-   - **Data Strategy**: Describe the strategies for managing and utilizing the data available to support AI implementation.
-   - **Data Security**: Include considerations for data privacy and security, especially in relation to AI processing.
-   - **Compliance**: Ensure that data management practices comply with relevant industry regulations.
+### Conclusion and Recommendations:
+- **Summary of AI Opportunities**: Summarize the most promising AI opportunities for the user's business based on the industry trends and their specific situation.
+- **Next Steps**: Provide actionable recommendations for moving forward with AI integration, including any immediate steps the user should take to begin the process.
 
-4. **Risk and Challenges**:
-   - **Risk Identification**: Identify potential risks and challenges that could arise during AI integration.
-   - **Preventative Measures**: Propose preventative measures to mitigate these risks.
-   - **Contingency Plans**: Develop contingency plans in case these challenges materialize.
+- **Additional Resources** (Optional): Suggest further reading, tools, or contacts that could assist the user in their AI integration journey.
 
-### Output Structure:
-- **Executive Summary**: Provide a brief overview of the operational plan.
-- **Industry Trends**: Analysis of current trends in {industry} and AI-driven opportunities.
-- **Technology Integration**: Detailed steps for integrating AI, system compatibility, and scalability.
-- **Workforce Training**: Comprehensive training plan, skill development, and continuous learning strategies.
-- **Data Management**: Data strategies, security considerations, and compliance measures.
-- **Risk and Challenges**: Identification, preventative measures, and contingency plans.
-- **Additional Recommendations**: Offer extra insights or suggest emerging technologies that might be relevant to the business.
-- **Conclusion**: Summarize the expected impact of AI integration on business operations.
+
 
 
         Ensure the report is structured professionally, with clear headings and well-organized content. 
@@ -247,11 +233,11 @@ As an AI consultant specializing in business and entrepreneurship, your task is 
 
         ## Format
         ```
-        <body>
+<body>
     <header>
         <div class="header-content">
             <p><a href="https://dmotts.github.io/portfolio/">Daley Mottley AI Consulting</a></p>
-            <h1>AI Insights Report</h1>
+            <h1>AI Industry-Focused Report</h1>
             <p class="sub-title">Prepared for</p>
             <h3>{ user_name }</h3>
         </div>
@@ -264,38 +250,36 @@ As an AI consultant specializing in business and entrepreneurship, your task is 
         </section>
 
         <section>
-            <h2>Industry Trends</h2>
-            <p>{{ industry_trends }}</p>
+            <h2>Business Overview</h2>
+            <p><strong>Objectives:</strong> The user's primary business objectives are to {{ objectives }}.</p>
+            <p><strong>Current Technology and Data:</strong> The user’s business currently utilizes {{ technology_and_data }}.</p>
+            <p><strong>Workforce and Training Needs:</strong> The current skill level of the team is {{ workforce_training }}.</p>
         </section>
 
         <section>
-            <h2>Technology Integration</h2>
-            <p>{{ technology_integration }}</p>
+            <h2>Industry AI Trends</h2>
+            <p><strong>Current AI Trends in {{ industry }}:</strong> {{ industry_ai_trends }}</p>
+            <p><strong>Impact of AI on the Industry:</strong> {{ ai_impact }}</p>
         </section>
 
         <section>
-            <h2>Workforce Training</h2>
-            <p>{{ workforce_training }}</p>
+            <h2>Benefits of AI Implementation</h2>
+            <p><strong>Strategic Benefits:</strong> {{ strategic_benefits }}</p>
+            <p><strong>Case Studies and Examples:</strong> {{ case_studies }}</p>
         </section>
 
         <section>
-            <h2>Data Management</h2>
-            <p>{{ data_management }}</p>
+            <h2>Tailored AI Integration Examples</h2>
+            <p><strong>Technology Integration:</strong> {{ technology_integration }}</p>
+            <p><strong>Workforce Training:</strong> {{ tailored_workforce_training }}</p>
+            <p><strong>Potential AI Applications:</strong> {{ potential_ai_applications }}</p>
         </section>
 
         <section>
-            <h2>Risk & Challenges</h2>
-            <p>{{ risk_And_challenges }}</p>
-        </section>
-
-        <section>
-            <h2>Additional Recommendations</h2>
-            <p>{{ additional_recommendations }}</p>
-        </section>
-
-        <section>
-            <h2>Conclusion</h2>
-            <p>{{ conclusion }}</p>
+            <h2>Conclusion and Recommendations</h2>
+            <p><strong>Summary of AI Opportunities:</strong> {{ ai_opportunities_summary }}</p>
+            <p><strong>Next Steps:</strong> {{ next_steps }}</p>
+            <p><strong>Additional Resources:</strong> {{ additional_resources }}</p>
         </section>
 
         <section class="cta">
