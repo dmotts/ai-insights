@@ -72,6 +72,6 @@ Please ensure your code follows the project's coding standards and includes test
 
 ## Follow Me
 
-If you find this project useful, please consider following me on GitHub:
+If you find this project useful, please consider connecting with me on GitHub:
 
 [Daley Mottley (dmotts)](https://github.com/dmotts)
