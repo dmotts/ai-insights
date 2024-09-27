@@ -20,7 +20,7 @@ AI Insights is a web-based application designed to provide valuable insights usi
 
 2. **Install dependencies:**
    ```bash
-   poetry install
+   pip install -r requirements.txt
    ```
 
 3. **Set up environment variables:**
@@ -46,7 +46,7 @@ AI Insights is a web-based application designed to provide valuable insights usi
 
 4. **Run the application:**
    ```bash
-   poetry run python app.py
+   python app.py
    ```
 
 5. **Access the application:**
