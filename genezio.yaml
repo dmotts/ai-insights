@@ -1,0 +1,10 @@
+frontend:
+    path: ./
+    publish: ""
+    scripts:
+        build: python app.py
+        deploy: pip install -r requirements.txt
+    subdomain: ai-insights
+name: ai-insights
+region: us-east-1
+yamlVersion: 2
