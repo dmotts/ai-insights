@@ -2,14 +2,20 @@
   "version": 2,
   "builds": [
     {
-      "src": "app.py",   // This is your main Flask app file in the root directory
-      "use": "@vercel/python"
+      "src": "app.py",
+      "use": "@vercel/python",
+      "config": {
+        "installCommand": "pip install -r requirements.txt",  // Install dependencies
+        "buildCommand": "",  // No build command needed for Flask apps
+        "devCommand": "flask run",  // Optional, for local development
+        "outputDirectory": ""  // Leave blank as there's no static build output
+      }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "app.py"    // Route all requests to app.py
+      "dest": "app.py"
     }
   ]
 }
