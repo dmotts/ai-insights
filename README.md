@@ -1,5 +1,9 @@
-# AI Insights
+<h1 align="center">
+AI Insights</span>
+</h1>
 
+
+![AI Insights Screenshot](https://res.cloudinary.com/dzpafdvkm/image/upload/v1727471949/Portfolio/ai-insights-report.png)
 ## Project Overview
 AI Insights is a web-based application designed to provide valuable insights using AI-driven analytics. The application leverages multiple data sources to deliver comprehensive reports and visualizations, helping users make data-driven decisions with ease.
 
