@@ -2,7 +2,7 @@
 AI Insights</span>
 </h1>
 
-<div align="center>
+<div align="center">
    <img src="https://res.cloudinary.com/dzpafdvkm/image/upload/v1727899164/Portfolio/ai-insights-screenshot.png" alt="AI Insights Screenshot" />
 </div>
 
