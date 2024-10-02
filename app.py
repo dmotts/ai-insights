@@ -77,7 +77,7 @@ if subscription_service:
 else:
     logger.info("SubscriptionService is disabled.")
 
-utilities_service = UtilitiesService('path_to/GeoLite2-City.mmdb')
+utilities_service = UtilitiesService()
 logger.info("UtilitiesService is initialized.")
 
 # Initialize the ReportGenerator if LLM service is enabled
@@ -134,9 +134,7 @@ def generate_report():
             validated_data.get('question3'),
         ]
 
-        # Get user information from headers using UtilitiesService
-        user_device_info = utilities_service.extract_user_info(request)
-
+        
         # Delegate report generation to the ReportGenerator class
         if Config.ENABLE_LLM_SERVICE and report_generator:
             logger.info("Generating report content using LLM service")
@@ -190,7 +188,7 @@ def generate_report():
             'pdf_url': google_drive_pdf_url,
             'doc_url': doc_url,
             'created_at': utilities_service.get_current_timestamp(),
-            **user_device_info
+            
         }
 
         # Save report data to MongoDB
