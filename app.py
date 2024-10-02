@@ -36,64 +36,24 @@ except Exception as e:
         logger.error(f"Failed to initialize EmailService: {e}")
     email_service = None
 
-# Check if Google Sheets credentials are provided before initializing the SheetsService
+# Initialize other services
 if Config.ENABLE_SHEETS_SERVICE:
     google_sheets_credentials = app.config.get('GOOGLE_SHEETS_CREDENTIALS_JSON')
     sheet_name = app.config.get('SHEET_NAME')
-    if google_sheets_credentials and sheet_name:
-        sheets_service = SheetsService(google_sheets_credentials, sheet_name)
-        logger.info("SheetsService is enabled.")
-    else:
-        logger.error("SheetsService cannot be initialized due to missing credentials or sheet name.")
-        sheets_service = None
+    sheets_service = SheetsService(google_sheets_credentials, sheet_name) if google_sheets_credentials and sheet_name else None
+    logger.info("SheetsService is enabled." if sheets_service else "SheetsService cannot be initialized.")
 else:
     sheets_service = None
-    logger.info("SheetsService is disabled.")
 
 mongodb_service = MongoDBService() if Config.ENABLE_DATABASE else None
-if mongodb_service:
-    logger.info("MongoDBService is enabled.")
-else:
-    logger.info("MongoDBService is disabled.")
-
 llm_service = LLMService() if Config.ENABLE_LLM_SERVICE else None
-if llm_service:
-    logger.info("LLMService is enabled.")
-else:
-    logger.info("LLMService is disabled.")
-
 pdf_service = PDFService(app.config['PDFCO_API_KEY']) if Config.ENABLE_PDF_SERVICE else None
-if pdf_service:
-    logger.info("PDFService is enabled.")
-else:
-    logger.info("PDFService is disabled.")
-
 integration_service = IntegrationService() if Config.ENABLE_INTEGRATION_SERVICE else None
-if integration_service:
-    logger.info("IntegrationService is enabled.")
-else:
-    logger.info("IntegrationService is disabled.")
-
 subscription_service = SubscriptionService() if Config.ENABLE_SUBSCRIPTION_SERVICE else None
-if subscription_service:
-    logger.info("SubscriptionService is enabled.")
-else:
-    logger.info("SubscriptionService is disabled.")
-
 utilities_service = UtilitiesService('path_to/GeoLite2-City.mmdb')
-logger.info("UtilitiesService is initialized.")
 
-# Initialize the ReportGenerator if LLM service is enabled
-if llm_service:
-    report_generator = ReportGenerator(
-        client=llm_service.client,
-        model=llm_service.model,
-        utilities_service=utilities_service
-    )
-    logger.info("ReportGenerator is initialized with LLM service.")
-else:
-    report_generator = None
-    logger.info("ReportGenerator is not initialized because LLM service is disabled.")
+# Initialize ReportGenerator if LLM service is enabled
+report_generator = ReportGenerator(client=llm_service.client, model=llm_service.model, utilities_service=utilities_service) if llm_service else None
 
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
@@ -152,18 +112,21 @@ def generate_report():
         # Generate a PDF from the HTML content
         if Config.ENABLE_PDF_SERVICE and pdf_service:
             logger.info("Generating PDF from HTML content")
-            pdf_url = pdf_service.generate_pdf(html_content)
-            if pdf_url:
-                logger.info(f"PDF generated successfully at: {pdf_url}")
+            pdf_path = pdf_service.generate_pdf(html_content)
+            if pdf_path:
+                logger.info(f"PDF generated successfully at: {pdf_path}")
                 file_name = f"report-{user_name}-{utilities_service.generate_report_id()}.pdf"
                 output_path = os.path.join("/tmp", file_name)
-                pdf_service.download_pdf(pdf_url, output_path)
+                
+                # If the PDF needs to be moved to /tmp, copy it
+                if pdf_path != output_path:
+                    pdf_service.copy_pdf(pdf_path, output_path)
 
                 if Config.ENABLE_SHEETS_SERVICE and sheets_service:
                     google_drive_pdf_url = sheets_service.save_pdf_to_drive(output_path, file_name)
                     logger.debug(f"PDF saved to Google Drive at URL: {google_drive_pdf_url}")
                 else:
-                    google_drive_pdf_url = pdf_url  # Use the PDF.co URL as a fallback
+                    google_drive_pdf_url = output_path  # Use the local file path as fallback
             else:
                 logger.error("PDF generation failed")
                 google_drive_pdf_url = None
@@ -244,7 +207,6 @@ def generate_report():
 def dashboard():
     logger.info("Rendering the dashboard page")
     return render_template('dashboard/index.html')
-
 
 # Main entry point to run the application
 if __name__ == '__main__':
