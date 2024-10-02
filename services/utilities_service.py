@@ -7,8 +7,8 @@ from werkzeug.exceptions import HTTPException
 class UtilitiesService:
     """Service class for utility functions."""
 
-    def __init__(self, geoip_db_path: str):
-        self.geoip_db_path = geoip_db_path
+    def __init__(self):
+        self.geoip_db_path = 'path_to/GeoLite2-City.mmdb'
         self.logger = logging.getLogger(__name__)
 
     def get_current_year(self) -> int:
@@ -51,7 +51,7 @@ class UtilitiesService:
 
     def handle_http_exception(self, e: HTTPException):
         """Handles HTTP exceptions."""
-        self.logger.error(f"HTTP error occurred: {e}")
+        self.logger.error(f"HTTP error occurred: {e}, URL: {e.description}")
         return jsonify({"status": "error", "message": e.description}), e.code
 
     def handle_general_exception(self, e: Exception):
