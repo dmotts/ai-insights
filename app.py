@@ -30,30 +30,67 @@ try:
     else:
         logger.info("EmailService is disabled.")
 except Exception as e:
-    if "CAPTCHA" in str(e):
-        logger.error("Failed to initialize EmailService: CAPTCHA is required and not implemented.")
-    else:
-        logger.error(f"Failed to initialize EmailService: {e}")
+    logger.error(f"Failed to initialize EmailService: {e}")
     email_service = None
 
 # Initialize other services
 if Config.ENABLE_SHEETS_SERVICE:
     google_sheets_credentials = app.config.get('GOOGLE_SHEETS_CREDENTIALS_JSON')
     sheet_name = app.config.get('SHEET_NAME')
-    sheets_service = SheetsService(google_sheets_credentials, sheet_name) if google_sheets_credentials and sheet_name else None
-    logger.info("SheetsService is enabled." if sheets_service else "SheetsService cannot be initialized.")
+    if google_sheets_credentials and sheet_name:
+        sheets_service = SheetsService(google_sheets_credentials, sheet_name)
+        logger.info("SheetsService is enabled.")
+    else:
+        logger.error("SheetsService cannot be initialized due to missing credentials or sheet name.")
+        sheets_service = None
 else:
     sheets_service = None
+    logger.info("SheetsService is disabled.")
 
 mongodb_service = MongoDBService() if Config.ENABLE_DATABASE else None
-llm_service = LLMService() if Config.ENABLE_LLM_SERVICE else None
-pdf_service = PDFService(app.config['PDFCO_API_KEY']) if Config.ENABLE_PDF_SERVICE else None
-integration_service = IntegrationService() if Config.ENABLE_INTEGRATION_SERVICE else None
-subscription_service = SubscriptionService() if Config.ENABLE_SUBSCRIPTION_SERVICE else None
-utilities_service = UtilitiesService('path_to/GeoLite2-City.mmdb')
+if mongodb_service:
+    logger.info("MongoDBService is enabled.")
+else:
+    logger.info("MongoDBService is disabled.")
 
-# Initialize ReportGenerator if LLM service is enabled
-report_generator = ReportGenerator(client=llm_service.client, model=llm_service.model, utilities_service=utilities_service) if llm_service else None
+llm_service = LLMService() if Config.ENABLE_LLM_SERVICE else None
+if llm_service:
+    logger.info("LLMService is enabled.")
+else:
+    logger.info("LLMService is disabled.")
+
+pdf_service = PDFService() if Config.ENABLE_PDF_SERVICE else None
+if pdf_service:
+    logger.info("PDFService is enabled.")
+else:
+    logger.info("PDFService is disabled.")
+
+integration_service = IntegrationService() if Config.ENABLE_INTEGRATION_SERVICE else None
+if integration_service:
+    logger.info("IntegrationService is enabled.")
+else:
+    logger.info("IntegrationService is disabled.")
+
+subscription_service = SubscriptionService() if Config.ENABLE_SUBSCRIPTION_SERVICE else None
+if subscription_service:
+    logger.info("SubscriptionService is enabled.")
+else:
+    logger.info("SubscriptionService is disabled.")
+
+utilities_service = UtilitiesService('path_to/GeoLite2-City.mmdb')
+logger.info("UtilitiesService is initialized.")
+
+# Initialize the ReportGenerator if LLM service is enabled
+if llm_service:
+    report_generator = ReportGenerator(
+        client=llm_service.client,
+        model=llm_service.model,
+        utilities_service=utilities_service
+    )
+    logger.info("ReportGenerator is initialized with LLM service.")
+else:
+    report_generator = None
+    logger.info("ReportGenerator is not initialized because LLM service is disabled.")
 
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
@@ -206,10 +243,3 @@ def generate_report():
 @app.route('/dashboard')
 def dashboard():
     logger.info("Rendering the dashboard page")
-    return render_template('dashboard/index.html')
-
-# Main entry point to run the application
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    logger.info(f"Starting application on port {port}")
-    app.run(host='0.0.0.0', port=port, debug=False)
