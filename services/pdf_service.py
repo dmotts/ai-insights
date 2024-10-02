@@ -1,14 +1,27 @@
-import requests
-import os
 import logging
+import os
+import requests  # For downloading PDF from URL
+import pdfkit  # For generating PDF from HTML
+from config import Config
 
 class PDFService:
     def __init__(self, api_key=None):
+        # Initialize logger
+        if not Config.ENABLE_PDF_SERVICE:
+            logging.info('PDF service is disabled.')
+            return
+
         self.logger = logging.getLogger(__name__)
+        self.api_key = api_key  # Optional API key if needed for external services
 
     def generate_pdf(self, html_content, output_path='ai-insights-report.pdf'):
+        if not Config.ENABLE_PDF_SERVICE:
+            logging.info('PDF service is disabled. Skipping PDF generation.')
+            return None
+
+        self.logger.debug(f'Generating PDF locally with pdfkit at {output_path}')
         try:
-            # Generate PDF using pdfkit or another method and save to output_path
+            # Generate PDF from HTML content and save to the specified output path
             pdfkit.from_string(html_content, output_path)
             self.logger.info(f'PDF generated and saved to: {output_path}')
             return output_path
@@ -44,4 +57,16 @@ class PDFService:
             return None
         except Exception as e:
             self.logger.error(f'Unexpected error while downloading PDF: {e}')
+            return None
+
+    def check_pdf_exists(self, output_path):
+        """
+        Checks if a PDF exists at the given output path.
+        """
+        self.logger.info(f'Checking for PDF at: {output_path}')
+        if os.path.exists(output_path):
+            self.logger.info(f'PDF available at: {output_path}')
+            return output_path
+        else:
+            self.logger.error(f'PDF not found at {output_path}')
             return None
