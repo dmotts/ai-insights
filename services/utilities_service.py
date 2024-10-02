@@ -8,7 +8,7 @@ class UtilitiesService:
     """Service class for utility functions."""
 
     def __init__(self):
-        self.geoip_db_path = path_to/GeoLite2-City.mmdb'
+        self.geoip_db_path = 'path_to/GeoLite2-City.mmdb'
         self.logger = logging.getLogger(__name__)
 
     def get_current_year(self) -> int:
