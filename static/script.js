@@ -60,15 +60,22 @@ document.addEventListener('DOMContentLoaded', function() {
         for (const field of currentFields) {
             if (!field.checkValidity()) {
                 field.classList.add('is-invalid');
+                field.classList.remove('is-valid');
                 isValid = false;
+                // Display validation message
+                const errorMessage = field.parentElement.querySelector('.invalid-feedback');
+                if (errorMessage) {
+                    errorMessage.style.display = 'block';
+                }
             } else {
                 field.classList.remove('is-invalid');
                 field.classList.add('is-valid');
+                // Hide validation message
+                const errorMessage = field.parentElement.querySelector('.invalid-feedback');
+                if (errorMessage) {
+                    errorMessage.style.display = 'none';
+                }
             }
-        }
-
-        if (!isValid) {
-            alert('Please complete all required fields correctly before proceeding.');
         }
 
         return isValid;
@@ -113,9 +120,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }, 50);
 
-                downloadButton.href = downloadUrl;
+                // Ensure the download URL is correctly resolved
+                const baseUrl = window.location.origin;
+                downloadButton.href = baseUrl + downloadUrl;
             }
         }, 50);
+    }
+
+    function showError(message) {
+        loadingAnimation.classList.remove('d-block');
+        loadingAnimation.classList.add('d-none');
+        alert(message);
     }
 
     submitBtn.addEventListener('click', () => {
@@ -130,24 +145,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(response => {
                 if (response.status === 'success') {
                     if (response.pdf_url) {
                         showSuccess(response.pdf_url);
                     } else {
-                        alert('PDF generation failed. Please try again later.');
-                        window.location.reload();
+                        showError('PDF generation failed. Please try again later.');
                     }
                 } else {
-                    alert('An error occurred, please try again.');
-                    window.location.reload();
+                    showError(response.message || 'An error occurred, please try again.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An unexpected error occurred. Please try again.');
-                window.location.reload();
+                showError('An unexpected error occurred. Please try again.');
             });
         }
     });
