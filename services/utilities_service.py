@@ -7,8 +7,8 @@ from werkzeug.exceptions import HTTPException
 class UtilitiesService:
     """Service class for utility functions."""
 
-    def __init__(self, geoip_db_path: str):
-        self.geoip_db_path = geoip_db_path
+    def __init__(self):
+        self.geoip_db_path = path_to/GeoLite2-City.mmdb'
         self.logger = logging.getLogger(__name__)
 
     def get_current_year(self) -> int:
