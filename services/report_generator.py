@@ -194,7 +194,7 @@ footer p {
         </body></html>
         """
 
-    def build_prompt(self, industry: str, answers: List[str],
+    def build_prompt(self, industry: str, answer: List[str],
                      user_name) -> str:
         return f"""
         ### Instruction:
