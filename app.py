@@ -243,3 +243,10 @@ def generate_report():
 @app.route('/dashboard')
 def dashboard():
     logger.info("Rendering the dashboard page")
+    return render_template('dashboard/index.html')
+
+# Main entry point to run the application
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    logger.info(f"Starting application on port {port}")
+    app.run(host='0.0.0.0', port=port, debug=False)
