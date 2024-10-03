@@ -86,6 +86,6 @@ Please ensure your code follows the project's coding standards and includes test
 
 ## Let's Connect 🤝
 
-If you find this project useful, please consider connecting with me on GitHub:
+If you find this project useful, please give this project a ⭐ and feel free to  contact me!
 
 [Daley Mottley (dmotts)](https://github.com/dmotts)
