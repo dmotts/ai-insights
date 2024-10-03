@@ -86,7 +86,7 @@ Please ensure your code follows the project's coding standards and includes test
 
 ## Contributors 
 
-·[Daley Mottley (dmotts)](https://github.com/dmotts)
+[Daley Mottley (dmotts)](https://github.com/dmotts)
 
 ## Let's Connect 🤝
 
