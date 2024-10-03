@@ -1,8 +1,3 @@
 [phases.setup]
 nixPkgs = ["...", "wkhtmltopdf-bin"]
 
-[phases.build]
-cmds = ['pip install -r requirements.txt:build']
-
-[start]
-cmd = 'python app.py:start'
