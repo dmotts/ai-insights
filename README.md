@@ -3,6 +3,9 @@ AI Insights</span>
 </h1>
 
 <div align="center">
+<p> 
+   <a href="https://ai-insights-production.up.railway.app/" target="_blank" >View Demo</a>
+</p>
    <img src="https://res.cloudinary.com/dzpafdvkm/image/upload/v1727899164/Portfolio/ai-insights-screenshot.png" alt="AI Insights Screenshot" />
 </div>
 
