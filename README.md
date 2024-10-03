@@ -90,6 +90,6 @@ Please ensure your code follows the project's coding standards and includes test
 
 ## Let's Connect 🤝
 
-If you like projects like this and would like to support the developer(s).
+If you like this project and would like to support the developer(s).
 Feel free to reach out and give this project a ⭐!
 
