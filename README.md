@@ -7,7 +7,7 @@ AI Insights</span>
 </div>
 
 ## Project Overview
-AI Insights is a web-based application designed to provide valuable insights using AI-driven analytics. The application leverages multiple data sources to deliver comprehensive reports and visualizations, helping users make data-driven decisions with ease.
+AI Insights is a web-based application designed to provide valuable insights for your business using AI-driven analytics. The application leverages multiple data sources to deliver comprehensive reports and visualizations, helping users make data-driven decisions with ease.
 
 ## Setup Instructions
 
