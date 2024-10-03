@@ -90,5 +90,5 @@ Please ensure your code follows the project's coding standards and includes test
 
 ## Let's Connect 🤝
 
-If you like this project and would like see more or show your support, then feel free to reach out the developer(s) and give this project a ⭐!
+If you liked this project and would like see more or show your support, then feel free to reach out the developer(s) and give this project a ⭐!
 
