@@ -43,7 +43,6 @@ AI Insights is a web-based application designed to provide valuable insights for
    - `GOOGLE_SHEETS_AUTH_PROVIDER_X509_CERT_URL`
    - `GOOGLE_SHEETS_CLIENT_X509_CERT_URL`
    - `OPENAI_API_KEY`
-   - `PDFCO_API_KEY`
    - `PROTONMAIL_ADDRESS`
    - `PROTONMAIL_PASSWORD`
    - `MONGODB_URI`
