@@ -9,7 +9,7 @@ AI Insights</span>
     <a href="https://ai-insights-production.up.railway.app/" target="blank">View Demo</a>
     ·
     <a href="https://github.com/dmotts/ai-insights/issues/new/choose">Report Bug</a>
-    
+ 
 </p>
 
    <img src="https://res.cloudinary.com/dzpafdvkm/image/upload/v1727899164/Portfolio/ai-insights-screenshot.png" alt="AI Insights Screenshot" />
