@@ -1,5 +1,5 @@
 <h1 align="center">
-AI Insights Report Generator</span>
+AI Insights <br> Report Generator</span>
 </h1>
 
 <div align="center">
