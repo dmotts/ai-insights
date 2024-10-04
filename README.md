@@ -85,12 +85,9 @@ To contribute:
 
 ***Please ensure your code follows the project's coding standards and includes tests where appropriate.***
 
-## Contributors 
+<h2 align="center"> 🌎 Let's Stay Connected 🤝 </h2>
 
-[Daley Mottley (dmotts)](https://github.com/dmotts)
+<p align="center"> If you liked this project and would like to see more features or show your support.</p>
+<p align="center"> Feel free to reach out to the developer(s) and give this project a ⭐!</p>
 
-## Let's Connect 🤝
-
-<p> If you liked this project and would like to see more features or show your support.</p>
-Feel free to reach out to the developer(s) and give this project a ⭐!
 
