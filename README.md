@@ -4,11 +4,11 @@ AI Insights <br> Report Generator</span>
 
 <div align="center">
 <p align="center">
-<a href="https://github.com/dmotts/ai-insights/issues/new/choose">Request Feature</a>
+<a href="https://github.com/dmotts/ai-insights/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.yml&title=%5BFeature+Request%5D+">Request Feature</a>
      ·
     <a href="https://ai-insights-production.up.railway.app/" target="blank">View Demo</a>
     ·
-    <a href="https://github.com/dmotts/ai-insights/issues/new/choose">Report Bug</a>
+    <a href="https://github.com/dmotts/ai-insights/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml&title=%5BBug%5D+">Report Bug</a>
  
 </p>
 
