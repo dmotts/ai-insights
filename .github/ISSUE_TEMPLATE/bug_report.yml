@@ -29,8 +29,8 @@ body:
   - type: textarea
     id: screenshots
     attributes:
-      label: Add ScreenShots
-      description: Add sufficient ScreenShots to explain your issue.
+      label: Add Screenshots 
+      description: Add sufficient Screenshots to explain your issue.
   - type: dropdown
     id: devices
     attributes:
