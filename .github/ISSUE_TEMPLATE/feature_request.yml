@@ -34,9 +34,9 @@ body:
       description: What benefits would this feature bring to the project or community?
       placeholder: Explain the advantages of implementing this feature.
   - type: textarea
-    id: screenShots
+    id: screenshots
     attributes:
-      label: Add ScreenShots
+      label: Add Screenshots 
       description: If any...
   - type: dropdown
     id: priority
