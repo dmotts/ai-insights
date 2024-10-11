@@ -15,10 +15,10 @@ AI Insights <br> Report Generator</span>
    <img src="https://res.cloudinary.com/dzpafdvkm/image/upload/v1727899164/Portfolio/ai-insights-screenshot.png" alt="AI Insights Screenshot" />
 </div>
 
-## Project Overview
+## Project Overview 🧐
 AI Insights is a web-based application designed to provide valuable insights for your business using AI-driven analytics. The application leverages multiple data sources to deliver comprehensive reports and visualizations, helping users make data-driven decisions with ease.
 
-## Setup Instructions
+## Setup Instructions 📄
 
 ### Prerequisites
 - Python 3.x
@@ -66,8 +66,8 @@ AI Insights is a web-based application designed to provide valuable insights for
 5. **Access the application:**
    Open your web browser and go to `http://localhost:5000` to view the application.
 
-## Contributions
-We welcome and appreciate contributions to the **Customer Support Bot** project! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+## Contributions 📥
+We welcome and appreciate all contributions to the **Customer Support Bot** project! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
 
 <p align="center"><em>Thank you for your support!</em></p>
 
