@@ -69,7 +69,7 @@ AI Insights is a web-based application designed to provide valuable insights for
 ## Contributions
 We welcome and appreciate contributions to the **Customer Support Bot** project! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
 
-<p align="center">Thank you for your support!</p>
+<p align="center"><em>Thank you for your support!</em></p>
 
 <hr>
 <h2 align="center"> 🌎 Let's Stay Connected 🤜🤛 </h2>
