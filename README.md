@@ -1,5 +1,5 @@
 <h1 align="center">
-AI Insights <br> Report Generator <br> |🔎🗞️📚🗃️_|_🥸_|_📝📊📈🖨️|</span>
+AI Insights <br> Report Generator <br> 🔎🗞️📚🗃️_|\🥸\|_📝📊📈🖨️</span>
 </h1>
 
 <div align="center">
