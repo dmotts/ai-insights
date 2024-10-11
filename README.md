@@ -67,12 +67,24 @@ AI Insights is a web-based application designed to provide valuable insights for
    Open your web browser and go to `http://localhost:5000` to view the application.
 
 ## Contributions 🧑‍🔧👷‍♀️🏗️🏢
-We welcome and appreciate all contributions to the **Customer Support Bot** project! 
 
-Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started! 🚀
+Contributions are welcome! It only takes five (5) steps!
 
-<p align="center"><em>Thank you for your support!</em></p>
+To contribute:
 
+1) Fork the repository.
+
+2) Create a new branch: `git checkout -b my-feature-branch`.
+
+3) Make your changes and commit them: `git commit -m 'Add some feature'`.
+
+4) Push to the branch: `git push origin my-feature-branch`.
+
+5) Open a pull request.
+
+***Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started! 🚀***
+
+<p align="center">🫶 <em>Thank you for your support! </em>🙌 </p>
 <hr>
 <h2 align="center"> 🌎 Let's Stay Connected 🤜🤛 </h2>
 
