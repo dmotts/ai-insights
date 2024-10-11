@@ -20,7 +20,7 @@ AI Insights is a web-based application designed to provide valuable insights for
 
 ## Setup Instructions 📄
 
-### Prerequisites
+### Prerequisites 
 - Python 3.x
 - Poetry package manager
 - Google Sheets API credentials (either through environment variables or a `credentials.json` file)
@@ -66,8 +66,10 @@ AI Insights is a web-based application designed to provide valuable insights for
 5. **Access the application:**
    Open your web browser and go to `http://localhost:5000` to view the application.
 
-## Contributions 📥
-We welcome and appreciate all contributions to the **Customer Support Bot** project! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+## Contributions 🧑‍🔧👷‍♀️🏗️🏢
+We welcome and appreciate all contributions to the **Customer Support Bot** project! 
+
+Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started! 🚀
 
 <p align="center"><em>Thank you for your support!</em></p>
 
