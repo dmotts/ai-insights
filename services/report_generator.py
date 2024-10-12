@@ -201,7 +201,7 @@ footer p {
 As an AI consultant specializing in business and entrepreneurship, your task is to develop a strategic operational plan for integrating artificial intelligence into the user's business operations within the {industry} industry.
 
 ### Business Overview:
-- **Objectives**: The primary objectives for AI integration are to {answer[0]}.
+- **Objectives**: The primary objectives for AI integration are to {', '.join(answer[0])}.
 - **Current Technology and Data**: The business currently uses {answer[1]}, and AI will need to integrate with these existing systems and data.
 - **Workforce and Training Needs**: The team’s skill level is currently at {answer[2]}, and they will require training to effectively use AI.
 
