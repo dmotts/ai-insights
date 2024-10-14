@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'Email': formData.get('client_email'),
             'Business Industry': formData.get('industry'),
             'What are your current data management and utilization challenges?': formData.get('question1'),
-            'What are the areas of technology integration and inefficiency?': formData.get('question2'),
+            'What are the areas of technology integration and inefficiency?': formData.getAll('question2').join(', '),
             'What are your long-term business goals and AI\'s role in achieving them?': formData.get('question3'),
         };
 
@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentFields = steps[currentStep].querySelectorAll('input, textarea, select');
         let isValid = true;
 
+        // Validate text inputs, textareas, and select fields
         for (const field of currentFields) {
             if (!field.checkValidity()) {
                 field.classList.add('is-invalid');
@@ -78,6 +79,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Checkbox validation for question2
+        const checkboxGroup = document.querySelectorAll('input[name="question2"]:checked');
+        if (checkboxGroup.length === 0) {
+           // If no checkboxes are selected, show validation error
+           const errorMessage = document.querySelector('input[name="question2"]').parentElement.querySelector('.invalid-feedback');
+           errorMessage.style.display = 'block';
+           isValid = false;
+        } else {
+           // If checkboxes are selected, hide validation error
+           const errorMessage = document.querySelector('input[name="question2"]').parentElement.querySelector('.invalid-feedback');
+           errorMessage.style.display = 'none';
+        }
         return isValid;
     }
 
