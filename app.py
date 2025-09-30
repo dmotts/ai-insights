@@ -139,7 +139,8 @@ class ReportRequestSchema(Schema):
     client_name = fields.Str(required=True)
     client_email = fields.Email(required=True)
     industry = fields.Str(required=True)
-    question1 = fields.Str(required=True)
+    # Accept multiple checkbox selections for question1
+    question1 = fields.List(fields.Str(), required=True)
     question2 = fields.Str(required=True)
     question3 = fields.Str(required=True)
 
@@ -157,8 +158,17 @@ def generate_report():
 
         user_name = validated_data.get('client_name')
         industry = validated_data.get('industry')
+        # Server-side validation for at least one objective selected
+        q1_list = validated_data.get('question1') or []
+        if not isinstance(q1_list, list) or len(q1_list) == 0:
+            raise ValidationError({'question1': ['Select at least one objective.']})
+        # Normalize checkbox selections to a readable string for prompt
+        if isinstance(q1_list, str):
+            q1_list = [q1_list]
+        q1_str = ', '.join(q1_list) if q1_list else 'No objectives selected'
+
         answers = [
-            validated_data.get('question1'),
+            q1_str,
             validated_data.get('question2'),
             validated_data.get('question3'),
         ]
@@ -203,6 +213,7 @@ def generate_report():
             'client_name': validated_data['client_name'],
             'client_email': validated_data['client_email'],
             'industry': industry,
+            'objectives': q1_list,
             'pdf_url': pdf_url,
             'doc_url': doc_url,
             'created_at': utilities_service.get_current_timestamp(),

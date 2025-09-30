@@ -35,13 +35,16 @@ document.addEventListener('DOMContentLoaded', function() {
         summaryDiv.innerHTML = ''; // Clear existing content
         const formData = new FormData(document.getElementById('reportForm'));
 
+        // Collect multi-select (checkbox) answers for question1
+        const objectives = Array.from(document.querySelectorAll('input[name="question1"]:checked')).map(el => el.value);
+
         const summaryData = {
             'Name': formData.get('client_name'),
             'Email': formData.get('client_email'),
             'Business Industry': formData.get('industry'),
-            'What are your current data management and utilization challenges?': formData.get('question1'),
-            'What are the areas of technology integration and inefficiency?': formData.get('question2'),
-            'What are your long-term business goals and AI\'s role in achieving them?': formData.get('question3'),
+            'Primary AI Objectives': objectives.length ? objectives.join(', ') : 'None selected',
+            'What existing technologies or data does your business currently use that AI will need to work with?': formData.get('question2'),
+            'What is the current skill level of your team, and what training will they need to effectively use AI?': formData.get('question3'),
         };
 
         for (const [question, answer] of Object.entries(summaryData)) {
@@ -74,6 +77,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 const errorMessage = field.parentElement.querySelector('.invalid-feedback');
                 if (errorMessage) {
                     errorMessage.style.display = 'none';
+                }
+            }
+        }
+
+        // Custom validation for checkbox group on Step 2 (question1)
+        if (steps[currentStep].querySelector('input[name="question1"][type="checkbox"]')) {
+            const anyChecked = steps[currentStep].querySelectorAll('input[name="question1"]:checked').length > 0;
+            const groupContainer = steps[currentStep].querySelector('.form-group');
+            if (!anyChecked) {
+                isValid = false;
+                if (groupContainer) {
+                    const errorMessage = groupContainer.querySelector('.invalid-feedback');
+                    if (errorMessage) errorMessage.style.display = 'block';
+                }
+            } else {
+                if (groupContainer) {
+                    const errorMessage = groupContainer.querySelector('.invalid-feedback');
+                    if (errorMessage) errorMessage.style.display = 'none';
                 }
             }
         }
@@ -138,7 +159,15 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoading();
 
             const formData = new FormData(document.getElementById('reportForm'));
+
+            // Build payload with support for multiple checkbox values
             const data = Object.fromEntries(formData.entries());
+            const q1Selections = Array.from(document.querySelectorAll('input[name="question1"]:checked')).map(el => el.value);
+            if (q1Selections.length) {
+                data.question1 = q1Selections;
+            } else {
+                data.question1 = [];
+            }
 
             fetch('/generate_report', {
                 method: 'POST',
