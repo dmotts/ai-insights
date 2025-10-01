@@ -170,6 +170,21 @@ To contribute:
 
 <p align="center" ><strong><em>Please read our <a href="https://github.com/daley-mottley/ai-insights/blob/main/CONTRIBUTION.md" >Contributing Guidelines</a> to get started!</em></strong> 🚀</p>
 
+
+<a name="contributors"></a>
+<h2 align="center">Say 'Hi' To Our Contributors!</h2>
+
+<p align="center">
+  <a href="https://github.com/daley-mottley">
+    <img src="https://github.com/daley-mottley.png" width="100" height="100" style="border-radius: 50%;" alt="daley-mottley"/>
+  </a>
+  <a href="https://github.com/Devansh422">
+    <img src="https://github.com/Devansh422.png" width="100" height="100" style="border-radius: 50%;" alt="Devansh422"/>
+  </a>
+
+</p>
+
+
 <p align="center">🫶 <em>Thank you for your support! </em>🙌 </p>
 <hr>
 <h2 align="center"> 🌎 Let's Stay Connected 🫸🫷 </h2>
